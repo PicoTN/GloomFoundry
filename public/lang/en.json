@@ -1,18 +1,47 @@
 {
   "TYPES": {
-    "Actor": { "mercenary": "Mercenary" },
-    "Item": { "background": "Background" },
-    "Card": { "modifier": "Modifier Card" }
+    "Actor": {
+      "mercenary": "Mercenary"
+    },
+    "Item": {
+      "background": "Background",
+      "perk": "Perk"
+    },
+    "Card": {
+      "modifier": "Modifier Card"
+    }
   },
   "GLOOM": {
-    "Sheet": { "mercenary": "Mercenary Sheet", "background": "Background Sheet" },
+    "Sheet": {
+      "mercenary": "Mercenary Sheet",
+      "background": "Background Sheet",
+      "perk": "Perk Sheet"
+    },
     "Attribute": {
-      "cunning": { "label": "Cunning", "abbr": "CU" },
-      "finesse": { "label": "Finesse", "abbr": "FI" },
-      "grit": { "label": "Grit", "abbr": "GR" },
-      "intuition": { "label": "Intuition", "abbr": "IN" },
-      "logic": { "label": "Logic", "abbr": "LO" },
-      "understanding": { "label": "Understanding", "abbr": "UN" }
+      "cunning": {
+        "label": "Cunning",
+        "abbr": "CU"
+      },
+      "finesse": {
+        "label": "Finesse",
+        "abbr": "FI"
+      },
+      "grit": {
+        "label": "Grit",
+        "abbr": "GR"
+      },
+      "intuition": {
+        "label": "Intuition",
+        "abbr": "IN"
+      },
+      "logic": {
+        "label": "Logic",
+        "abbr": "LO"
+      },
+      "understanding": {
+        "label": "Understanding",
+        "abbr": "UN"
+      }
     },
     "Mercenary": {
       "pronouns": "Pronouns",
@@ -25,9 +54,15 @@
       "personalGoal": "Personal Goal",
       "biography": "Biography",
       "FIELDS": {
-        "level": { "label": "Level" },
-        "gold": { "label": "Gold" },
-        "biography": { "label": "Biography" }
+        "level": {
+          "label": "Level"
+        },
+        "gold": {
+          "label": "Gold"
+        },
+        "biography": {
+          "label": "Biography"
+        }
       }
     },
     "Card": {
@@ -47,7 +82,7 @@
       "reshufflePending": "A Critical or Null was drawn: the deck will be reshuffled at the end of the round",
       "reshuffle": "Reshuffle",
       "rebuild": "Rebuild",
-      "rebuildConfirm": "Rebuild this Modifier Deck from scratch? All cards, including Bless and Curse, will be replaced by the base deck.",
+      "rebuildConfirm": "Rebuild this Modifier Deck from the base deck and your ticked perks? The discard pile is shuffled back in. Bless and Curse cards are kept.",
       "clearTemporary": "Remove Bless/Curse",
       "open": "Open",
       "recent": "Recently drawn",
@@ -107,7 +142,10 @@
       "expended": "Expended",
       "toggleExpended": "Toggle expended"
     },
-    "Item": { "edit": "Edit", "delete": "Delete" },
+    "Item": {
+      "edit": "Edit",
+      "delete": "Delete"
+    },
     "Rest": {
       "title": "Rest",
       "quickBreath": "Quick Breath",
@@ -129,6 +167,38 @@
         "hint": "How modifier cards are displayed for you: Gloomhaven-style faces, or the matching playing card (for groups using a poker deck).",
         "gloomhaven": "Gloomhaven",
         "playing": "Playing cards"
+      }
+    },
+    "Perk": {
+      "plural": "Perks",
+      "new": "New Perk",
+      "create": "Add a Perk",
+      "none": "No perks yet. Add one and enter its cards from your class's perk list.",
+      "namePlaceholder": "Perk name",
+      "description": "Reminder",
+      "descriptionPlaceholder": "e.g. Replace a −1 with a +0 Wound",
+      "codesHint": "Each box below is one checkbox of the perk. Write cards as playing-card codes: 7♥ or 7H, 10S, AC, RJ / BJ for jokers. Separate several cards with spaces or +.",
+      "box": "Box",
+      "remove": "Remove",
+      "add": "Add",
+      "attack": "Attack",
+      "attribute": "Attribute",
+      "effect": "Effect",
+      "effectPlaceholder": "e.g. Wound",
+      "addCard": "Add a card",
+      "addStep": "Add a box",
+      "duplicateStep": "Duplicate this box",
+      "deleteStep": "Delete this box",
+      "deleteCard": "Remove this card",
+      "attackKind": {
+        "number": "Modifier",
+        "critical": "Critical ×2",
+        "null": "Null"
+      },
+      "issue": {
+        "invalidCode": "{perk} (box {box}): \"{code}\" is not a valid card code.",
+        "missingCard": "{perk} (box {box}): {code} is not in the deck, so it can't be removed.",
+        "duplicateCard": "{perk} (box {box}): {code} is already in the deck. Groups using a poker deck can't have it twice."
       }
     }
   }

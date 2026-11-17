@@ -8,9 +8,11 @@ import { GMDeckApp } from "./module/apps/gm-deck.ts";
 import { SYSTEM_ID, templatePath } from "./module/config.ts";
 import { BackgroundModel } from "./module/data/background.ts";
 import { MercenaryModel } from "./module/data/mercenary.ts";
+import { PerkModel } from "./module/data/perk.ts";
 import { ModifierCardModel } from "./module/data/modifier-card.ts";
 import { addTemporary, drawAttack, testAttribute } from "./module/deck/actions.ts";
 import { registerCombatHooks } from "./module/deck/combat-hooks.ts";
+import { registerPerkHooks } from "./module/deck/composition.ts";
 import { ModifierDeck } from "./module/deck/modifier-deck.ts";
 import { getActorDeck, getGMDeck, registerDeckLifecycleHooks } from "./module/deck/registry.ts";
 import * as modifierRules from "./module/rules/modifier.ts";
@@ -18,6 +20,7 @@ import * as resolution from "./module/rules/resolution.ts";
 import { applyCardFaceStyle, registerSettings, type CardFaceStyle } from "./module/settings.ts";
 import { BackgroundSheet } from "./module/sheets/background-sheet.ts";
 import { MercenarySheet } from "./module/sheets/mercenary-sheet.ts";
+import { PerkSheet } from "./module/sheets/perk-sheet.ts";
 import { registerSocket } from "./module/socket.ts";
 
 const api = {
@@ -38,7 +41,7 @@ Hooks.once("init", async () => {
   (game as unknown as Record<string, unknown>)[SYSTEM_ID] = api;
 
   Object.assign(CONFIG.Actor.dataModels, { mercenary: MercenaryModel });
-  Object.assign(CONFIG.Item.dataModels, { background: BackgroundModel });
+  Object.assign(CONFIG.Item.dataModels, { background: BackgroundModel, perk: PerkModel });
   Object.assign(CONFIG.Card.dataModels, { modifier: ModifierCardModel });
 
   const DocumentSheetConfig = foundry.applications.apps.DocumentSheetConfig;
@@ -52,10 +55,16 @@ Hooks.once("init", async () => {
     makeDefault: true,
     label: "GLOOM.Sheet.background",
   } as never);
+  DocumentSheetConfig.registerSheet(Item, SYSTEM_ID, PerkSheet, {
+    types: ["perk"],
+    makeDefault: true,
+    label: "GLOOM.Sheet.perk",
+  } as never);
 
   registerSettings();
   registerDeckLifecycleHooks();
   registerCombatHooks();
+  registerPerkHooks();
 
   await foundry.applications.handlebars.loadTemplates({
     "gloom.modifier-card": templatePath("parts/modifier-card.hbs"),

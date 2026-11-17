@@ -1,0 +1,60 @@
+<section class="sheet-body perk-editor">
+  <header class="sheet-header">
+    <img class="profile small" src="{{item.img}}" alt="" data-action="editImage" data-edit="img">
+    <input class="name" type="text" name="name" value="{{item.name}}" placeholder="{{localize 'GLOOM.Perk.namePlaceholder'}}">
+  </header>
+  <label class="stacked">
+    {{localize "GLOOM.Perk.description"}}
+    <input type="text" name="system.description" value="{{system.description}}" placeholder="{{localize 'GLOOM.Perk.descriptionPlaceholder'}}">
+  </label>
+  <p class="hint">{{localize "GLOOM.Perk.codesHint"}}</p>
+
+  <div class="perk-steps">
+    {{#each steps as |step|}}
+    <fieldset class="perk-step{{#if step.ticked}} ticked{{/if}}">
+      <legend>
+        <i class="fa-regular {{#if step.ticked}}fa-square-check{{else}}fa-square{{/if}}"></i>
+        {{localize "GLOOM.Perk.box"}} {{step.number}}
+        {{#if ../editable}}
+        <a class="item-control" data-action="duplicateStep" data-step="{{step.index}}" data-tooltip="GLOOM.Perk.duplicateStep"><i class="fa-solid fa-copy"></i></a>
+        <a class="item-control" data-action="deleteStep" data-step="{{step.index}}" data-tooltip="GLOOM.Perk.deleteStep"><i class="fa-solid fa-trash"></i></a>
+        {{/if}}
+      </legend>
+      <label class="stacked">
+        {{localize "GLOOM.Perk.remove"}}
+        <input type="text" class="{{#if step.removeInvalid}}invalid{{/if}}" name="system.steps.{{step.index}}.remove" value="{{step.remove}}" placeholder="2♥ 2♦">
+      </label>
+      <table class="perk-adds">
+        <thead>
+          <tr>
+            <th>{{localize "GLOOM.Perk.add"}}</th>
+            <th>{{localize "GLOOM.Perk.attack"}}</th>
+            <th></th>
+            <th>{{localize "GLOOM.Perk.attribute"}}</th>
+            <th>{{localize "GLOOM.Perk.effect"}}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each step.add as |card|}}
+          <tr>
+            <td><input type="text" class="code{{#if card.invalid}} invalid{{/if}}" name="system.steps.{{step.index}}.add.{{card.index}}.card" value="{{card.card}}" placeholder="7♥"></td>
+            <td>
+              <select name="system.steps.{{step.index}}.add.{{card.index}}.attackKind">
+                {{#each ../../attackKinds as |kind|}}<option value="{{kind.key}}"{{#if (eq kind.key card.attackKind)}} selected{{/if}}>{{kind.label}}</option>{{/each}}
+              </select>
+            </td>
+            <td><input type="number" class="num" name="system.steps.{{step.index}}.add.{{card.index}}.attackValue" value="{{card.attackValue}}" step="1"{{#unless card.isNumber}} disabled{{/unless}}></td>
+            <td><input type="number" class="num" name="system.steps.{{step.index}}.add.{{card.index}}.attribute" value="{{card.attribute}}" min="0" max="9" step="1"></td>
+            <td><input type="text" name="system.steps.{{step.index}}.add.{{card.index}}.effect" value="{{card.effect}}" placeholder="{{localize 'GLOOM.Perk.effectPlaceholder'}}"></td>
+            <td>{{#if ../../editable}}<a class="item-control" data-action="deleteCard" data-step="{{step.index}}" data-card="{{card.index}}" data-tooltip="GLOOM.Perk.deleteCard"><i class="fa-solid fa-xmark"></i></a>{{/if}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+      {{#if ../editable}}<button type="button" class="small" data-action="addCard" data-step="{{step.index}}"><i class="fa-solid fa-plus"></i> {{localize "GLOOM.Perk.addCard"}}</button>{{/if}}
+    </fieldset>
+    {{/each}}
+  </div>
+  {{#if editable}}<button type="button" data-action="addStep"><i class="fa-solid fa-plus"></i> {{localize "GLOOM.Perk.addStep"}}</button>{{/if}}
+</section>

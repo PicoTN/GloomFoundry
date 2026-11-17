@@ -1,6 +1,8 @@
 import { ATTRIBUTE_LABELS, ATTRIBUTES, templatePath, type AttributeKey } from "../config.ts";
 import { cardView } from "../chat/draw-message.ts";
 import { addTemporary, drawAttack, testAttribute } from "../deck/actions.ts";
+import { composeActorDeck, perkItems } from "../deck/compose-actor.ts";
+import { rebuildActorDeck } from "../deck/composition.ts";
 import { getActorDeck } from "../deck/registry.ts";
 import { runAsGM } from "../socket.ts";
 
@@ -27,6 +29,8 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       createDeck: MercenarySheet.#onCreateDeck,
       openDeck: MercenarySheet.#onOpenDeck,
       createBackground: MercenarySheet.#onCreateBackground,
+      createPerk: MercenarySheet.#onCreatePerk,
+      togglePerkBox: MercenarySheet.#onTogglePerkBox,
       editItem: MercenarySheet.#onEditItem,
       deleteItem: MercenarySheet.#onDeleteItem,
       toggleExpended: MercenarySheet.#onToggleExpended,
@@ -73,6 +77,21 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
             recent: deck.recentDiscards(6).map((c, i) => cardView(c, i === 0, i > 0)),
           }
         : null,
+      perks: perkItems(actor).map((p) => {
+        const sys = p.system as unknown as { description: string; taken: number; steps: unknown[] };
+        return {
+          id: p.id,
+          name: p.name,
+          description: sys.description,
+          boxes: sys.steps.map((_, i) => ({ index: i, ticked: i < sys.taken })),
+        };
+      }),
+      perkIssues: composeActorDeck(actor).issues.map((issue) =>
+        game.i18n!.format(`GLOOM.Perk.issue.${issue.kind}`, {
+          perk: issue.perk,
+          box: String(issue.step),
+          code: issue.code,
+        })),
       backgrounds: actor.items
         .filter((i) => i.type === "background")
         .map((i) => ({ id: i.id, name: i.name, img: i.img, expended: (i.system as { expended: boolean }).expended })),
@@ -123,7 +142,7 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       window: { title: t("GLOOM.Deck.rebuild") },
       content: `<p>${t("GLOOM.Deck.rebuildConfirm")}</p>`,
     } as never);
-    if (ok) await deck.rebuild();
+    if (ok) await rebuildActorDeck(this.document);
   }
 
   static async #onCreateDeck(this: MercenarySheet) {
@@ -141,6 +160,22 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
     await this.document.createEmbeddedDocuments("Item", [
       { name: t("GLOOM.Background.new"), type: "background" },
     ] as never);
+  }
+
+  static async #onCreatePerk(this: MercenarySheet) {
+    const [perk] = await this.document.createEmbeddedDocuments("Item", [
+      { name: t("GLOOM.Perk.new"), type: "perk" },
+    ] as never);
+    await perk?.sheet?.render(true);
+  }
+
+  /** Clicking box N ticks boxes 1..N; clicking the last ticked box unticks it. */
+  static async #onTogglePerkBox(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {
+    const item = this.#itemFrom(target);
+    if (!item) return;
+    const index = Number(target.dataset["index"]);
+    const taken = (item.system as unknown as { taken: number }).taken;
+    await item.update({ "system.taken": taken === index + 1 ? index : index + 1 } as never);
   }
 
   static async #onEditItem(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {

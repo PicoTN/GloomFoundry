@@ -41,7 +41,8 @@
         "htmlFields": [
           "description"
         ]
-      }
+      },
+      "perk": {}
     },
     "Card": {
       "modifier": {}

@@ -172,13 +172,23 @@ export class ModifierDeck {
     return ids.length;
   }
 
-  /** Throw away every card and rebuild the deck from the base composition (+ perks, later). */
-  async rebuild(cards: readonly ModifierCardData[] = BASE_DECK): Promise<void> {
+  /**
+   * Replace every card with `cards` (base deck + perks) and shuffle. The discard pile
+   * is emptied. Bless/Curse cards still in the deck are kept unless `keepTemporary` is false.
+   */
+  async rebuild(cards: readonly ModifierCardData[] = BASE_DECK, { keepTemporary = true } = {}): Promise<void> {
+    const temporary = keepTemporary
+      ? this.undrawn.flatMap((c) => {
+          const data = modifierData(c);
+          return data && (data.category === "bless" || data.category === "curse") ? [data] : [];
+        })
+      : [];
     const discardIds = this.discardPile.cards.map((c) => c.id!);
     if (discardIds.length) await this.discardPile.deleteEmbeddedDocuments("Card", discardIds);
     const deckIds = this.drawPile.cards.map((c) => c.id!);
     if (deckIds.length) await this.drawPile.deleteEmbeddedDocuments("Card", deckIds);
-    await this.drawPile.createEmbeddedDocuments("Card", cards.map((c, i) => toCardCreateData(c, i)));
+    const all = [...cards, ...temporary];
+    await this.drawPile.createEmbeddedDocuments("Card", all.map((c, i) => toCardCreateData(c, i)));
     await this.drawPile.shuffle(QUIET);
   }
 }

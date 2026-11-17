@@ -4,6 +4,7 @@
  * runs on the active GM's client in response to actor hooks or socket requests.
  */
 import { SYSTEM_ID } from "../config.ts";
+import { composeActorDeck } from "./compose-actor.ts";
 import { ModifierDeck } from "./modifier-deck.ts";
 
 export const GM_DECK_REF = "gm";
@@ -77,7 +78,7 @@ export async function ensureActorDecks(actor: Actor.Implementation): Promise<Mod
   const { draw, discard } = await createPair(actor.name ?? "?", ownership, { actor: actor.uuid });
   await actor.update({ "system.deck.drawPile": draw.id, "system.deck.discardPile": discard.id } as never);
   const deck = new ModifierDeck(draw, discard, actor);
-  await deck.rebuild();
+  await deck.rebuild(composeActorDeck(actor).cards);
   return deck;
 }
 

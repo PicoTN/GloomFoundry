@@ -44,6 +44,12 @@ for (let atk = -3; atk <= 4; atk++) {
 }
 write("critical", card({ circle: C.purple, label: "×2" }));
 write("null", card({ circle: C.dark, label: "Ø" }));
+// Perk cards can be Critical/Null with an attribute value (e.g. a "×2 / 4" card).
+for (let attr = 1; attr <= 6; attr++) {
+  write(`critical-attr${attr}`, card({ circle: C.purple, label: "×2", attr }));
+  write(`null-attr${attr}`, card({ circle: C.dark, label: "Ø", attr }));
+  n += 2;
+}
 write("bless", card({ circle: C.purple, label: "×2", border: C.bless, tag: "BLESS" }));
 write("curse", card({ circle: C.dark, label: "Ø", border: C.curse, tag: "CURSE" }));
 write("back", `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">

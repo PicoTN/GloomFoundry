@@ -162,10 +162,10 @@ export function attackLabel(card: ModifierCardData): string {
   }
 }
 
-/** Stable art key describing the card's face, e.g. "atk+1-attr4", "critical", "bless". */
+/** Stable art key describing the card's face, e.g. "atk-p1-attr4", "critical", "critical-attr4", "bless". */
 export function faceKey(card: ModifierCardData): string {
   if (card.category === "bless" || card.category === "curse") return card.category;
-  if (card.attack.kind !== "number") return card.attack.kind;
+  if (card.attack.kind !== "number") return card.attribute ? `${card.attack.kind}-attr${card.attribute}` : card.attack.kind;
   const sign = card.attack.value >= 0 ? "p" : "m";
   return `atk-${sign}${Math.abs(card.attack.value)}-attr${card.attribute ?? 0}`;
 }

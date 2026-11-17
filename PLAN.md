@@ -169,7 +169,8 @@ The face cards cover the temporary cards:
 | **1. Modifier deck** | Card model, base 20-card deck generator, per-actor and GM decks, draw/test/attack chat cards, advantage/disadvantage, Critical/Null reshuffle, Bless/Curse, poker/GH face toggle. **This is the MVP; the game is playable with it plus notes.** |
 | **2. Mercenary sheet** | Attributes with click-to-test (TN prompt, background and skill bonuses), HP, rests (Quick Breath / Full Rest automation), backgrounds. |
 | **3. Powers** | Talent, Skill and Item types; ready/expended/lost states; Skill loadout; "lose a Skill to negate damage". |
-| **4. Perks** | Perk data for the 16 classes (transcribed from pp. 344–347), perk UI that rebuilds the deck. |
+| **4. Perks** ✅ | Generic perk editor (no class data bundled: players enter perks from their own book); ticking boxes rebuilds the deck, keeping Bless/Curse. |
+| **4b. Conditions** | Condition toggles on the sheet (Strengthen/Muddle → advantage/disadvantage, Poison → +1 attack against, Ward, Bless/Curse…), feeding the draw dialogs. |
 | **5. Combat** | Planning-phase picker, initiative, enemy speeds, cleanup automation, element tracker, conditions as status effects / AEs. |
 | **6. Enemies** | Enemy actor with level/elite tables, GM deck draws, threat budget helper. |
 | **7. Content** | Compendia (see IP note). |
