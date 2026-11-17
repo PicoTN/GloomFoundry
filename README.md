@@ -4,6 +4,10 @@ An unofficial [Foundry VTT](https://foundryvtt.com) system for **Gloomhaven: The
 
 > [!NOTE]
 > **This is a personal test project.** It is made for my own table. It is experimental, may break between versions, and comes with no support or guarantee. You're welcome to look around or try it, but please don't rely on it for your campaign. Issues and suggestions are appreciated, though I may not act on them.
+>
+> **It is heavily vibe-coded**: most of the code is written with an AI coding assistant. Review it accordingly.
+>
+> **It does not and will not include any official assets.** That means no rulebook text, artwork, card scans or icons from Cephalofair Games. You need your own copy of the game to play.
 
 > Status: early development (v0.1). It covers Modifier Decks and mercenary sheets. Combat automation, Skills and Talents, perks and enemies come later; see [PLAN.md](PLAN.md).
 
