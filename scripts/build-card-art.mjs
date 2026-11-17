@@ -33,9 +33,9 @@ function card({ circle, label, attr, border = C.border, tag = "" }) {
 const write = (key, svg) => writeFileSync(join(OUT, `${key}.svg`), svg);
 let n = 0;
 
-// Numeric cards: attack -3..+4 (perks go beyond the base -2..+2), attribute 0..6 (0 = none).
+// Numeric cards: attack -3..+4 (perks go beyond the base -2..+2), attribute 0..7 (0 = none).
 for (let atk = -3; atk <= 4; atk++) {
-  for (let attr = 0; attr <= 6; attr++) {
+  for (let attr = 0; attr <= 7; attr++) {
     const key = `atk-${atk >= 0 ? "p" : "m"}${Math.abs(atk)}-attr${attr}`;
     const circle = atk > 0 ? C.green : atk < 0 ? C.red : C.grey;
     write(key, card({ circle, label: atk >= 0 ? `+${atk}` : `${atk}`, attr }));
@@ -45,7 +45,7 @@ for (let atk = -3; atk <= 4; atk++) {
 write("critical", card({ circle: C.purple, label: "×2" }));
 write("null", card({ circle: C.dark, label: "Ø" }));
 // Perk cards can be Critical/Null with an attribute value (e.g. a "×2 / 4" card).
-for (let attr = 1; attr <= 6; attr++) {
+for (let attr = 1; attr <= 7; attr++) {
   write(`critical-attr${attr}`, card({ circle: C.purple, label: "×2", attr }));
   write(`null-attr${attr}`, card({ circle: C.dark, label: "Ø", attr }));
   n += 2;

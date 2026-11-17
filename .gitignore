@@ -14,3 +14,6 @@ packs/**/CURRENT
 .env
 foundry.config.json
 .DS_Store
+
+# Official content transcribed from the rulebook: local only, never commit
+content/

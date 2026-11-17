@@ -199,6 +199,15 @@
         "invalidCode": "{perk} (box {box}): \"{code}\" is not a valid card code.",
         "missingCard": "{perk} (box {box}): {code} is not in the deck, so it can't be removed.",
         "duplicateCard": "{perk} (box {box}): {code} is already in the deck. Groups using a poker deck can't have it twice."
+      },
+      "import": {
+        "title": "Import perks",
+        "hint": "Choose a JSON file of perks (one class file, for example). Perks whose name already exists on this mercenary are skipped.",
+        "fromServer": "From Foundry / Forge assets",
+        "fromComputer": "From my computer",
+        "noPerks": "This file contains no perks.",
+        "done": "Imported {count} perk(s), skipped {skipped} already present.",
+        "failed": "Could not import perks: {error}"
       }
     }
   }

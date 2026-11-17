@@ -155,7 +155,8 @@ body.gloom-face-playing .gloom-card {
   h3 {
     border-bottom: 1px solid var(--gloom-brown); margin: 0.5rem 0 0.35rem;
     display: flex; align-items: center; gap: 0.5rem;
-    .item-control { margin-left: auto; font-size: 0.85rem; }
+    .item-control { font-size: 0.85rem; }
+    .item-control:first-of-type { margin-left: auto; }
   }
 
   .attribute-grid {

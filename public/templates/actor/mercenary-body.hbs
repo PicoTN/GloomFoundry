@@ -45,7 +45,10 @@
   <section class="perks">
     <h3>
       {{localize "GLOOM.Perk.plural"}}
-      {{#if editable}}<a class="item-control" data-action="createPerk" data-tooltip="GLOOM.Perk.create"><i class="fa-solid fa-plus"></i></a>{{/if}}
+      {{#if editable}}
+      <a class="item-control" data-action="importPerks" data-tooltip="GLOOM.Perk.import.title"><i class="fa-solid fa-file-import"></i></a>
+      <a class="item-control" data-action="createPerk" data-tooltip="GLOOM.Perk.create"><i class="fa-solid fa-plus"></i></a>
+      {{/if}}
     </h3>
     <ul class="item-list">
       {{#each perks as |perk|}}

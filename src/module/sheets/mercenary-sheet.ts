@@ -3,6 +3,7 @@ import { cardView } from "../chat/draw-message.ts";
 import { addTemporary, drawAttack, testAttribute } from "../deck/actions.ts";
 import { composeActorDeck, perkItems } from "../deck/compose-actor.ts";
 import { rebuildActorDeck } from "../deck/composition.ts";
+import { promptImportPerks } from "../perks/import.ts";
 import { getActorDeck } from "../deck/registry.ts";
 import { runAsGM } from "../socket.ts";
 
@@ -30,6 +31,7 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       openDeck: MercenarySheet.#onOpenDeck,
       createBackground: MercenarySheet.#onCreateBackground,
       createPerk: MercenarySheet.#onCreatePerk,
+      importPerks: MercenarySheet.#onImportPerks,
       togglePerkBox: MercenarySheet.#onTogglePerkBox,
       editItem: MercenarySheet.#onEditItem,
       deleteItem: MercenarySheet.#onDeleteItem,
@@ -167,6 +169,10 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       { name: t("GLOOM.Perk.new"), type: "perk" },
     ] as never);
     await perk?.sheet?.render(true);
+  }
+
+  static async #onImportPerks(this: MercenarySheet) {
+    await promptImportPerks(this.document);
   }
 
   /** Clicking box N ticks boxes 1..N; clicking the last ticked box unticks it. */
