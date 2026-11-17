@@ -98,6 +98,15 @@ describe("attacks", () => {
     expect(r.damage).toBe(4);
   });
 
+  it("applies Ward after Shield, rounding the reduction up", () => {
+    const r = resolveAttack({ base: 5, bonus: 0, shield: 1, ward: true, mode: "normal" }, [find("6-spades")]);
+    expect(r.afterShield).toBe(6);
+    expect(r.warded).toBe(3);
+    expect(r.damage).toBe(3);
+    expect(resolveAttack({ base: 5, bonus: 0, shield: 0, ward: true, mode: "normal" }, [find("3-clubs")]).damage).toBe(2);
+    expect(resolveAttack({ base: 1, bonus: 0, shield: 0, ward: true, mode: "normal" }, [find("3-clubs")]).damage).toBe(0);
+  });
+
   it("never deals negative damage", () => {
     expect(resolveAttack({ base: 1, bonus: 0, shield: 0, mode: "normal" }, [find("A-hearts")]).damage).toBe(0);
   });

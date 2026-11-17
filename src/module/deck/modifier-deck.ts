@@ -91,8 +91,10 @@ export class ModifierDeck {
   }
 
   /**
-   * Draw `count` cards (2 for advantage/disadvantage). An empty deck is reshuffled
-   * before drawing (house rule: the rulebook does not cover running out of cards).
+   * Draw `count` cards (2 for advantage/disadvantage).
+   * The deck should never run out, since drawing Critical/Null always reshuffles the
+   * discard pile back in. The empty-deck reshuffle below is only a safety net
+   * (e.g. a long combat round before the cleanup-phase reshuffle).
    */
   async draw(count: number, { inCombat = false }: { inCombat?: boolean } = {}): Promise<DrawnCard[]> {
     const drawn: DrawnCard[] = [];

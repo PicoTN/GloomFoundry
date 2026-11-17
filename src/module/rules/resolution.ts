@@ -107,6 +107,8 @@ export interface AttackInput {
   bonus: number;
   /** Target's Shield, applied after the modifier card (p. 77). */
   shield: number;
+  /** Target has Ward: halves the damage, applied last, after Shield (p. 77, 84). */
+  ward?: boolean;
   mode: DrawMode;
 }
 
@@ -116,6 +118,10 @@ export interface AttackResult {
   tie: boolean;
   /** Attack value after bonuses and the modifier card, before Shield. */
   attackValue: number;
+  /** Damage after Shield, before Ward. */
+  afterShield: number;
+  /** Damage prevented by Ward (0 without Ward). */
+  warded: number;
   /** Final damage suffered by the target. */
   damage: number;
   critical: boolean;
@@ -136,6 +142,11 @@ export function resolveAttack(input: AttackInput, cards: ModifierCardData[]): At
   const { keptIndex, kept, tie } = pick(cards, score, input.mode, sameEffect);
   const attackValue = attackValueWith(kept, preCard);
   const isNull = isNullLike(kept);
-  const damage = isNull ? 0 : Math.max(0, attackValue - Math.max(0, input.shield));
-  return { cards, keptIndex, tie, attackValue, damage, critical: isCriticalLike(kept), null: isNull };
+  const afterShield = isNull ? 0 : Math.max(0, attackValue - Math.max(0, input.shield));
+  // "reduce that damage by half (rounded up)": the reduction is rounded up, so 5 damage becomes 2.
+  const warded = input.ward ? Math.ceil(afterShield / 2) : 0;
+  const damage = afterShield - warded;
+  return {
+    cards, keptIndex, tie, attackValue, afterShield, warded, damage, critical: isCriticalLike(kept), null: isNull,
+  };
 }

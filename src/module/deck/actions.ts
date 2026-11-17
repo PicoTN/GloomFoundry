@@ -141,15 +141,17 @@ export async function drawAttack(deck: ModifierDeck): Promise<void> {
   const base = readNumber(form["base"], 2); // basic attack is "Attack 2" (p. 66)
   const bonus = readNumber(form["bonus"], 0);
   const shield = readNumber(form["shield"], 0);
+  const ward = Boolean(form["ward"]);
   const mode = (form["mode"] as DrawMode | undefined) ?? "normal";
 
   const drawn = await drawFor(deck, mode);
   if (!drawn) return;
-  const result = resolveAttack({ base, bonus, shield, mode }, drawn.map((d) => d.data));
+  const result = resolveAttack({ base, bonus, shield, ward, mode }, drawn.map((d) => d.data));
   const details: DrawMessageContext["details"] = [{ label: t("GLOOM.Attack.base"), value: String(base) }];
   if (bonus) details.push({ label: t("GLOOM.Attack.bonus"), value: bonus > 0 ? `+${bonus}` : String(bonus) });
   details.push({ label: t("GLOOM.Attack.value"), value: String(result.attackValue) });
   if (shield) details.push({ label: t("GLOOM.Attack.shield"), value: `-${shield}` });
+  if (ward) details.push({ label: t("GLOOM.Attack.ward"), value: `-${result.warded}` });
 
   const outcome = result.null
     ? { label: t("GLOOM.Attack.nullHit"), css: "crit-failure" }

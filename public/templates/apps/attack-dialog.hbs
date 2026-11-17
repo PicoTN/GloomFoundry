@@ -13,6 +13,11 @@
     <input type="number" name="shield" value="0" min="0" step="1">
   </div>
   <div class="form-group">
+    <label>{{localize "GLOOM.Attack.ward"}}</label>
+    <input type="checkbox" name="ward">
+    <p class="hint">{{localize "GLOOM.Attack.wardHint"}}</p>
+  </div>
+  <div class="form-group">
     <label>{{localize "GLOOM.Mode.label"}}</label>
     <select name="mode">{{#each modes}}<option value="{{key}}">{{label}}</option>{{/each}}</select>
   </div>

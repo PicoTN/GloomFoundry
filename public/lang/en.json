@@ -93,6 +93,8 @@
       "bonusHint": "Sum of +X / -X attack effects (e.g. +1 if the target is Poisoned).",
       "value": "Attack value",
       "shield": "Target Shield",
+      "ward": "Target has Ward",
+      "wardHint": "Halves the damage, rounding the reduction up. Applied last, after Shield.",
       "damage": "{damage} damage",
       "nullHit": "Hit, but no damage",
       "effect": "Card effect"

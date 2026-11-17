@@ -195,9 +195,13 @@ The face cards cover the temporary cards:
 - TypeScript from day one (TS 7, fvtt-types, Vite, Vitest).
 - English only, with every string in `lang/` so other languages can be added.
 
-## 7. Open questions
+## 7. Rules clarifications
 
-1. **Rules check.** Is "−0" vs "+0" on perk cards meaningful? It could be a rolling-modifier marker. Needs a check in the rules.
-2. **Advantage + disadvantage together.** The rulebook doesn't say how they combine; we currently cancel them out.
-3. **Empty deck.** The rulebook doesn't cover running out of cards; we currently reshuffle the discard pile.
-4. **Critical damage.** "Twice your base damage": we currently double the value after +X/−X attack effects, before Shield.
+- Modifiers are always written "+0", never "−0". The "−0" seen in the extracted perk tables was a rendering artefact.
+- A Modifier Deck never runs out: drawing Critical/Null always reshuffles the discard pile back in. The code keeps an empty-deck reshuffle only as a safety net.
+- Damage order: attack bonuses and penalties, then the modifier card, then Shield, then Ward (p. 77, 84). Ward halves the damage with the reduction rounded up, so 5 damage becomes 2. This matches the board game; the exact wording ("reduce that damage by half (rounded up)") is slightly ambiguous.
+
+## 8. Open questions
+
+1. **Advantage + disadvantage together.** The rulebook doesn't say how they combine; we currently cancel them out.
+2. **Critical damage.** "Twice your base damage": we currently double the value after +X/−X attack effects, before Shield and Ward.
