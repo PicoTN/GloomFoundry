@@ -5,6 +5,7 @@
 import "../styles/gloomfoundry.scss";
 
 import { GMDeckApp } from "./module/apps/gm-deck.ts";
+import { registerInvisibilityHooks } from "./module/canvas/invisibility.ts";
 import { registerConditionHooks } from "./module/condition-hooks.ts";
 import { registerStatusEffects } from "./module/conditions.ts";
 import { SYSTEM_ID, templatePath } from "./module/config.ts";
@@ -66,6 +67,7 @@ Hooks.once("init", async () => {
   registerSettings();
   registerStatusEffects();
   registerConditionHooks();
+  registerInvisibilityHooks();
   registerDeckLifecycleHooks();
   registerCombatHooks();
   registerPerkHooks();

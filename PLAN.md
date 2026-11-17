@@ -172,7 +172,7 @@ The face cards cover the temporary cards:
 | **4. Perks** ✅ | Generic perk editor (no class data bundled: players enter perks from their own book); ticking boxes rebuilds the deck, keeping Bless/Curse. |
 | **4b. Conditions** ✅ | Gloomhaven conditions replace Foundry's token statuses (plus Unconscious/Dead). Sheet toggles with resist tests; Strengthen/Muddle and the target's Poison/Ward pre-fill the draw dialogs; Bless/Curse from the token HUD add deck cards; rests and end of combat clear conditions; Unconscious follows HP. Durations wait for combat (phase 5). |
 | **5. Combat** | Planning-phase picker, initiative, enemy speeds, cleanup automation, element tracker, conditions as status effects / AEs. |
-| **6. Enemies** | Enemy actor with level/elite tables, GM deck draws, threat budget helper. |
+| **6. Enemies** | Enemy actor with level/elite tables, GM deck draws, threat budget helper. New enemy tokens default to Hostile. A **"switch side"** button (sheet and token HUD) flips Friendly/Hostile for charmed, allied or betraying NPCs. Sides already drive Invisible (see below). |
 | **7. Content** | Compendia (see IP note). |
 
 ---
@@ -195,6 +195,12 @@ The face cards cover the temporary cards:
 - Scope: deck + sheet first. Combat automation later, but planned.
 - TypeScript from day one (TS 7, fvtt-types, Vite, Vitest).
 - English only, with every string in `lang/` so other languages can be added.
+
+## 6b. Sides and Invisible (implemented)
+
+A token's side is its Foundry **disposition**: Friendly (mercenaries, allied NPCs) vs Hostile (enemies). Neutral and Secret are never opposed.
+**Invisible** makes a token undetectable by the vision of tokens on the *opposing* side only, by wrapping every detection mode's `_canDetect`. Allies keep seeing each other. A GM looking through an enemy token doesn't see invisible mercenaries. A GM with no token selected sees everything.
+This only matters on scenes with Token Vision enabled. Targeting is not blocked yet; that could come with combat automation.
 
 ## 7. Rules clarifications
 

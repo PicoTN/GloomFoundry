@@ -65,8 +65,8 @@ export function registerStatusEffects(): void {
     ...EXTRA_STATUSES.map((s) => ({ id: s.id, name: conditionLabel(s.id), img: img(s.coreIcon) })),
   ] as typeof CONFIG.statusEffects;
 
-  // Gloomhaven's Invisible only prevents enemies from targeting you: it must not hide the
-  // token from other players the way Foundry's special INVISIBLE status does.
+  // Gloomhaven's Invisible only hides you from the opposing side (see canvas/invisibility.ts),
+  // so Foundry's special INVISIBLE status (hidden from everyone) is disabled.
   const special = CONFIG.specialStatusEffects as Record<string, string>;
   special["INVISIBLE"] = "gloomfoundry-none";
   special["DEFEATED"] = "dead";

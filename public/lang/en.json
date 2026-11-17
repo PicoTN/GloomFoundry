@@ -229,7 +229,7 @@
       },
       "invisible": {
         "name": "Invisible",
-        "hint": "Enemies can't target you. Combat: until the end of your next turn. Exploration: until the end of the scene."
+        "hint": "Enemies can't target you, and opposing tokens (Friendly vs Hostile) can't see your token. Combat: until the end of your next turn. Exploration: until the end of the scene."
       },
       "regenerate": {
         "name": "Regenerate",
