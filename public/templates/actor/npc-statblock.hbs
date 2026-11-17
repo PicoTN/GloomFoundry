@@ -13,6 +13,7 @@
     <label>{{localize "GLOOM.Npc.threat"}} ({{localize "GLOOM.Npc.category.elite"}})<input type="number" name="system.threat.elite" value="{{system.threat.elite}}" min="0"></label>
     <label>{{localize "GLOOM.Npc.adversaryBoost"}}<select name="system.adversaryBoost">{{selectOptions boosts selected=system.adversaryBoost valueAttr="key" labelAttr="label"}}</select></label>
     <label>{{localize "GLOOM.Npc.stuntPool"}}<input type="number" name="system.stunts.max" value="{{system.stunts.max}}" min="0"></label>
+    <label class="checkbox span2"><input type="checkbox" name="system.printedNemesis"{{#if system.printedNemesis}} checked{{/if}}> {{localize "GLOOM.Npc.printedNemesis"}}</label>
   </div>
 
   <h4>{{localize "GLOOM.Npc.columnsTitle"}}</h4>

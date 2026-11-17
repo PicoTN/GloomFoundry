@@ -51,6 +51,13 @@ describe("computeNpcStats", () => {
   });
 });
 
+describe("printed nemesis", () => {
+  it("multiplies HP and Threat by M and keeps the printed move/attack", () => {
+    const s = computeNpcStats({ ...archers, category: "nemesis", level: 2, printedNemesis: true, nemesisActions: 3 });
+    expect([s.hpMax, s.move, s.attack, s.threat]).toEqual([28, 2, 4, 16]);
+  });
+});
+
 describe("campaign level and Threat", () => {
   it("CL is half the average mercenary level, rounded up", () => {
     expect(campaignLevel([3, 3, 3])).toBe(2);

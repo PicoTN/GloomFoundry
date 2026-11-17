@@ -41,6 +41,8 @@ function defineNpcSchema() {
     threat: new fields.SchemaField({ normal: int(2, 0), elite: int(4, 0) }),
     initiative: new fields.SchemaField({ fast: int(20, 1, 100), normal: int(50, 1, 100), slow: int(80, 1, 100) }),
     adversaryBoost: new fields.StringField({ required: true, initial: "attack", choices: ["move", "attack"] }),
+    /** Printed nemesis: the table holds final stats, HP and Threat per mercenary (×M). */
+    printedNemesis: new fields.BooleanField({ required: true, initial: false }),
     /** Meaning of the DFNS/OFNS markers for this variant, e.g. "■ = Shield 1". */
     markers: new fields.SchemaField({ defense: text(), offense: text() }),
     /** Manual mode stats. */
@@ -107,6 +109,7 @@ export class NpcModel extends foundry.abstract.TypeDataModel<NpcSchema, Actor.Im
         adversaryBoost: this.adversaryBoost as "move" | "attack",
         mercenaries: game.settings ? mercenaryCount() : 4,
         nemesisActions,
+        printedNemesis: this.printedNemesis,
       });
       this.hp.max = this.current.hpMax;
     }

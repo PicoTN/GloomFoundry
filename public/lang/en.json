@@ -486,7 +486,8 @@
       "markersOffense": "OFNS markers (what ✦ / ⊕ mean for this variant)",
       "summonOf": "summon of",
       "summonHint": "Drop a mercenary on this sheet to make it their summon (it then draws from their deck).",
-      "clearController": "No longer a summon"
+      "clearController": "No longer a summon",
+      "printedNemesis": "Printed nemesis (table holds final stats; HP and Threat are per mercenary, ×M)"
     },
     "NpcAction": {
       "plural": "Actions",

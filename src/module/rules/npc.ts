@@ -39,6 +39,11 @@ export interface NpcStatInput {
   mercenaries: number;
   /** Nemesis-only actions: the first is included, each further one adds 1×M Threat (p. 293). */
   nemesisActions: number;
+  /**
+   * A printed nemesis (p. 296-297): its table already holds the final move/attack, HP and
+   * Threat are printed "per mercenary" (×M). Otherwise a nemesis is derived from the elite template.
+   */
+  printedNemesis?: boolean;
 }
 
 export interface NpcStats {
@@ -97,6 +102,12 @@ export function computeNpcStats(input: NpcStatInput): NpcStats {
       };
     }
     case "nemesis":
+      if (input.printedNemesis) {
+        return {
+          hpMax: base.hp * m, move: base.move, attack: base.attack, attributes,
+          threat: input.threat.elite * m, defense: base.defense, offense: base.offense,
+        };
+      }
       // Elite template: HP ×M, move +1, attack +1, Threat (elite + 2) ×M, +1×M per extra unique action.
       return {
         hpMax: base.hp * m,
