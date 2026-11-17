@@ -35,6 +35,8 @@ https://github.com/PicoTN/GloomFoundry/releases/latest/download/system.json
 - **Perks:** a generic editor (you enter the cards from your own book); ticking a box rebuilds the deck.
 - **Powers & progression:** Talents, Skills (loadout, expend/lose, heal 3, negate damage, test bonus), equipment by slot, Class and Ancestry items that grant their items and set HP by level, Backgrounds by category (Master +2), Quick Breath / Full Rest recovery. The sheet is split into tabs.
 - **NPCs:** enemies, allies and summons with bestiary stat blocks by campaign level (normal, elite, adversary, nemesis), actions by initiative speed, a switch-side button, and a Threat tally in the GM window.
+- **Combat:** planning phase (powers + initiative, enemy speeds), lowest initiative first, element tracker, automatic turn/round upkeep (conditions, Regenerate/Wound, element decay, expending planned Skills), apply-damage buttons.
+- **Icon packs:** replace condition, element and modifier-card icons with your own via a JSON manifest (Settings).
 - **Conditions:** the Gloomhaven conditions replace Foundry's token statuses. Toggle them on the sheet or the token; Strengthen/Muddle and the target's Poison/Ward are applied in the draw dialogs, and each negative condition can be resisted from the sheet.
 - **Mercenary sheet:**
   - the six Attributes, with click-to-test

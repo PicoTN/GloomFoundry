@@ -406,3 +406,40 @@ body.gloom-face-playing .gloom-card {
 }
 
 #token-hud .gloom-switch-side { font-size: 1.1rem; }
+
+// ---------------------------------------------------------------------------
+// Combat: tracker panel, elements, damage
+// ---------------------------------------------------------------------------
+
+.gloom-tracker {
+  display: flex; flex-direction: column; gap: 0.3rem; padding: 0.3rem 0.4rem;
+  border-bottom: 1px solid var(--color-border, #555);
+  .gloom-phase { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem;
+    .label { font-weight: bold; font-size: 0.85rem; }
+    .buttons { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-left: auto;
+      button { font-size: 0.75rem; height: auto; padding: 0.1rem 0.4rem; width: auto; }
+    }
+    &.phase-planning .label { color: var(--gloom-gold); }
+    &.phase-action .label { color: var(--gloom-green); }
+  }
+}
+
+.gloom-elements {
+  display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap;
+  .gloom-element {
+    width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+    border: 2px solid rgb(255 255 255 / 15%); opacity: 0.35; font-size: 0.95rem; position: relative;
+    img { width: 22px; height: 22px; border: none; }
+    &.state-1 { opacity: 0.75; border-style: dashed; }
+    &.state-2 { opacity: 1; box-shadow: 0 0 6px currentColor; }
+    &.pending::after { content: "+"; position: absolute; right: -4px; top: -6px; font-size: 0.75rem; font-weight: bold; }
+  }
+  .el-air { color: #a9c7d8; } .el-dark { color: #7d6bb0; } .el-earth { color: #8fb04a; }
+  .el-fire { color: #e2662b; } .el-ice { color: #56c3e8; } .el-light { color: #f0c43c; }
+  .hint { font-size: 0.65rem; opacity: 0.6; flex: 1 0 100%; }
+}
+
+.gloom-plan-names { display: block; font-size: 0.7rem; opacity: 0.75; }
+.gloom-draw .apply-damage { margin-top: 0.35rem; width: 100%; }
+.gloom-round h3 { margin: 0; }
+.gloom-damage i { color: var(--gloom-red); }

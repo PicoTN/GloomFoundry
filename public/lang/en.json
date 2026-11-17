@@ -521,6 +521,72 @@
         "deadly": "Deadly",
         "beyond": "Beyond deadly"
       }
+    },
+    "Element": {
+      "air": "Air",
+      "dark": "Dark",
+      "earth": "Earth",
+      "fire": "Fire",
+      "ice": "Ice",
+      "light": "Light",
+      "state": {
+        "0": "Inert",
+        "1": "Waning",
+        "2": "Strong"
+      },
+      "pending": "strong at the end of this turn",
+      "hint": "Click: infuse · Right-click: consume · GM Shift-click: cycle"
+    },
+    "Speed": {
+      "fast": "Fast",
+      "normal": "Normal",
+      "slow": "Slow"
+    },
+    "Plan": {
+      "title": "Plan the round: {name}",
+      "confirm": "Ready",
+      "basic": "Basic action / none",
+      "hint": "Choose a primary and a secondary action from two different powers (Talents, ready Skills, items with an action). Your initiative is one of the two powers' initiatives. Skills chosen here are expended (or lost) at the end of your turn, even if you don't use them.",
+      "initiativeFrom": "Initiative from",
+      "custom": "Other initiative",
+      "samePower": "The primary and the secondary action must come from two different powers.",
+      "noInitiative": "Choose a power with an initiative, or enter one.",
+      "ready": "{name} is ready (initiative {initiative}).",
+      "enemiesTitle": "Enemy speeds",
+      "enemiesHint": "Choose the initiative speed of each enemy type. A type cannot use the same speed as last round. Elites act before normals of their type.",
+      "lastSpeed": "last round:",
+      "noEnemies": "No GM-controlled characters in this combat."
+    },
+    "Combat": {
+      "phase": {
+        "planning": "Planning phase",
+        "action": "Action phase"
+      },
+      "planTurn": "Plan my turn",
+      "startAction": "Start the action phase",
+      "unplanned": "These characters haven't planned yet: {names}. Start anyway?",
+      "roundTitle": "Round {round}",
+      "planningHint": "Planning phase: mercenaries choose their actions and initiative, the GM chooses enemy speeds, then the GM starts the action phase.",
+      "expired": "{name}: {conditions} ended.",
+      "stunned": "{name} is stunned and cannot act."
+    },
+    "Damage": {
+      "suffered": "{name} suffers {amount} damage.",
+      "applyTo": "Apply {amount} damage to {name}",
+      "applySelected": "Apply {amount} damage to selected tokens",
+      "noTarget": "Select or target a token first."
+    },
+    "IconPack": {
+      "title": "Icon pack",
+      "menuLabel": "Choose icon pack",
+      "menuHint": "Replace the system's icons (conditions, elements, modifier card faces) with your own, from a JSON manifest in your Foundry data or Forge Assets.",
+      "hint": "Pick an icon pack manifest (iconpack.json). Its paths are relative to the manifest. The page reloads after a change.",
+      "current": "Current pack:",
+      "none": "none",
+      "load": "Choose a manifest",
+      "clear": "Use the default icons",
+      "loaded": "Icon pack loaded: {count} icons.",
+      "cleared": "Default icons restored."
     }
   }
 }

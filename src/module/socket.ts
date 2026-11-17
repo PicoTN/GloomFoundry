@@ -5,10 +5,15 @@
 import { SOCKET_NAME } from "./config.ts";
 import type { TemporaryKind } from "./deck/modifier-deck.ts";
 import { ensureActorDecks, isActiveGM, resolveDeck } from "./deck/registry.ts";
+import type { ElementId, ElementState } from "./rules/combat.ts";
+import { sufferDamage, type DamageOptions } from "./combat/damage.ts";
+import { handleElementRequest } from "./combat/elements.ts";
 
 export type SocketRequest =
   | { action: "addTemporary"; deck: string; kind: TemporaryKind; count: number }
-  | { action: "ensureDecks"; actor: string };
+  | { action: "ensureDecks"; actor: string }
+  | { action: "element"; element: ElementId; change: "infuse" | ElementState }
+  | { action: "applyDamage"; actor: string; amount: number; options: DamageOptions };
 
 async function handle(req: SocketRequest): Promise<void> {
   switch (req.action) {
@@ -20,6 +25,15 @@ async function handle(req: SocketRequest): Promise<void> {
     case "ensureDecks": {
       const actor = (await fromUuid(req.actor)) as Actor.Implementation | null;
       if (actor) await ensureActorDecks(actor);
+      return;
+    }
+    case "element": {
+      await handleElementRequest(req.element, req.change);
+      return;
+    }
+    case "applyDamage": {
+      const actor = (await fromUuid(req.actor)) as Actor.Implementation | null;
+      if (actor) await sufferDamage(actor, req.amount, req.options);
       return;
     }
   }

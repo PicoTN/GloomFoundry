@@ -31,6 +31,7 @@ declare module "fvtt-types/configuration" {
     "gloomfoundry.deckFolder": string;
     "gloomfoundry.cardFace": "gloomhaven" | "playing";
     "gloomfoundry.mercenaryCount": number;
+    "gloomfoundry.iconPack": object;
     "gloomfoundry.difficulty": "easy" | "normal" | "hard" | "deadly";
   }
 }

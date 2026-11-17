@@ -59,9 +59,10 @@ export function conditionLabel(id: string): string {
 export function registerStatusEffects(): void {
   const coreImg = new Map(CONFIG.statusEffects.map((s) => [s.id, s.img as string | undefined]));
   const img = (core: string) => coreImg.get(core) ?? `${SYSTEM_PATH}/assets/cards/back.svg`;
+  const pack = CONFIG.GLOOM?.icons ?? {};
 
   CONFIG.statusEffects = [
-    ...CONDITIONS.map((c) => ({ id: c.id, name: conditionLabel(c.id), img: img(c.coreIcon) })),
+    ...CONDITIONS.map((c) => ({ id: c.id, name: conditionLabel(c.id), img: pack[`condition.${c.id}`] ?? img(c.coreIcon) })),
     ...EXTRA_STATUSES.map((s) => ({ id: s.id, name: conditionLabel(s.id), img: img(s.coreIcon) })),
   ] as typeof CONFIG.statusEffects;
 

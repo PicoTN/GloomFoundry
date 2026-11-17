@@ -241,9 +241,17 @@ export async function drawAttack(deck: ModifierDeck, options: AttackOptions = {}
       tie: result.tie,
       details: effect ? [...details, { label: t("GLOOM.Attack.effect"), value: effect }] : details,
       outcome,
+      damageButton: {
+        label: target
+          ? f("GLOOM.Damage.applyTo", { name: target.name ?? "", amount: String(result.damage) })
+          : f("GLOOM.Damage.applySelected", { amount: String(result.damage) }),
+      },
     },
     attacker,
-    { type: "attack", damage: result.damage, critical: result.critical, null: result.null },
+    {
+      type: "attack", damage: result.damage, critical: result.critical, null: result.null,
+      targetUuid: target?.uuid ?? "", wardApplied: ward && result.warded > 0, attacker: attacker?.name ?? deck.label,
+    },
   );
 }
 

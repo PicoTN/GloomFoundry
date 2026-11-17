@@ -1,0 +1,9 @@
+<div class="gloomfoundry gloom-dialog gloom-speeds-dialog">
+  <p class="hint">{{localize "GLOOM.Plan.enemiesHint"}}</p>
+  {{#each rows as |r|}}
+  <div class="form-group">
+    <label>{{r.name}} ×{{r.count}}{{#if r.last}} <span class="hint">({{localize "GLOOM.Plan.lastSpeed"}} {{r.last}})</span>{{/if}}</label>
+    <select name="speed.{{r.key}}">{{#each r.speeds}}<option value="{{key}}"{{#if selected}} selected{{/if}}>{{label}}</option>{{/each}}</select>
+  </div>
+  {{/each}}
+</div>

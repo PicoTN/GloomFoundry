@@ -1,4 +1,5 @@
 import { SYSTEM_ID } from "./config.ts";
+import { registerIconPackSettings } from "./icons.ts";
 
 export type CardFaceStyle = "gloomhaven" | "playing";
 
@@ -14,6 +15,8 @@ export function registerSettings(): void {
   settings.register(SYSTEM_ID, "gmDrawPile", { scope: "world", config: false, type: String, default: "" });
   settings.register(SYSTEM_ID, "gmDiscardPile", { scope: "world", config: false, type: String, default: "" });
   settings.register(SYSTEM_ID, "deckFolder", { scope: "world", config: false, type: String, default: "" });
+
+  registerIconPackSettings();
 
   settings.register(SYSTEM_ID, "mercenaryCount", {
     name: "GLOOM.Settings.mercenaryCount.name",

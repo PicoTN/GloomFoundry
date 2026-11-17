@@ -8,6 +8,7 @@ import { GMDeckApp } from "./module/apps/gm-deck.ts";
 import { registerInvisibilityHooks } from "./module/canvas/invisibility.ts";
 import { registerConditionHooks } from "./module/condition-hooks.ts";
 import { registerStatusEffects } from "./module/conditions.ts";
+import { applyIconPack } from "./module/icons.ts";
 import { SYSTEM_ID, templatePath } from "./module/config.ts";
 import { BackgroundModel } from "./module/data/background.ts";
 import { MercenaryModel } from "./module/data/mercenary.ts";
@@ -29,6 +30,9 @@ import { MercenarySheet } from "./module/sheets/mercenary-sheet.ts";
 import { PerkSheet } from "./module/sheets/perk-sheet.ts";
 import { NpcSheet } from "./module/sheets/npc-sheet.ts";
 import { registerNpcHooks } from "./module/npc.ts";
+import { registerCombatFlow } from "./module/combat/combat.ts";
+import { registerDamageButtons } from "./module/combat/damage.ts";
+import { registerTrackerUI } from "./module/combat/tracker.ts";
 import { registerSocket } from "./module/socket.ts";
 
 const api = {
@@ -84,6 +88,7 @@ Hooks.once("init", async () => {
   } as never);
 
   registerSettings();
+  applyIconPack();
   registerStatusEffects();
   registerConditionHooks();
   registerInvisibilityHooks();
@@ -92,6 +97,9 @@ Hooks.once("init", async () => {
   registerPerkHooks();
   registerPowerHooks();
   registerNpcHooks();
+  registerCombatFlow();
+  registerDamageButtons();
+  registerTrackerUI();
 
   await foundry.applications.handlebars.loadTemplates({
     "gloom.modifier-card": templatePath("parts/modifier-card.hbs"),

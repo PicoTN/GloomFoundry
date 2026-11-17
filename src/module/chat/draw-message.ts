@@ -53,6 +53,8 @@ export interface DrawMessageContext {
   /** Lines like "Total: 7 vs TN 6". */
   details: { label: string; value: string }[];
   outcome?: { label: string; css: string };
+  /** "Apply damage" button (attacks). */
+  damageButton?: { label: string };
 }
 
 export async function postDrawMessage(

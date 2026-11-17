@@ -16,5 +16,5 @@ export function templatePath(name: string): string {
 }
 
 export function cardArtPath(key: string): string {
-  return `${SYSTEM_PATH}/assets/cards/${key}.svg`;
+  return CONFIG.GLOOM?.icons[`card.${key}`] ?? `${SYSTEM_PATH}/assets/cards/${key}.svg`;
 }

@@ -1,0 +1,29 @@
+<div class="gloomfoundry gloom-dialog gloom-plan-dialog">
+  <p class="hint">{{localize "GLOOM.Plan.hint"}}</p>
+  <div class="form-group">
+    <label>{{localize "GLOOM.Power.primary"}}</label>
+    <select name="primary">
+      <option value="">{{localize "GLOOM.Plan.basic"}}</option>
+      {{#each primaryOptions}}<option value="{{value}}"{{#if (eq value ../primary)}} selected{{/if}}>{{label}}</option>{{/each}}
+    </select>
+  </div>
+  <div class="form-group">
+    <label>{{localize "GLOOM.Power.secondary"}}</label>
+    <select name="secondary">
+      <option value="">{{localize "GLOOM.Plan.basic"}}</option>
+      {{#each secondaryOptions}}<option value="{{value}}"{{#if (eq value ../secondary)}} selected{{/if}}>{{label}}</option>{{/each}}
+    </select>
+  </div>
+  <div class="form-group">
+    <label>{{localize "GLOOM.Plan.initiativeFrom"}}</label>
+    <select name="initiativeFrom">
+      <option value="primary">{{localize "GLOOM.Power.primary"}}</option>
+      <option value="secondary">{{localize "GLOOM.Power.secondary"}}</option>
+      <option value="custom">{{localize "GLOOM.Plan.custom"}}</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label>{{localize "GLOOM.Plan.custom"}}</label>
+    <input type="number" name="customInitiative" min="1" max="100" step="1">
+  </div>
+</div>
