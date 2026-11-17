@@ -6,6 +6,7 @@ import { rebuildActorDeck } from "../deck/composition.ts";
 import { promptImportPerks } from "../perks/import.ts";
 import { getActorDeck } from "../deck/registry.ts";
 import { runAsGM } from "../socket.ts";
+import { clearConditions, conditionLabel, hasCondition, TOGGLE_CONDITIONS } from "../conditions.ts";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const t = (key: string) => game.i18n!.localize(key);
@@ -36,6 +37,8 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       editItem: MercenarySheet.#onEditItem,
       deleteItem: MercenarySheet.#onDeleteItem,
       toggleExpended: MercenarySheet.#onToggleExpended,
+      toggleCondition: MercenarySheet.#onToggleCondition,
+      resistCondition: MercenarySheet.#onResistCondition,
       quickBreath: MercenarySheet.#onQuickBreath,
       fullRest: MercenarySheet.#onFullRest,
     } satisfies Record<string, Handler>,
@@ -79,6 +82,19 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
             recent: deck.recentDiscards(6).map((c, i) => cardView(c, i === 0, i > 0)),
           }
         : null,
+      conditions: TOGGLE_CONDITIONS.map((c) => {
+        const active = hasCondition(actor, c.id);
+        return {
+          id: c.id,
+          kind: c.kind,
+          label: t(conditionLabel(c.id)),
+          hint: t(`GLOOM.Condition.${c.id}.hint`),
+          img: CONFIG.statusEffects.find((s) => s.id === c.id)?.img ?? "",
+          active,
+          resist: active && c.resist ? t(ATTRIBUTE_LABELS[c.resist].abbr) : null,
+        };
+      }),
+      unconscious: hasCondition(actor, "unconscious"),
       perks: perkItems(actor).map((p) => {
         const sys = p.system as unknown as { description: string; taken: number; steps: unknown[] };
         return {
@@ -200,9 +216,24 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
     await item.update({ "system.expended": !expended } as never);
   }
 
-  /** Quick Breath (p. 68): recover expended powers. Backgrounds are refreshed too. */
+  static async #onToggleCondition(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {
+    const id = target.closest<HTMLElement>("[data-condition]")?.dataset["condition"];
+    if (id) await this.document.toggleStatusEffect(id);
+  }
+
+  /** Resist a condition: test its Attribute, expending a Background as the cost (p. 83). */
+  static async #onResistCondition(this: MercenarySheet, event: PointerEvent, target: HTMLElement) {
+    event.stopPropagation();
+    const id = target.closest<HTMLElement>("[data-condition]")?.dataset["condition"];
+    const def = TOGGLE_CONDITIONS.find((c) => c.id === id);
+    const deck = this.deck;
+    if (def?.resist && deck) await testAttribute(deck, { attribute: def.resist, resist: def.id });
+  }
+
+  /** Quick Breath (p. 68): end of scene, recover expended powers; scene conditions end too. */
   static async #onQuickBreath(this: MercenarySheet) {
     await this.#refreshBackgrounds();
+    await clearConditions(this.document);
     ui.notifications?.info(game.i18n!.format("GLOOM.Rest.quickBreathDone", { name: this.document.name ?? "" }));
   }
 
@@ -211,6 +242,7 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
     const hp = (this.document.system as unknown as { hp: { max: number } }).hp;
     await this.document.update({ "system.hp.value": hp.max } as never);
     await this.#refreshBackgrounds();
+    await clearConditions(this.document);
     await this.deck?.removeTemporary();
     ui.notifications?.info(game.i18n!.format("GLOOM.Rest.fullRestDone", { name: this.document.name ?? "" }));
   }

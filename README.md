@@ -33,6 +33,7 @@ https://github.com/PicoTN/GloomFoundry/releases/latest/download/system.json
   - All decks shuffle at the start and end of combat.
 - **Card faces.** Gloomhaven-style by default. Each player can switch to playing-card faces in the settings, for groups that use a poker deck (Appendix p. 343).
 - **Perks:** a generic editor (you enter the cards from your own book); ticking a box rebuilds the deck.
+- **Conditions:** the Gloomhaven conditions replace Foundry's token statuses. Toggle them on the sheet or the token; Strengthen/Muddle and the target's Poison/Ward are applied in the draw dialogs, and each negative condition can be resisted from the sheet.
 - **Mercenary sheet:**
   - the six Attributes, with click-to-test
   - HP, level and gold

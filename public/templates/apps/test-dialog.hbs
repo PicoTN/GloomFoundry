@@ -24,6 +24,7 @@
   {{#if backgrounds.length}}
   <div class="form-group">
     <label>{{localize "GLOOM.Test.background"}}</label>
+    {{#if resist}}<p class="hint">{{localize "GLOOM.Test.resistBackgroundHint"}}</p>{{/if}}
     <select name="background">
       <option value="">—</option>
       {{#each backgrounds}}<option value="{{id}}">{{name}} (+1)</option>{{/each}}
@@ -32,6 +33,6 @@
   {{/if}}
   <div class="form-group">
     <label>{{localize "GLOOM.Mode.label"}}</label>
-    <select name="mode">{{#each modes}}<option value="{{key}}">{{label}}</option>{{/each}}</select>
+    <select name="mode">{{#each modes}}<option value="{{key}}"{{#if selected}} selected{{/if}}>{{label}}</option>{{/each}}</select>
   </div>
 </div>

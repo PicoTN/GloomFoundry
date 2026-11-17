@@ -112,7 +112,10 @@
       "total": "Total",
       "tn": "Target Number",
       "tnHidden": "Hidden",
-      "clickToTest": "Click to test this Attribute"
+      "clickToTest": "Click to test this Attribute",
+      "resistTitle": "Resist {condition}",
+      "resistChatTitle": "Resist {condition} ({attr})",
+      "resistBackgroundHint": "Resisting costs a Background, which gives no bonus here."
     },
     "Outcome": {
       "criticalSuccess": "Critical Success",
@@ -132,7 +135,10 @@
       "wardHint": "Halves the damage, rounding the reduction up. Applied last, after Shield.",
       "damage": "{damage} damage",
       "nullHit": "Hit, but no damage",
-      "effect": "Card effect"
+      "effect": "Card effect",
+      "target": "Target",
+      "poisoned": "Target is Poisoned",
+      "poisonedHint": "+1 attack, applied with the other attack bonuses."
     },
     "Background": {
       "plural": "Backgrounds",
@@ -149,10 +155,10 @@
     "Rest": {
       "title": "Rest",
       "quickBreath": "Quick Breath",
-      "quickBreathHint": "End of scene: recover expended powers and Backgrounds.",
+      "quickBreathHint": "End of scene: recover expended powers and Backgrounds, and remove conditions.",
       "quickBreathDone": "{name} takes a Quick Breath.",
       "fullRest": "Full Rest",
-      "fullRestHint": "Recover all HP, all powers and Backgrounds, and remove Bless/Curse cards.",
+      "fullRestHint": "Recover all HP, all powers and Backgrounds, and remove conditions and Bless/Curse cards.",
       "fullRestDone": "{name} takes a Full Rest."
     },
     "Notify": {
@@ -208,6 +214,70 @@
         "noPerks": "This file contains no perks.",
         "done": "Imported {count} perk(s), skipped {skipped} already present.",
         "failed": "Could not import perks: {error}"
+      }
+    },
+    "Condition": {
+      "plural": "Conditions",
+      "resist": "Resist: test this Attribute, expending a Background (it gives no bonus). TN = the enemy's move + attack.",
+      "bless": {
+        "name": "Bless",
+        "hint": "Shuffles a Bless card into the Modifier Deck (max 6). It counts as a Critical."
+      },
+      "curse": {
+        "name": "Curse",
+        "hint": "Shuffles a Curse card into the Modifier Deck (max 6). It counts as a Null. Test UN to resist."
+      },
+      "invisible": {
+        "name": "Invisible",
+        "hint": "Enemies can't target you. Combat: until the end of your next turn. Exploration: until the end of the scene."
+      },
+      "regenerate": {
+        "name": "Regenerate",
+        "hint": "Heal 1 at the start of each of your turns, before Wound. Lasts until you take damage."
+      },
+      "safeguard": {
+        "name": "Safeguard",
+        "hint": "Prevents the next negative condition you would gain."
+      },
+      "strengthen": {
+        "name": "Strengthen",
+        "hint": "Your actions gain advantage. Combat: until the end of your next turn. Exploration: one action."
+      },
+      "ward": {
+        "name": "Ward",
+        "hint": "Halves the next damage you suffer (reduction rounded up), applied after everything else."
+      },
+      "immobilize": {
+        "name": "Immobilize",
+        "hint": "You can't perform movement abilities (forced movement still works). Combat: until the end of your next turn. Test FI to resist."
+      },
+      "muddle": {
+        "name": "Muddle",
+        "hint": "Your actions gain disadvantage. Combat: until the end of your next turn. Test LO to resist."
+      },
+      "pacify": {
+        "name": "Pacify",
+        "hint": "You can't perform attack abilities. Combat: until the end of your next turn. Test IN to resist."
+      },
+      "poison": {
+        "name": "Poison",
+        "hint": "Attacks targeting you gain +1 attack. Lasts until you are healed (the heal only removes Poison) or the scene ends. Test CU to resist."
+      },
+      "stun": {
+        "name": "Stun",
+        "hint": "You can't use items or perform any abilities. Combat: until the end of your next turn. Test GR to resist (instead of an action)."
+      },
+      "wound": {
+        "name": "Wound",
+        "hint": "Suffer 1 damage at the start of each of your turns (every minute in exploration). Lasts until healed or the scene ends. Test GR to resist."
+      },
+      "unconscious": {
+        "name": "Unconscious",
+        "hint": "At 0 HP: you can't act until healed or a Full Rest."
+      },
+      "dead": {
+        "name": "Dead",
+        "hint": ""
       }
     }
   }

@@ -1,4 +1,5 @@
 <div class="gloomfoundry gloom-dialog">
+  {{#if targetName}}<p class="target"><i class="fa-solid fa-bullseye"></i> {{targetName}}</p>{{/if}}
   <div class="form-group">
     <label>{{localize "GLOOM.Attack.base"}}</label>
     <input type="number" name="base" value="2" min="0" step="1">
@@ -9,16 +10,21 @@
     <p class="hint">{{localize "GLOOM.Attack.bonusHint"}}</p>
   </div>
   <div class="form-group">
+    <label>{{localize "GLOOM.Attack.poisoned"}}</label>
+    <input type="checkbox" name="poisoned"{{#if poisoned}} checked{{/if}}>
+    <p class="hint">{{localize "GLOOM.Attack.poisonedHint"}}</p>
+  </div>
+  <div class="form-group">
     <label>{{localize "GLOOM.Attack.shield"}}</label>
     <input type="number" name="shield" value="0" min="0" step="1">
   </div>
   <div class="form-group">
     <label>{{localize "GLOOM.Attack.ward"}}</label>
-    <input type="checkbox" name="ward">
+    <input type="checkbox" name="ward"{{#if warded}} checked{{/if}}>
     <p class="hint">{{localize "GLOOM.Attack.wardHint"}}</p>
   </div>
   <div class="form-group">
     <label>{{localize "GLOOM.Mode.label"}}</label>
-    <select name="mode">{{#each modes}}<option value="{{key}}">{{label}}</option>{{/each}}</select>
+    <select name="mode">{{#each modes}}<option value="{{key}}"{{#if selected}} selected{{/if}}>{{label}}</option>{{/each}}</select>
   </div>
 </div>

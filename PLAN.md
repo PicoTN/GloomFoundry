@@ -170,7 +170,7 @@ The face cards cover the temporary cards:
 | **2. Mercenary sheet** | Attributes with click-to-test (TN prompt, background and skill bonuses), HP, rests (Quick Breath / Full Rest automation), backgrounds. |
 | **3. Powers** | Talent, Skill and Item types; ready/expended/lost states; Skill loadout; "lose a Skill to negate damage". |
 | **4. Perks** ✅ | Generic perk editor (no class data bundled: players enter perks from their own book); ticking boxes rebuilds the deck, keeping Bless/Curse. |
-| **4b. Conditions** | Condition toggles on the sheet (Strengthen/Muddle → advantage/disadvantage, Poison → +1 attack against, Ward, Bless/Curse…), feeding the draw dialogs. |
+| **4b. Conditions** ✅ | Gloomhaven conditions replace Foundry's token statuses (plus Unconscious/Dead). Sheet toggles with resist tests; Strengthen/Muddle and the target's Poison/Ward pre-fill the draw dialogs; Bless/Curse from the token HUD add deck cards; rests and end of combat clear conditions; Unconscious follows HP. Durations wait for combat (phase 5). |
 | **5. Combat** | Planning-phase picker, initiative, enemy speeds, cleanup automation, element tracker, conditions as status effects / AEs. |
 | **6. Enemies** | Enemy actor with level/elite tables, GM deck draws, threat budget helper. |
 | **7. Content** | Compendia (see IP note). |

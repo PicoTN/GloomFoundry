@@ -5,6 +5,8 @@
 import "../styles/gloomfoundry.scss";
 
 import { GMDeckApp } from "./module/apps/gm-deck.ts";
+import { registerConditionHooks } from "./module/condition-hooks.ts";
+import { registerStatusEffects } from "./module/conditions.ts";
 import { SYSTEM_ID, templatePath } from "./module/config.ts";
 import { BackgroundModel } from "./module/data/background.ts";
 import { MercenaryModel } from "./module/data/mercenary.ts";
@@ -62,6 +64,8 @@ Hooks.once("init", async () => {
   } as never);
 
   registerSettings();
+  registerStatusEffects();
+  registerConditionHooks();
   registerDeckLifecycleHooks();
   registerCombatHooks();
   registerPerkHooks();

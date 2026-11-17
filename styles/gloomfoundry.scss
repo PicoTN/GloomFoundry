@@ -229,3 +229,33 @@ body.gloom-face-playing .gloom-card {
   input.invalid { outline: 2px solid var(--gloom-red); }
   button.small { font-size: 0.8rem; }
 }
+
+// ---------------------------------------------------------------------------
+// Conditions
+// ---------------------------------------------------------------------------
+
+.gloomfoundry.sheet .conditions {
+  .unconscious-tag { margin-left: auto; font-size: 0.8rem; color: var(--gloom-red); }
+  .condition-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr)); gap: 0.3rem; }
+  .condition {
+    position: relative; display: flex;
+    button {
+      flex: 1; display: flex; align-items: center; gap: 0.35rem; justify-content: flex-start;
+      height: auto; padding: 0.15rem 0.35rem; font-size: 0.8rem; opacity: 0.55;
+      img { width: 20px; height: 20px; border: none; filter: grayscale(1); }
+    }
+    &.active button {
+      opacity: 1; font-weight: bold;
+      img { filter: none; }
+    }
+    &.positive.active button { border-color: var(--gloom-green); box-shadow: inset 0 0 0 1px var(--gloom-green); }
+    &.negative.active button { border-color: var(--gloom-red); box-shadow: inset 0 0 0 1px var(--gloom-red); }
+    .resist {
+      position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+      font-size: 0.65rem; font-weight: bold; padding: 0 0.25rem; border-radius: 3px;
+      background: var(--gloom-brown); color: white;
+    }
+  }
+}
+
+.gloom-dialog .target { margin: 0 0 0.25rem; font-weight: bold; }

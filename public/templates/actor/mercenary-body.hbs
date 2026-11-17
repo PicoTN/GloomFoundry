@@ -14,6 +14,25 @@
     </div>
   </section>
 
+  <section class="conditions">
+    <h3>
+      {{localize "GLOOM.Condition.plural"}}
+      {{#if unconscious}}<span class="unconscious-tag"><i class="fa-solid fa-bed-pulse"></i> {{localize "GLOOM.Condition.unconscious.name"}}</span>{{/if}}
+    </h3>
+    <div class="condition-grid">
+      {{#each conditions as |c|}}
+      <div class="condition {{c.kind}}{{#if c.active}} active{{/if}}" data-condition="{{c.id}}">
+        <button type="button" data-action="toggleCondition"{{#unless ../editable}} disabled{{/unless}} data-tooltip="{{c.hint}}">
+          <img src="{{c.img}}" alt=""> <span>{{c.label}}</span>
+        </button>
+        {{#if c.resist}}
+        <a class="resist" data-action="resistCondition" data-tooltip="{{localize 'GLOOM.Condition.resist'}}">{{c.resist}}</a>
+        {{/if}}
+      </div>
+      {{/each}}
+    </div>
+  </section>
+
   <section class="gloom-deck-panel">
     <h3>{{localize "GLOOM.Deck.title"}}</h3>
     {{#if deck}}
