@@ -1,4 +1,15 @@
 <section class="gloom-deck-panel">
+  <div class="party-info">
+    <span data-tooltip="GLOOM.Threat.mercenariesHint"><i class="fa-solid fa-users"></i> M = {{party.mercenaries}}</span>
+    <span data-tooltip="GLOOM.Threat.clHint"><i class="fa-solid fa-signal"></i> CL {{party.cl}}</span>
+    <span data-tooltip="GLOOM.Threat.challengeHint"><i class="fa-solid fa-triangle-exclamation"></i> {{localize "GLOOM.Threat.trap"}} {{party.challenge.trap}} · {{localize "GLOOM.Threat.hazard"}} {{party.challenge.hazard}}</span>
+  </div>
+  <div class="threat{{#if threat.over}} over{{/if}}">
+    <span><i class="fa-solid fa-skull"></i> {{localize "GLOOM.Threat.label"}} {{threat.total}} / {{threat.max}}</span>
+    <select name="difficulty">{{#each threat.difficulties}}<option value="{{key}}"{{#if selected}} selected{{/if}}>{{label}}</option>{{/each}}</select>
+    <a data-action="refresh" data-tooltip="GLOOM.Threat.refresh"><i class="fa-solid fa-rotate"></i></a>
+    <p class="hint">{{localize "GLOOM.Threat.sceneHint"}} ({{threat.count}}) · {{threat.fitsLabel}}</p>
+  </div>
   {{#if deck}}
   {{> "gloom.deck-counts" deck}}
   <div class="deck-buttons">

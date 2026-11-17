@@ -9,7 +9,7 @@ import { EQUIPMENT_SLOTS } from "../rules/progression.ts";
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const t = (key: string) => game.i18n!.localize(key);
 
-export const ITEM_SHEET_TYPES = ["skill", "talent", "equipment", "background", "class", "ancestry"] as const;
+export const ITEM_SHEET_TYPES = ["skill", "talent", "equipment", "background", "class", "ancestry", "npcAction"] as const;
 
 const choices = (keys: readonly string[], prefix: string) => keys.map((k) => ({ key: k, label: t(`${prefix}.${k}`) }));
 
@@ -63,6 +63,7 @@ export class GloomItemSheet extends HandlebarsApplicationMixin(foundry.applicati
         per: choices(["scene", "rest"], "GLOOM.Equipment.per"),
         category: choices(["occupation", "origin", "social"], "GLOOM.Background.category"),
         hpTrack: choices(["low", "medium", "high"], "GLOOM.Class.hpTrack"),
+        npcActionKind: choices(["action", "break", "stunt"], "GLOOM.NpcAction.kind"),
       },
       attributes: ATTRIBUTES.map((a) => ({
         key: a,

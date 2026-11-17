@@ -34,6 +34,12 @@
         "htmlFields": [
           "biography"
         ]
+      },
+      "npc": {
+        "htmlFields": [
+          "description",
+          "tacticsText"
+        ]
       }
     },
     "Item": {
@@ -68,6 +74,11 @@
         ]
       },
       "ancestry": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "npcAction": {
         "htmlFields": [
           "description"
         ]

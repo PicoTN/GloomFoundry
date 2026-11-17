@@ -1,7 +1,8 @@
 {
   "TYPES": {
     "Actor": {
-      "mercenary": "Mercenary"
+      "mercenary": "Mercenary",
+      "npc": "NPC"
     },
     "Item": {
       "background": "Background",
@@ -10,7 +11,8 @@
       "talent": "Talent",
       "equipment": "Item",
       "class": "Class",
-      "ancestry": "Ancestry"
+      "ancestry": "Ancestry",
+      "npcAction": "NPC Action"
     },
     "Card": {
       "modifier": "Modifier Card"
@@ -21,7 +23,8 @@
       "mercenary": "Mercenary Sheet",
       "background": "Background Sheet",
       "perk": "Perk Sheet",
-      "item": "GloomFoundry Item Sheet"
+      "item": "GloomFoundry Item Sheet",
+      "npc": "NPC Sheet"
     },
     "Attribute": {
       "cunning": {
@@ -203,6 +206,10 @@
         "hint": "How modifier cards are displayed for you: Gloomhaven-style faces, or the matching playing card (for groups using a poker deck).",
         "gloomhaven": "Gloomhaven",
         "playing": "Playing cards"
+      },
+      "mercenaryCount": {
+        "name": "Mercenaries present (M)",
+        "hint": "Used for nemesis stats and Threat maximums. 0 = count the player-owned mercenaries."
       }
     },
     "Perk": {
@@ -311,7 +318,10 @@
       "powers": "Powers",
       "inventory": "Inventory",
       "progression": "Progression",
-      "story": "Story"
+      "story": "Story",
+      "overview": "Overview",
+      "statblock": "Stat block",
+      "notes": "Notes"
     },
     "Power": {
       "primary": "Primary action",
@@ -432,6 +442,85 @@
     "Heal": {
       "healed": "{name} heals {amount}.",
       "poisonRemoved": "{name} is healed: Poison is removed instead of healing damage."
+    },
+    "Side": {
+      "switch": "Switch side (Friendly ⇄ Hostile)",
+      "hostile": "Hostile",
+      "friendly": "Friendly",
+      "neutral": "Neutral",
+      "nowHostile": "{name} is now Hostile.",
+      "nowFriendly": "{name} is now Friendly."
+    },
+    "Npc": {
+      "categoryLabel": "Category",
+      "category": {
+        "normal": "Normal",
+        "elite": "Elite",
+        "adversary": "Adversary",
+        "nemesis": "Nemesis"
+      },
+      "level": "Level (CL)",
+      "threat": "Threat",
+      "move": "Move",
+      "attack": "Attack",
+      "initiative": "Initiative",
+      "tactics": "Tactics",
+      "modeLabel": "Stats",
+      "mode": {
+        "table": "Stat block (by CL)",
+        "manual": "Manual"
+      },
+      "adversaryBoost": "Adversary boost",
+      "boost": {
+        "move": "Move +25%",
+        "attack": "Attack +25%"
+      },
+      "stuntPool": "Stunt pool (nemesis)",
+      "columnsTitle": "Attribute columns (the pair printed above Move and Attack shares their value)",
+      "column": {
+        "move": "Move column",
+        "attack": "Attack column",
+        "other": "Other"
+      },
+      "markersDefense": "DFNS markers (what ■ / ▣ mean for this variant)",
+      "markersOffense": "OFNS markers (what ✦ / ⊕ mean for this variant)",
+      "summonOf": "summon of",
+      "summonHint": "Drop a mercenary on this sheet to make it their summon (it then draws from their deck).",
+      "clearController": "No longer a summon"
+    },
+    "NpcAction": {
+      "plural": "Actions",
+      "new": "New action",
+      "none": "No actions yet.",
+      "fast": "Fast",
+      "normal": "Normal",
+      "slow": "Slow",
+      "kindLabel": "Kind",
+      "kind": {
+        "action": "Action",
+        "break": "Break",
+        "stunt": "Stunt"
+      },
+      "eliteOnly": "Elite only (yellow)",
+      "nemesisOnly": "Nemesis-only unique action",
+      "basicHint": "Any enemy may instead Move −1 and interact, or Move +0 and start a contest (GR vs GR, CU vs CU, CU vs LO), at any speed."
+    },
+    "Threat": {
+      "label": "Threat",
+      "refresh": "Recount",
+      "mercenariesHint": "Mercenaries present (M). Set it in the system settings, or leave 0 to count player-owned mercenaries.",
+      "clHint": "Campaign level: half the average mercenary level, rounded up.",
+      "challengeHint": "Combat Challenge table for this CL.",
+      "trap": "traps",
+      "hazard": "hazard",
+      "sceneHint": "Hostile NPC tokens with HP on this scene",
+      "difficulty": {
+        "easy": "Easy",
+        "normal": "Normal",
+        "hard": "Hard",
+        "deadly": "Deadly",
+        "beyond": "Beyond deadly"
+      }
     }
   }
 }

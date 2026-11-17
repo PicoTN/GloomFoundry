@@ -1,0 +1,25 @@
+<header class="sheet-header">
+  <img class="profile" src="{{actor.img}}" alt="{{actor.name}}" data-action="editImage" data-edit="img">
+  <div class="identity">
+    <div class="name-row">
+      <input class="name" type="text" name="name" value="{{actor.name}}">
+      <button type="button" class="side side-{{side}}" data-action="switchSide" data-tooltip="GLOOM.Side.switch"{{#unless editable}} disabled{{/unless}}>
+        <i class="fa-solid fa-people-arrows"></i> {{sideLabel}}
+      </button>
+    </div>
+    <div class="row stats">
+      {{#if table}}
+      <label>{{localize "GLOOM.Npc.categoryLabel"}}<select name="system.category">{{selectOptions categories selected=system.category valueAttr="key" labelAttr="label"}}</select></label>
+      <label>{{localize "GLOOM.Npc.level"}}<select name="system.level" data-dtype="Number">{{selectOptions levels selected=system.level valueAttr="key" labelAttr="label"}}</select></label>
+      {{/if}}
+      <label class="hp">{{localize "GLOOM.Mercenary.hp"}}
+        <span class="pair">
+          <input type="number" name="system.hp.value" value="{{system.hp.value}}" min="0" step="1">
+          <span class="sep">/</span>
+          <input type="number" name="system.hp.max" value="{{system.hp.max}}" min="0" step="1"{{#if table}} disabled{{/if}}>
+        </span>
+      </label>
+      <label>{{localize "GLOOM.Npc.threat"}}<span class="value">{{system.current.threat}}</span></label>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,16 @@
+<table class="stat-table">
+  <thead><tr><th>CL</th><th>DFNS</th><th>HP</th><th>{{localize "GLOOM.Npc.move"}}</th><th>{{localize "GLOOM.Npc.attack"}}</th><th>{{localize "GLOOM.Npc.column.other"}}</th><th>OFNS</th></tr></thead>
+  <tbody>
+    {{#each rows as |r|}}
+    <tr class="{{#if r.current}}current{{/if}}">
+      <td>{{r.level}}</td>
+      <td><input type="text" class="marker" name="system.stats.{{../key}}.{{r.level}}.defense" value="{{r.defense}}"></td>
+      <td><input type="number" name="system.stats.{{../key}}.{{r.level}}.hp" value="{{r.hp}}" min="0"></td>
+      <td><input type="number" name="system.stats.{{../key}}.{{r.level}}.move" value="{{r.move}}" min="0"></td>
+      <td><input type="number" name="system.stats.{{../key}}.{{r.level}}.attack" value="{{r.attack}}" min="0"></td>
+      <td><input type="number" name="system.stats.{{../key}}.{{r.level}}.other" value="{{r.other}}" min="0"></td>
+      <td><input type="text" class="marker" name="system.stats.{{../key}}.{{r.level}}.offense" value="{{r.offense}}"></td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>

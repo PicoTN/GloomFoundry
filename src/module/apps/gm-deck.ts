@@ -6,6 +6,9 @@ import { templatePath } from "../config.ts";
 import { cardView } from "../chat/draw-message.ts";
 import { addTemporary, drawAttack, testAttribute } from "../deck/actions.ts";
 import { ensureGMDeck, getGMDeck } from "../deck/registry.ts";
+import { currentCampaignLevel, mercenaryCount, sceneThreat } from "../npc.ts";
+import { COMBAT_CHALLENGE, DIFFICULTIES, threatDifficulty, threatMaximum, type Difficulty } from "../rules/npc.ts";
+import { SYSTEM_ID } from "../config.ts";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const t = (key: string) => game.i18n!.localize(key);
@@ -30,6 +33,7 @@ export class GMDeckApp extends HandlebarsApplicationMixin(ApplicationV2) {
       clearTemporary: GMDeckApp.#onClear,
       reshuffle: GMDeckApp.#onReshuffle,
       rebuild: GMDeckApp.#onRebuild,
+      refresh: GMDeckApp.#onRefresh,
     },
   } as never;
 
@@ -40,12 +44,42 @@ export class GMDeckApp extends HandlebarsApplicationMixin(ApplicationV2) {
   override async _prepareContext(options: Parameters<foundry.applications.api.ApplicationV2["_prepareContext"]>[0]) {
     const context = await super._prepareContext(options);
     const deck = getGMDeck();
+    const m = mercenaryCount();
+    const cl = currentCampaignLevel();
+    const difficulty = game.settings!.get(SYSTEM_ID, "difficulty") as Difficulty;
+    const threat = sceneThreat();
+    const fits = threatDifficulty(threat.total, m);
     return {
       ...context,
+      party: {
+        mercenaries: m,
+        cl,
+        challenge: COMBAT_CHALLENGE[cl],
+      },
+      threat: {
+        ...threat,
+        max: threatMaximum(difficulty, m),
+        over: threat.total > threatMaximum(difficulty, m),
+        fitsLabel: t(`GLOOM.Threat.difficulty.${fits}`),
+        difficulties: DIFFICULTIES.map((d) => ({
+          key: d, label: `${t(`GLOOM.Threat.difficulty.${d}`)} (${threatMaximum(d, m)})`, selected: d === difficulty,
+        })),
+      },
       deck: deck
         ? { ...deck.counts(), recent: deck.recentDiscards(6).map((c, i) => cardView(c, i === 0, i > 0)) }
         : null,
     };
+  }
+
+  protected override async _onRender(
+    context: Parameters<foundry.applications.api.ApplicationV2["_onRender"]>[0],
+    options: Parameters<foundry.applications.api.ApplicationV2["_onRender"]>[1],
+  ): Promise<void> {
+    await super._onRender(context, options);
+    this.element.querySelector<HTMLSelectElement>("select[name=difficulty]")?.addEventListener("change", async (event) => {
+      await game.settings!.set(SYSTEM_ID, "difficulty", (event.target as HTMLSelectElement).value as Difficulty);
+      void this.render();
+    });
   }
 
   static async #deck() {
@@ -78,6 +112,10 @@ export class GMDeckApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static async #onReshuffle(this: GMDeckApp) {
     await (await GMDeckApp.#deck())?.reshuffle();
+  }
+
+  static async #onRefresh(this: GMDeckApp) {
+    await this.render();
   }
 
   static async #onRebuild(this: GMDeckApp) {

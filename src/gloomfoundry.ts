@@ -11,6 +11,7 @@ import { registerStatusEffects } from "./module/conditions.ts";
 import { SYSTEM_ID, templatePath } from "./module/config.ts";
 import { BackgroundModel } from "./module/data/background.ts";
 import { MercenaryModel } from "./module/data/mercenary.ts";
+import { NpcActionModel, NpcModel } from "./module/data/npc.ts";
 import { PerkModel } from "./module/data/perk.ts";
 import { AncestryModel, ClassModel, EquipmentModel, SkillModel, TalentModel } from "./module/data/powers.ts";
 import { ModifierCardModel } from "./module/data/modifier-card.ts";
@@ -26,6 +27,8 @@ import { GloomItemSheet, ITEM_SHEET_TYPES } from "./module/sheets/item-sheet.ts"
 import { registerPowerHooks } from "./module/powers.ts";
 import { MercenarySheet } from "./module/sheets/mercenary-sheet.ts";
 import { PerkSheet } from "./module/sheets/perk-sheet.ts";
+import { NpcSheet } from "./module/sheets/npc-sheet.ts";
+import { registerNpcHooks } from "./module/npc.ts";
 import { registerSocket } from "./module/socket.ts";
 
 const api = {
@@ -45,7 +48,7 @@ Hooks.once("init", async () => {
   console.log("GloomFoundry | Initializing");
   (game as unknown as Record<string, unknown>)[SYSTEM_ID] = api;
 
-  Object.assign(CONFIG.Actor.dataModels, { mercenary: MercenaryModel });
+  Object.assign(CONFIG.Actor.dataModels, { mercenary: MercenaryModel, npc: NpcModel });
   Object.assign(CONFIG.Item.dataModels, {
     background: BackgroundModel,
     perk: PerkModel,
@@ -54,6 +57,7 @@ Hooks.once("init", async () => {
     equipment: EquipmentModel,
     class: ClassModel,
     ancestry: AncestryModel,
+    npcAction: NpcActionModel,
   });
   Object.assign(CONFIG.Card.dataModels, { modifier: ModifierCardModel });
 
@@ -62,6 +66,11 @@ Hooks.once("init", async () => {
     types: ["mercenary"],
     makeDefault: true,
     label: "GLOOM.Sheet.mercenary",
+  } as never);
+  DocumentSheetConfig.registerSheet(Actor, SYSTEM_ID, NpcSheet, {
+    types: ["npc"],
+    makeDefault: true,
+    label: "GLOOM.Sheet.npc",
   } as never);
   DocumentSheetConfig.registerSheet(Item, SYSTEM_ID, GloomItemSheet, {
     types: [...ITEM_SHEET_TYPES],
@@ -82,10 +91,12 @@ Hooks.once("init", async () => {
   registerCombatHooks();
   registerPerkHooks();
   registerPowerHooks();
+  registerNpcHooks();
 
   await foundry.applications.handlebars.loadTemplates({
     "gloom.modifier-card": templatePath("parts/modifier-card.hbs"),
     "gloom.deck-counts": templatePath("parts/deck-counts.hbs"),
+    "gloom.npc.stat-table": templatePath("actor/parts/stat-table.hbs"),
     ...Object.fromEntries(
       [...ITEM_SHEET_TYPES, "grants"].map((p) => [`gloom.item.${p}`, templatePath(`item/parts/${p}.hbs`)]),
     ),
@@ -117,6 +128,14 @@ for (const hook of ["createCard", "updateCard", "deleteCard"] as const) {
   });
 }
 Hooks.on("updateCards", (stack) => refreshDeckViews(stack as Cards.Implementation));
+
+// Keep the GM window's Threat tally current.
+const refreshGMWindow = foundry.utils.debounce(() => {
+  if (GMDeckApp.instance.rendered) void GMDeckApp.instance.render();
+}, 200);
+for (const hook of ["createToken", "deleteToken", "updateToken", "updateActor", "canvasReady"] as const) {
+  Hooks.on(hook, () => refreshGMWindow());
+}
 
 // "GM Modifier Deck" button in the Cards sidebar.
 Hooks.on("renderCardsDirectory", (_app, html) => {

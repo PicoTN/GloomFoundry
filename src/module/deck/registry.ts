@@ -31,6 +31,22 @@ export function getActorDeck(actor: Actor.Implementation | null | undefined): Mo
   return draw && discard ? new ModifierDeck(draw, discard, actor) : null;
 }
 
+/**
+ * The deck a character draws from: a mercenary's own deck; a summon's controller's deck;
+ * the shared GM deck for every other GM-controlled character (p. 63).
+ */
+export function deckForActor(actor: Actor.Implementation | null | undefined): ModifierDeck | null {
+  if (!actor) return getGMDeck();
+  if (actor.type === "mercenary") return getActorDeck(actor);
+  const controllerUuid = (actor.system as unknown as { controller?: string }).controller;
+  if (controllerUuid) {
+    const controller = fromUuidSync(controllerUuid) as Actor.Implementation | null;
+    const deck = getActorDeck(controller);
+    if (deck) return deck;
+  }
+  return getGMDeck();
+}
+
 export function getGMDeck(): ModifierDeck | null {
   const draw = getCards(game.settings!.get(SYSTEM_ID, "gmDrawPile"));
   const discard = getCards(game.settings!.get(SYSTEM_ID, "gmDiscardPile"));

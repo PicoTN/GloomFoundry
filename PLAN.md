@@ -172,7 +172,7 @@ The face cards cover the temporary cards:
 | **4. Perks** ✅ | Generic perk editor (no class data bundled: players enter perks from their own book); ticking boxes rebuilds the deck, keeping Bless/Curse. |
 | **4b. Conditions** ✅ | Gloomhaven conditions replace Foundry's token statuses (plus Unconscious/Dead). Sheet toggles with resist tests; Strengthen/Muddle and the target's Poison/Ward pre-fill the draw dialogs; Bless/Curse from the token HUD add deck cards; rests and end of combat clear conditions; Unconscious follows HP. Durations wait for combat (phase 5). |
 | **5. Combat** | Planning-phase picker, initiative, enemy speeds, cleanup automation, element tracker, conditions as status effects / AEs. |
-| **6. Enemies** | Enemy actor with level/elite tables, GM deck draws, threat budget helper. New enemy tokens default to Hostile. A **"switch side"** button (sheet and token HUD) flips Friendly/Hostile for charmed, allied or betraying NPCs. Sides already drive Invisible (see below). |
+| **6. NPCs** ✅ | One `npc` actor for enemies, allies, summons and townsfolk. Bestiary stat block by CL (normal/elite, Attribute columns, DFNS/OFNS markers), or manual stats. Adversary and nemesis derived stats. NPC actions (F/N/S, elite-only, break/stunt). Uses the GM deck, or the controller's deck for summons. Switch side (sheet + token HUD), new NPCs Hostile at the current CL. GM window shows M, CL, the Combat Challenge values and scene Threat vs the difficulty max. Next: bestiary transcription into `content/`, summon actors for class summons. |
 | **7. Content** | Compendia (see IP note). |
 
 ---

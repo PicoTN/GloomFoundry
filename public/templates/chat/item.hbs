@@ -3,7 +3,7 @@
     <img src="{{item.img}}" alt="">
     <div>
       <h3>{{item.name}}</h3>
-      <span class="subtitle">{{typeLabel}}{{#if system.level}} · {{localize "GLOOM.Item.level"}} {{system.level}}{{/if}}{{#if system.initiative}} · <i class="fa-solid fa-gauge-high"></i> {{system.initiative}}{{/if}}</span>
+      <span class="subtitle">{{typeLabel}}{{#if system.level}} · {{localize "GLOOM.Item.level"}} {{system.level}}{{/if}}{{#if system.initiative}} · <i class="fa-solid fa-gauge-high"></i> {{system.initiative}}{{/if}}{{#if system.speedLabel}} · {{system.speedLabel}}{{/if}}</span>
     </div>
   </header>
   {{#if system.flavor}}<p class="flavor">{{system.flavor}}</p>{{/if}}

@@ -1,11 +1,9 @@
 import { clearConditions, hasCondition } from "./conditions.ts";
 import { addTemporary } from "./deck/actions.ts";
-import { getActorDeck, getGMDeck, isActiveGM } from "./deck/registry.ts";
+import { deckForActor, isActiveGM } from "./deck/registry.ts";
 
 /** The deck that receives Bless/Curse for this actor: their own, or the GM deck for GM characters. */
-function deckFor(actor: Actor.Implementation) {
-  return getActorDeck(actor) ?? (actor.type === "mercenary" ? null : getGMDeck());
-}
+const deckFor = deckForActor;
 
 export function registerConditionHooks(): void {
   // Bless/Curse from the token HUD: shuffle a card into the deck instead of creating an effect.
@@ -21,16 +19,15 @@ export function registerConditionHooks(): void {
     return false;
   });
 
-  // Unconscious follows HP (p. 68): set at 0, cleared when healed.
+  // At 0 HP: mercenaries fall Unconscious (p. 68), GM-controlled characters are defeated.
   Hooks.on("updateActor", (actor, changes, _options, userId) => {
     if (userId !== game.user?.id) return;
     const a = actor as Actor.Implementation;
     const hpChanged = (changes as { system?: { hp?: { value?: number } } }).system?.hp?.value !== undefined;
-    if (a.type !== "mercenary" || !hpChanged) return;
+    if (!hpChanged || (a.type !== "mercenary" && a.type !== "npc")) return;
+    const status = a.type === "mercenary" ? "unconscious" : "dead";
     const down = (a.system as unknown as { hp: { value: number } }).hp.value <= 0;
-    if (down !== hasCondition(a, "unconscious")) {
-      void a.toggleStatusEffect("unconscious", { active: down, overlay: down });
-    }
+    if (down !== hasCondition(a, status)) void a.toggleStatusEffect(status, { active: down, overlay: down });
   });
 
   // End of combat: conditions such as Poison or Wound are removed (p. 72).

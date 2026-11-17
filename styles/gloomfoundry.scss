@@ -347,3 +347,62 @@ body.gloom-face-playing .gloom-card {
 }
 .gloom-heal i { color: var(--gloom-green); }
 .gloom-negate i { color: var(--gloom-brown); }
+
+// ---------------------------------------------------------------------------
+// NPCs, sides, Threat
+// ---------------------------------------------------------------------------
+
+.gloomfoundry.sheet.npc {
+  nav.tabs { margin: 0.25rem 0; }
+  .tab:not(.active) { display: none; }
+  .tab { display: flex; flex-direction: column; gap: 0.35rem; }
+  .name-row { display: flex; gap: 0.5rem; align-items: center; .name { flex: 1; } }
+  .side { flex: 0 0 auto; width: auto; font-size: 0.8rem; padding: 0 0.5rem; }
+  .side-hostile { color: var(--gloom-red); border-color: var(--gloom-red); }
+  .side-friendly { color: var(--gloom-green); border-color: var(--gloom-green); }
+  .row.stats .value { font-size: 1.2rem; font-weight: bold; text-align: center; }
+  .big-stats { display: flex; flex-wrap: wrap; gap: 0.5rem;
+    .stat { display: flex; flex-direction: column; align-items: center; min-width: 4.5rem; padding: 0.2rem 0.4rem;
+      border: 1px solid var(--gloom-brown); border-radius: 4px;
+      .label { font-size: 0.65rem; text-transform: uppercase; opacity: 0.75; }
+      .value { font-size: 1.4rem; font-weight: bold; }
+      .value.small { font-size: 0.85rem; }
+      .value.marker { font-size: 1.1rem; }
+    }
+  }
+  .attribute .score { text-align: center; font-size: 1.1rem; font-weight: bold; }
+  .npc-action {
+    .speeds { background: var(--gloom-gold); color: var(--gloom-ink); min-width: 2.6rem; text-align: center; }
+    &.elite .item-name { color: #9a6b00; }
+    &.unavailable { opacity: 0.4; }
+    .elite-tag { background: #f0d48a; }
+    .nemesis-tag { background: var(--gloom-purple); color: white; }
+  }
+  .attribute-columns { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.35rem;
+    label { display: flex; flex-direction: column; align-items: center; font-size: 0.75rem; }
+  }
+  .stat-table { width: 100%; border-collapse: collapse; font-size: 0.8rem;
+    th { font-weight: normal; opacity: 0.75; }
+    td { padding: 0.05rem 0.15rem; text-align: center; }
+    input { height: 1.5rem; text-align: center; padding: 0; }
+    input.marker { width: 2.2rem; }
+    tr.current td { background: rgb(217 164 65 / 25%); }
+  }
+  .grid-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); gap: 0.35rem 0.6rem;
+    label { display: flex; flex-direction: column; font-size: 0.75rem; }
+    .span2 { grid-column: span 2; }
+  }
+  h4 { margin: 0.5rem 0 0.2rem; border-bottom: 1px solid var(--gloom-brown); }
+  .hint { font-size: 0.75rem; opacity: 0.8; margin: 0.1rem 0; }
+}
+
+.gloomfoundry.gm-deck {
+  .party-info { display: flex; flex-wrap: wrap; gap: 0.75rem; font-size: 0.8rem; margin-bottom: 0.35rem; }
+  .threat { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;
+    select { width: auto; flex: 1; }
+    .hint { flex: 0 0 100%; font-size: 0.75rem; opacity: 0.8; margin: 0; }
+    &.over > span { color: var(--gloom-red); font-weight: bold; }
+  }
+}
+
+#token-hud .gloom-switch-side { font-size: 1.1rem; }

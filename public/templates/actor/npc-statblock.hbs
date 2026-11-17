@@ -1,0 +1,46 @@
+<section class="tab statblock-tab {{tabs.statblock.cssClass}}" data-tab="statblock" data-group="primary">
+  <div class="grid-fields">
+    <label>{{localize "GLOOM.Npc.modeLabel"}}<select name="system.mode">{{selectOptions modes selected=system.mode valueAttr="key" labelAttr="label"}}</select></label>
+    <label>{{localize "GLOOM.Npc.tactics"}}<input type="number" name="system.tactics" value="{{system.tactics}}" min="0" max="5" step="1"></label>
+    <label>{{localize "GLOOM.Npc.initiative"}} F<input type="number" name="system.initiative.fast" value="{{system.initiative.fast}}" min="1" max="100"></label>
+    <label>{{localize "GLOOM.Npc.initiative"}} N<input type="number" name="system.initiative.normal" value="{{system.initiative.normal}}" min="1" max="100"></label>
+    <label>{{localize "GLOOM.Npc.initiative"}} S<input type="number" name="system.initiative.slow" value="{{system.initiative.slow}}" min="1" max="100"></label>
+  </div>
+
+  {{#if table}}
+  <div class="grid-fields">
+    <label>{{localize "GLOOM.Npc.threat"}} ({{localize "GLOOM.Npc.category.normal"}})<input type="number" name="system.threat.normal" value="{{system.threat.normal}}" min="0"></label>
+    <label>{{localize "GLOOM.Npc.threat"}} ({{localize "GLOOM.Npc.category.elite"}})<input type="number" name="system.threat.elite" value="{{system.threat.elite}}" min="0"></label>
+    <label>{{localize "GLOOM.Npc.adversaryBoost"}}<select name="system.adversaryBoost">{{selectOptions boosts selected=system.adversaryBoost valueAttr="key" labelAttr="label"}}</select></label>
+    <label>{{localize "GLOOM.Npc.stuntPool"}}<input type="number" name="system.stunts.max" value="{{system.stunts.max}}" min="0"></label>
+  </div>
+
+  <h4>{{localize "GLOOM.Npc.columnsTitle"}}</h4>
+  <div class="attribute-columns">
+    {{#each attributes as |a|}}
+    <label>{{a.abbr}}<select name="attrColumn.{{a.key}}">{{selectOptions @root.columnChoices selected=a.column valueAttr="key" labelAttr="label"}}</select></label>
+    {{/each}}
+  </div>
+
+  <h4>{{localize "GLOOM.Npc.category.normal"}}</h4>
+  {{> "gloom.npc.stat-table" rows=normalRows key="normal"}}
+  <h4>{{localize "GLOOM.Npc.category.elite"}}</h4>
+  {{> "gloom.npc.stat-table" rows=eliteRows key="elite"}}
+
+  <div class="grid-fields">
+    <label class="span2">{{localize "GLOOM.Npc.markersDefense"}}<input type="text" name="system.markers.defense" value="{{system.markers.defense}}" placeholder="■ = Shield 1, ▣ = Shield 2"></label>
+    <label class="span2">{{localize "GLOOM.Npc.markersOffense"}}<input type="text" name="system.markers.offense" value="{{system.markers.offense}}" placeholder="✦ = Wound"></label>
+  </div>
+  {{else}}
+  <div class="grid-fields">
+    <label>{{localize "GLOOM.Npc.move"}}<input type="number" name="system.manual.move" value="{{system.manual.move}}" min="0"></label>
+    <label>{{localize "GLOOM.Npc.attack"}}<input type="number" name="system.manual.attack" value="{{system.manual.attack}}" min="0"></label>
+    <label>{{localize "GLOOM.Npc.threat"}}<input type="number" name="system.manual.threat" value="{{system.manual.threat}}" min="0"></label>
+  </div>
+  <div class="attribute-columns">
+    {{#each attributes as |a|}}
+    <label>{{a.abbr}}<input type="number" name="system.manual.attributes.{{a.key}}" value="{{a.manual}}" min="0" max="9"></label>
+    {{/each}}
+  </div>
+  {{/if}}
+</section>

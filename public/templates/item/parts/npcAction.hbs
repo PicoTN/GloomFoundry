@@ -1,0 +1,9 @@
+<div class="grid-fields">
+  <label class="checkbox"><input type="checkbox" name="system.speeds.fast"{{#if system.speeds.fast}} checked{{/if}}> {{localize "GLOOM.NpcAction.fast"}}</label>
+  <label class="checkbox"><input type="checkbox" name="system.speeds.normal"{{#if system.speeds.normal}} checked{{/if}}> {{localize "GLOOM.NpcAction.normal"}}</label>
+  <label class="checkbox"><input type="checkbox" name="system.speeds.slow"{{#if system.speeds.slow}} checked{{/if}}> {{localize "GLOOM.NpcAction.slow"}}</label>
+  <label>{{localize "GLOOM.NpcAction.kindLabel"}}<select name="system.kind">{{selectOptions options.npcActionKind selected=system.kind valueAttr="key" labelAttr="label"}}</select></label>
+  <label class="checkbox"><input type="checkbox" name="system.eliteOnly"{{#if system.eliteOnly}} checked{{/if}}> {{localize "GLOOM.NpcAction.eliteOnly"}}</label>
+  <label class="checkbox"><input type="checkbox" name="system.nemesisOnly"{{#if system.nemesisOnly}} checked{{/if}}> {{localize "GLOOM.NpcAction.nemesisOnly"}}</label>
+</div>
+{{formInput systemFields.description value=system.description enriched=enriched.description toggled=true name="system.description"}}

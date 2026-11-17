@@ -84,6 +84,8 @@ export interface TestOptions {
   score?: number;
   /** Condition being resisted (p. 83), used for the titles. */
   resist?: string;
+  /** Character testing, when different from the deck owner (NPCs drawing from the GM deck). */
+  actor?: Actor.Implementation | null;
 }
 
 function backgroundsOf(actor: Actor.Implementation | null) {
@@ -92,7 +94,7 @@ function backgroundsOf(actor: Actor.Implementation | null) {
 }
 
 export async function testAttribute(deck: ModifierDeck, options: TestOptions = {}): Promise<void> {
-  const actor = deck.actor;
+  const actor = options.actor ?? deck.actor;
   const attrs = (actor?.system as { attributes?: Record<AttributeKey, number> } | undefined)?.attributes;
   const attribute = options.attribute ?? null;
   const dialogData = {
@@ -162,7 +164,7 @@ export async function testAttribute(deck: ModifierDeck, options: TestOptions = {
       title: options.resist
         ? f("GLOOM.Test.resistChatTitle", { condition: resistName, attr: attrLabel })
         : f("GLOOM.Test.chatTitle", { attr: attrLabel }),
-      subtitle: deck.label,
+      subtitle: actor && actor !== deck.actor ? `${actor.name ?? ""} · ${deck.label}` : deck.label,
       cards: drawn.map((d, i) => cardView(d, i === result.keptIndex)),
       mode,
       ...(mode !== "normal" ? { modeLabel: t(`GLOOM.Mode.${mode}`) } : {}),
@@ -181,10 +183,19 @@ export async function testAttribute(deck: ModifierDeck, options: TestOptions = {
 // Attack
 // ---------------------------------------------------------------------------
 
-export async function drawAttack(deck: ModifierDeck): Promise<void> {
-  const { mode: defaultMode, sources } = conditionMode(deck.actor);
+export interface AttackOptions {
+  /** Attacking character, when different from the deck owner (NPCs, summons). */
+  actor?: Actor.Implementation | null;
+  /** Default base attack value (an NPC's attack stat). */
+  base?: number;
+}
+
+export async function drawAttack(deck: ModifierDeck, options: AttackOptions = {}): Promise<void> {
+  const attacker = options.actor ?? deck.actor;
+  const { mode: defaultMode, sources } = conditionMode(attacker);
   const target = currentTargetActor();
   const form = await input(t("GLOOM.Attack.title"), "apps/attack-dialog.hbs", {
+    base: options.base ?? 2,
     modes: modeOptions(defaultMode),
     targetName: target?.name ?? "",
     poisoned: hasCondition(target, "poison"),
@@ -223,7 +234,7 @@ export async function drawAttack(deck: ModifierDeck): Promise<void> {
   await postDrawMessage(
     {
       title: t("GLOOM.Attack.chatTitle"),
-      subtitle: deck.label,
+      subtitle: attacker && attacker !== deck.actor ? `${attacker.name ?? ""} · ${deck.label}` : deck.label,
       cards: drawn.map((d, i) => cardView(d, i === result.keptIndex)),
       mode,
       ...(mode !== "normal" ? { modeLabel: t(`GLOOM.Mode.${mode}`) } : {}),
@@ -231,7 +242,7 @@ export async function drawAttack(deck: ModifierDeck): Promise<void> {
       details: effect ? [...details, { label: t("GLOOM.Attack.effect"), value: effect }] : details,
       outcome,
     },
-    deck.actor,
+    attacker,
     { type: "attack", damage: result.damage, critical: result.critical, null: result.null },
   );
 }

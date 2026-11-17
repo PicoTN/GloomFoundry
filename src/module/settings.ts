@@ -15,6 +15,19 @@ export function registerSettings(): void {
   settings.register(SYSTEM_ID, "gmDiscardPile", { scope: "world", config: false, type: String, default: "" });
   settings.register(SYSTEM_ID, "deckFolder", { scope: "world", config: false, type: String, default: "" });
 
+  settings.register(SYSTEM_ID, "mercenaryCount", {
+    name: "GLOOM.Settings.mercenaryCount.name",
+    hint: "GLOOM.Settings.mercenaryCount.hint",
+    scope: "world",
+    config: true,
+    type: Number,
+    default: 0,
+    onChange: () => game.actors?.forEach((a) => a.type === "npc" && a.reset()),
+  } as never);
+  settings.register(SYSTEM_ID, "difficulty", {
+    scope: "world", config: false, type: String, default: "normal",
+  } as never);
+
   settings.register(SYSTEM_ID, "cardFace", {
     name: "GLOOM.Settings.cardFace.name",
     hint: "GLOOM.Settings.cardFace.hint",
