@@ -12,6 +12,7 @@ import { SYSTEM_ID, templatePath } from "./module/config.ts";
 import { BackgroundModel } from "./module/data/background.ts";
 import { MercenaryModel } from "./module/data/mercenary.ts";
 import { PerkModel } from "./module/data/perk.ts";
+import { AncestryModel, ClassModel, EquipmentModel, SkillModel, TalentModel } from "./module/data/powers.ts";
 import { ModifierCardModel } from "./module/data/modifier-card.ts";
 import { addTemporary, drawAttack, testAttribute } from "./module/deck/actions.ts";
 import { registerCombatHooks } from "./module/deck/combat-hooks.ts";
@@ -21,7 +22,8 @@ import { getActorDeck, getGMDeck, registerDeckLifecycleHooks } from "./module/de
 import * as modifierRules from "./module/rules/modifier.ts";
 import * as resolution from "./module/rules/resolution.ts";
 import { applyCardFaceStyle, registerSettings, type CardFaceStyle } from "./module/settings.ts";
-import { BackgroundSheet } from "./module/sheets/background-sheet.ts";
+import { GloomItemSheet, ITEM_SHEET_TYPES } from "./module/sheets/item-sheet.ts";
+import { registerPowerHooks } from "./module/powers.ts";
 import { MercenarySheet } from "./module/sheets/mercenary-sheet.ts";
 import { PerkSheet } from "./module/sheets/perk-sheet.ts";
 import { registerSocket } from "./module/socket.ts";
@@ -44,7 +46,15 @@ Hooks.once("init", async () => {
   (game as unknown as Record<string, unknown>)[SYSTEM_ID] = api;
 
   Object.assign(CONFIG.Actor.dataModels, { mercenary: MercenaryModel });
-  Object.assign(CONFIG.Item.dataModels, { background: BackgroundModel, perk: PerkModel });
+  Object.assign(CONFIG.Item.dataModels, {
+    background: BackgroundModel,
+    perk: PerkModel,
+    skill: SkillModel,
+    talent: TalentModel,
+    equipment: EquipmentModel,
+    class: ClassModel,
+    ancestry: AncestryModel,
+  });
   Object.assign(CONFIG.Card.dataModels, { modifier: ModifierCardModel });
 
   const DocumentSheetConfig = foundry.applications.apps.DocumentSheetConfig;
@@ -53,10 +63,10 @@ Hooks.once("init", async () => {
     makeDefault: true,
     label: "GLOOM.Sheet.mercenary",
   } as never);
-  DocumentSheetConfig.registerSheet(Item, SYSTEM_ID, BackgroundSheet, {
-    types: ["background"],
+  DocumentSheetConfig.registerSheet(Item, SYSTEM_ID, GloomItemSheet, {
+    types: [...ITEM_SHEET_TYPES],
     makeDefault: true,
-    label: "GLOOM.Sheet.background",
+    label: "GLOOM.Sheet.item",
   } as never);
   DocumentSheetConfig.registerSheet(Item, SYSTEM_ID, PerkSheet, {
     types: ["perk"],
@@ -71,10 +81,14 @@ Hooks.once("init", async () => {
   registerDeckLifecycleHooks();
   registerCombatHooks();
   registerPerkHooks();
+  registerPowerHooks();
 
   await foundry.applications.handlebars.loadTemplates({
     "gloom.modifier-card": templatePath("parts/modifier-card.hbs"),
     "gloom.deck-counts": templatePath("parts/deck-counts.hbs"),
+    ...Object.fromEntries(
+      [...ITEM_SHEET_TYPES, "grants"].map((p) => [`gloom.item.${p}`, templatePath(`item/parts/${p}.hbs`)]),
+    ),
   });
 });
 

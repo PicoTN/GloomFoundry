@@ -1,0 +1,13 @@
+<div class="grid-fields">
+  <label>{{localize "GLOOM.Class.hpTrackLabel"}}<select name="system.hpTrack">{{selectOptions options.hpTrack selected=system.hpTrack valueAttr="key" labelAttr="label"}}</select></label>
+  <label class="span2">{{localize "GLOOM.Class.startingGear"}}<input type="text" name="system.startingGear" value="{{system.startingGear}}"></label>
+</div>
+<h4>{{localize "GLOOM.Class.attributes"}}</h4>
+<div class="attribute-bonuses">
+  {{#each attributes as |a|}}<label>{{a.abbr}}<input type="number" name="system.attributes.{{a.key}}" value="{{a.value}}" min="0" step="1"></label>{{/each}}
+</div>
+<h4>{{localize "GLOOM.Item.description"}}</h4>
+{{formInput systemFields.description value=system.description enriched=enriched.description toggled=true name="system.description"}}
+<h4>{{localize "GLOOM.Class.specialMechanics"}}</h4>
+{{formInput systemFields.specialMechanics value=system.specialMechanics enriched=enriched.specialMechanics toggled=true name="system.specialMechanics"}}
+{{> "gloom.item.grants"}}

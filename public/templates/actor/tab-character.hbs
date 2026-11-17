@@ -1,9 +1,9 @@
-<section class="sheet-body">
+<section class="tab character-tab {{tabs.character.cssClass}}" data-tab="character" data-group="primary">
   <section class="attributes">
-    <h3>{{localize "GLOOM.Mercenary.attributes"}}</h3>
+    <h3>{{localize "GLOOM.Mercenary.attributes"}} <span class="hint">{{localize "GLOOM.Mercenary.attributeMax"}} {{system.attributeMax}}</span></h3>
     <div class="attribute-grid">
       {{#each attributes}}
-      <div class="attribute">
+      <div class="attribute{{#if overMax}} over-max{{/if}}">
         <button type="button" class="test" data-action="testAttribute" data-attribute="{{key}}" data-tooltip="GLOOM.Test.clickToTest">
           <span class="abbr">{{abbr}}</span>
           <span class="label">{{label}}</span>
@@ -61,41 +61,6 @@
     {{/if}}
   </section>
 
-  <section class="perks">
-    <h3>
-      {{localize "GLOOM.Perk.plural"}}
-      {{#if editable}}
-      <a class="item-control" data-action="importPerks" data-tooltip="GLOOM.Perk.import.title"><i class="fa-solid fa-file-import"></i></a>
-      <a class="item-control" data-action="createPerk" data-tooltip="GLOOM.Perk.create"><i class="fa-solid fa-plus"></i></a>
-      {{/if}}
-    </h3>
-    <ul class="item-list">
-      {{#each perks as |perk|}}
-      <li class="item perk" data-item-id="{{perk.id}}">
-        <span class="boxes">
-          {{#each perk.boxes as |box|}}
-          <a class="perk-box{{#if box.ticked}} ticked{{/if}}"{{#if ../../editable}} data-action="togglePerkBox"{{/if}} data-index="{{box.index}}">
-            <i class="fa-regular {{#if box.ticked}}fa-square-check{{else}}fa-square{{/if}}"></i>
-          </a>
-          {{/each}}
-        </span>
-        <span class="item-name">{{perk.name}}{{#if perk.description}} <span class="perk-desc">{{perk.description}}</span>{{/if}}</span>
-        {{#if ../editable}}
-        <a class="item-control" data-action="editItem" data-tooltip="GLOOM.Item.edit"><i class="fa-solid fa-pen"></i></a>
-        <a class="item-control" data-action="deleteItem" data-tooltip="GLOOM.Item.delete"><i class="fa-solid fa-trash"></i></a>
-        {{/if}}
-      </li>
-      {{else}}
-      <li class="empty">{{localize "GLOOM.Perk.none"}}</li>
-      {{/each}}
-    </ul>
-    {{#if perkIssues.length}}
-    <ul class="perk-issues">
-      {{#each perkIssues}}<li><i class="fa-solid fa-triangle-exclamation"></i> {{this}}</li>{{/each}}
-    </ul>
-    {{/if}}
-  </section>
-
   {{#if editable}}
   <section class="rests">
     <h3>{{localize "GLOOM.Rest.title"}}</h3>
@@ -109,13 +74,16 @@
   <section class="backgrounds">
     <h3>
       {{localize "GLOOM.Background.plural"}}
-      {{#if editable}}<a class="item-control" data-action="createBackground" data-tooltip="GLOOM.Background.create"><i class="fa-solid fa-plus"></i></a>{{/if}}
+      {{#if editable}}
+      <a class="item-control" data-action="importItems" data-tab="character" data-tooltip="GLOOM.Import.title"><i class="fa-solid fa-file-import"></i></a>
+      <a class="item-control" data-action="createItem" data-type="background" data-tooltip="GLOOM.Background.create"><i class="fa-solid fa-plus"></i></a>
+      {{/if}}
     </h3>
     <ul class="item-list">
       {{#each backgrounds}}
       <li class="item{{#if expended}} expended{{/if}}" data-item-id="{{id}}">
         <img src="{{img}}" alt="">
-        <span class="item-name">{{name}}</span>
+        <span class="item-name">{{name}} <span class="tag">{{category}} · +{{bonus}}</span></span>
         {{#if ../editable}}
         <a class="item-control" data-action="toggleExpended" data-tooltip="GLOOM.Background.toggleExpended"><i class="fa-solid {{#if expended}}fa-hourglass-end{{else}}fa-check{{/if}}"></i></a>
         <a class="item-control" data-action="editItem" data-tooltip="GLOOM.Item.edit"><i class="fa-solid fa-pen"></i></a>
@@ -128,10 +96,4 @@
     </ul>
   </section>
 
-  <section class="biography">
-    <h3>{{localize "GLOOM.Mercenary.personalGoal"}}</h3>
-    <input type="text" name="system.personalGoal" value="{{system.personalGoal}}">
-    <h3>{{localize "GLOOM.Mercenary.biography"}}</h3>
-    {{formInput systemFields.biography value=system.biography enriched=enrichedBiography toggled=true name="system.biography"}}
-  </section>
 </section>

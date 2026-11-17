@@ -1,0 +1,15 @@
+<div class="gloomfoundry gloom-item-card">
+  <header>
+    <img src="{{item.img}}" alt="">
+    <div>
+      <h3>{{item.name}}</h3>
+      <span class="subtitle">{{typeLabel}}{{#if system.level}} · {{localize "GLOOM.Item.level"}} {{system.level}}{{/if}}{{#if system.initiative}} · <i class="fa-solid fa-gauge-high"></i> {{system.initiative}}{{/if}}</span>
+    </div>
+  </header>
+  {{#if system.flavor}}<p class="flavor">{{system.flavor}}</p>{{/if}}
+  {{#if primary}}<div class="action primary"><span class="tag">{{localize "GLOOM.Power.primary"}}</span>{{{primary}}}</div>{{/if}}
+  {{#if secondary}}<div class="action secondary"><span class="tag">{{localize "GLOOM.Power.secondary"}}</span>{{{secondary}}}</div>{{/if}}
+  {{#if passive}}<div class="action passive">{{{passive}}}</div>{{/if}}
+  {{#if effect}}<div class="action effect">{{{effect}}}</div>{{/if}}
+  {{#if description}}<div class="action description">{{{description}}}</div>{{/if}}
+</div>

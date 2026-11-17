@@ -1,4 +1,5 @@
 import { ATTRIBUTES } from "../config.ts";
+import { attributeMax, maxHp, MAX_LEVEL, type HpTrack } from "../rules/progression.ts";
 
 const fields = foundry.data.fields;
 
@@ -18,7 +19,7 @@ function defineMercenarySchema() {
       value: new fields.NumberField({ required: true, nullable: false, integer: true, min: 0, initial: 8 }),
       max: new fields.NumberField({ required: true, nullable: false, integer: true, min: 0, initial: 8 }),
     }),
-    level: new fields.NumberField({ required: true, nullable: false, integer: true, min: 1, initial: 1 }),
+    level: new fields.NumberField({ required: true, nullable: false, integer: true, min: 1, max: MAX_LEVEL, initial: 1 }),
     gold: new fields.NumberField({ required: true, nullable: false, integer: true, min: 0, initial: 0 }),
     pronouns: new fields.StringField({ required: true, blank: true, initial: "" }),
     ancestry: new fields.StringField({ required: true, blank: true, initial: "" }),
@@ -43,8 +44,23 @@ export class MercenaryModel extends foundry.abstract.TypeDataModel<MercenarySche
 
   static override LOCALIZATION_PREFIXES = ["GLOOM.Mercenary"];
 
+  /** Max HP comes from the class item's health track, when there is one. */
+  hpFromClass = false;
+  /** Attribute maximum for the current level (2 + half the level, rounded up). */
+  attributeMax = 3;
+
   override prepareDerivedData(): void {
     super.prepareDerivedData();
+    const items = this.parent?.items;
+    const cls = items?.find((i) => i.type === "class");
+    const ancestry = items?.find((i) => i.type === "ancestry");
+    if (cls) {
+      this.hpFromClass = true;
+      this.hp.max = maxHp((cls.system as unknown as { hpTrack: HpTrack }).hpTrack, this.level);
+      this.className = cls.name ?? this.className;
+    }
+    if (ancestry) this.ancestry = ancestry.name ?? this.ancestry;
+    this.attributeMax = attributeMax(this.level);
     this.hp.value = Math.min(this.hp.value, this.hp.max);
   }
 }

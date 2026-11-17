@@ -259,3 +259,91 @@ body.gloom-face-playing .gloom-card {
 }
 
 .gloom-dialog .target { margin: 0 0 0.25rem; font-weight: bold; }
+
+// ---------------------------------------------------------------------------
+// Tabs, powers, inventory, progression
+// ---------------------------------------------------------------------------
+
+.gloomfoundry.sheet.mercenary {
+  nav.tabs { margin: 0.25rem 0; }
+  .tab:not(.active) { display: none; }
+  .tab { display: flex; flex-direction: column; gap: 0.25rem; }
+
+  h3 .hint { font-size: 0.75rem; font-weight: normal; opacity: 0.75; }
+  h3 .hint.over, .attribute.over-max input { color: var(--gloom-red); font-weight: bold; }
+
+  .item-list .item {
+    .tag { font-size: 0.7rem; padding: 0 0.3rem; border-radius: 3px; background: rgb(0 0 0 / 12%); white-space: nowrap; }
+    .tag.init { background: var(--gloom-gold); color: var(--gloom-ink); }
+    .tag.bonus { background: var(--gloom-green); color: white; }
+    .state { font-size: 0.7rem; opacity: 0.7; min-width: 4.5rem; text-align: right; }
+    .lost-marker { font-size: 0.75rem; opacity: 0.7; }
+    .prep { width: 1rem; text-align: center; }
+    a.item-name { cursor: pointer; }
+    &.state-expended .item-name { opacity: 0.6; font-style: italic; }
+    &.state-lost .item-name { opacity: 0.45; text-decoration: line-through; }
+    &.unprepared { opacity: 0.6; }
+    &.locked { opacity: 0.45; }
+    &.equipped .prep { color: var(--gloom-green); }
+  }
+
+  .inventory-header { display: flex; align-items: center; gap: 0.5rem;
+    label { display: flex; align-items: center; gap: 0.35rem; }
+    input { width: 5rem; }
+    .item-control { margin-left: auto; }
+  }
+
+  .option-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
+    .option-card { border: 1px dashed var(--gloom-brown); border-radius: 4px; padding: 0.35rem 0.5rem; min-height: 3.2rem;
+      .label { font-size: 0.7rem; text-transform: uppercase; opacity: 0.7; }
+      .item { display: flex; align-items: center; gap: 0.4rem; img { width: 28px; height: 28px; border: none; } .item-control { margin-left: auto; } }
+    }
+  }
+  .tag { font-size: 0.7rem; opacity: 0.8; }
+}
+
+// Item sheets
+.gloomfoundry.sheet.item {
+  .sheet-header { align-items: center;
+    .identity { flex: 1; display: flex; flex-direction: column; }
+    .type-label { font-size: 0.75rem; opacity: 0.7; }
+    .profile.small { width: 48px; height: 48px; }
+  }
+  .grid-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); gap: 0.35rem 0.6rem;
+    label { display: flex; flex-direction: column; font-size: 0.75rem; gap: 0.1rem; }
+    label.checkbox { flex-direction: row; align-items: center; }
+    .span2 { grid-column: span 2; }
+  }
+  .stacked { display: flex; flex-direction: column; font-size: 0.75rem; gap: 0.1rem; }
+  h4 { margin: 0.5rem 0 0.2rem; border-bottom: 1px solid var(--gloom-brown); display: flex; align-items: center;
+    .item-control { margin-left: auto; font-size: 0.85rem; }
+  }
+  prose-mirror { min-height: 5rem; }
+  .attribute-bonuses { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.35rem;
+    label { display: flex; flex-direction: column; align-items: center; font-size: 0.75rem; }
+    input { text-align: center; }
+  }
+  .grants-drop { border: 1px dashed var(--gloom-brown); border-radius: 4px; padding: 0.35rem 0.5rem; min-height: 3rem;
+    .item { display: flex; align-items: center; gap: 0.4rem; img { width: 22px; height: 22px; border: none; } .item-name { flex: 1; } .type-label { font-size: 0.7rem; opacity: 0.7; } }
+    .item-list { list-style: none; margin: 0; padding: 0; }
+  }
+  .hint { font-size: 0.75rem; opacity: 0.8; margin: 0.2rem 0; }
+}
+
+// Item chat card
+.gloom-item-card {
+  header { display: flex; gap: 0.5rem; align-items: center;
+    img { width: 36px; height: 36px; border: none; }
+    h3 { margin: 0; border: none; font-size: 1.05rem; }
+    .subtitle { font-size: 0.75rem; opacity: 0.75; }
+  }
+  .flavor { font-style: italic; font-size: 0.8rem; margin: 0.25rem 0; }
+  .action { border-left: 3px solid var(--gloom-brown); padding: 0.1rem 0.4rem; margin: 0.3rem 0; font-size: 0.85rem;
+    .tag { display: block; font-size: 0.65rem; text-transform: uppercase; opacity: 0.7; }
+    p { margin: 0.1rem 0; }
+    &.primary { border-color: var(--gloom-gold); }
+    &.secondary { border-color: var(--gloom-grey); }
+  }
+}
+.gloom-heal i { color: var(--gloom-green); }
+.gloom-negate i { color: var(--gloom-brown); }

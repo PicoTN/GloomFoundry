@@ -1,0 +1,8 @@
+<section class="tab story-tab {{tabs.story.cssClass}}" data-tab="story" data-group="primary">
+  <section class="biography">
+    <h3>{{localize "GLOOM.Mercenary.personalGoal"}}</h3>
+    <input type="text" name="system.personalGoal" value="{{system.personalGoal}}">
+    <h3>{{localize "GLOOM.Mercenary.biography"}}</h3>
+    {{formInput systemFields.biography value=system.biography enriched=enrichedBiography toggled=true name="system.biography"}}
+  </section>
+</section>

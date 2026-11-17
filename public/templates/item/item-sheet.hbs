@@ -1,0 +1,10 @@
+<section class="sheet-body item-{{item.type}}">
+  <header class="sheet-header">
+    <img class="profile small" src="{{item.img}}" alt="" data-action="editImage" data-edit="img">
+    <div class="identity">
+      <input class="name" type="text" name="name" value="{{item.name}}">
+      <span class="type-label">{{typeLabel}}</span>
+    </div>
+  </header>
+  {{> (lookup this "bodyPartial")}}
+</section>

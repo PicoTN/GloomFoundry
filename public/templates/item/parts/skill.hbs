@@ -1,0 +1,14 @@
+<div class="grid-fields">
+  <label>{{localize "GLOOM.Skill.sourceLabel"}}<select name="system.source">{{selectOptions options.source selected=system.source valueAttr="key" labelAttr="label"}}</select></label>
+  <label>{{localize "GLOOM.Item.level"}}<input type="number" name="system.level" value="{{system.level}}" min="1" step="1"></label>
+  <label>{{localize "GLOOM.Item.initiative"}}<input type="number" name="system.initiative" value="{{system.initiative}}" min="1" max="100" step="1"></label>
+  <label>{{localize "GLOOM.Skill.bonus"}}<input type="number" name="system.bonusOverride" value="{{system.bonusOverride}}" min="0" step="1" placeholder="+{{testBonus}}"></label>
+  <label>{{localize "GLOOM.Power.stateLabel"}}<select name="system.state">{{selectOptions options.state selected=system.state valueAttr="key" labelAttr="label"}}</select></label>
+  <label class="checkbox"><input type="checkbox" name="system.lostOnUse"{{#if system.lostOnUse}} checked{{/if}}> {{localize "GLOOM.Power.lostOnUse"}}</label>
+  <label class="checkbox"><input type="checkbox" name="system.prepared"{{#if system.prepared}} checked{{/if}}> {{localize "GLOOM.Skill.prepared"}}</label>
+</div>
+<label class="stacked">{{localize "GLOOM.Skill.flavor"}}<input type="text" name="system.flavor" value="{{system.flavor}}"></label>
+<h4>{{localize "GLOOM.Power.primary"}}</h4>
+{{formInput systemFields.primary value=system.primary enriched=enriched.primary toggled=true name="system.primary"}}
+<h4>{{localize "GLOOM.Power.secondary"}}</h4>
+{{formInput systemFields.secondary value=system.secondary enriched=enriched.secondary toggled=true name="system.secondary"}}

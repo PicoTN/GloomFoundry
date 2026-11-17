@@ -42,7 +42,36 @@
           "description"
         ]
       },
-      "perk": {}
+      "perk": {},
+      "skill": {
+        "htmlFields": [
+          "primary",
+          "secondary"
+        ]
+      },
+      "talent": {
+        "htmlFields": [
+          "primary",
+          "secondary",
+          "passive"
+        ]
+      },
+      "equipment": {
+        "htmlFields": [
+          "effect"
+        ]
+      },
+      "class": {
+        "htmlFields": [
+          "description",
+          "specialMechanics"
+        ]
+      },
+      "ancestry": {
+        "htmlFields": [
+          "description"
+        ]
+      }
     },
     "Card": {
       "modifier": {}

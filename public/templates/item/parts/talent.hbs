@@ -1,0 +1,15 @@
+<div class="grid-fields">
+  <label>{{localize "GLOOM.Talent.kindLabel"}}<select name="system.kind">{{selectOptions options.talentKind selected=system.kind valueAttr="key" labelAttr="label"}}</select></label>
+  <label>{{localize "GLOOM.Item.level"}}<input type="number" name="system.level" value="{{system.level}}" min="1" step="1"></label>
+  <label>{{localize "GLOOM.Item.initiative"}}<input type="number" name="system.initiative" value="{{system.initiative}}" min="1" max="100" step="1"></label>
+  <label>{{localize "GLOOM.Talent.replaces"}}<input type="text" name="system.replaces" value="{{system.replaces}}"></label>
+</div>
+{{#if (eq system.kind "passive")}}
+<h4>{{localize "GLOOM.Talent.passiveEffect"}}</h4>
+{{formInput systemFields.passive value=system.passive enriched=enriched.passive toggled=true name="system.passive"}}
+{{else}}
+<h4>{{localize "GLOOM.Power.primary"}}</h4>
+{{formInput systemFields.primary value=system.primary enriched=enriched.primary toggled=true name="system.primary"}}
+<h4>{{localize "GLOOM.Power.secondary"}}</h4>
+{{formInput systemFields.secondary value=system.secondary enriched=enriched.secondary toggled=true name="system.secondary"}}
+{{/if}}

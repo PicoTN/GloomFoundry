@@ -1,0 +1,61 @@
+<section class="tab progression-tab {{tabs.progression.cssClass}}" data-tab="progression" data-group="primary">
+  <section class="class-ancestry">
+    <h3>{{localize "GLOOM.Progression.title"}}</h3>
+    <div class="option-cards">
+      <div class="option-card">
+        <span class="label">{{localize "TYPES.Item.class"}}</span>
+        {{#if classItem}}
+        <div class="item" data-item-id="{{classItem.id}}">
+          <img src="{{classItem.img}}" alt=""><a class="item-name" data-action="editItem">{{classItem.name}}</a>
+          {{#if editable}}<a class="item-control" data-action="deleteItem" data-tooltip="GLOOM.Item.delete"><i class="fa-solid fa-trash"></i></a>{{/if}}
+        </div>
+        {{else}}<p class="hint">{{localize "GLOOM.Progression.dropClass"}}</p>{{/if}}
+      </div>
+      <div class="option-card">
+        <span class="label">{{localize "TYPES.Item.ancestry"}}</span>
+        {{#if ancestryItem}}
+        <div class="item" data-item-id="{{ancestryItem.id}}">
+          <img src="{{ancestryItem.img}}" alt=""><a class="item-name" data-action="editItem">{{ancestryItem.name}}</a>
+          {{#if editable}}<a class="item-control" data-action="deleteItem" data-tooltip="GLOOM.Item.delete"><i class="fa-solid fa-trash"></i></a>{{/if}}
+        </div>
+        {{else}}<p class="hint">{{localize "GLOOM.Progression.dropAncestry"}}</p>{{/if}}
+      </div>
+    </div>
+    <p class="hint">{{localize "GLOOM.Progression.levelHint"}}</p>
+  </section>
+  <section class="perks">
+    <h3>
+      {{localize "GLOOM.Perk.plural"}} <span class="hint">{{localize "GLOOM.Perk.taken"}} {{perksTaken}}</span>
+      {{#if editable}}
+      <a class="item-control" data-action="importPerks" data-tooltip="GLOOM.Perk.import.title"><i class="fa-solid fa-file-import"></i></a>
+      <a class="item-control" data-action="createPerk" data-tooltip="GLOOM.Perk.create"><i class="fa-solid fa-plus"></i></a>
+      {{/if}}
+    </h3>
+    <ul class="item-list">
+      {{#each perks as |perk|}}
+      <li class="item perk" data-item-id="{{perk.id}}">
+        <span class="boxes">
+          {{#each perk.boxes as |box|}}
+          <a class="perk-box{{#if box.ticked}} ticked{{/if}}"{{#if ../../editable}} data-action="togglePerkBox"{{/if}} data-index="{{box.index}}">
+            <i class="fa-regular {{#if box.ticked}}fa-square-check{{else}}fa-square{{/if}}"></i>
+          </a>
+          {{/each}}
+        </span>
+        <span class="item-name">{{perk.name}}{{#if perk.description}} <span class="perk-desc">{{perk.description}}</span>{{/if}}</span>
+        {{#if ../editable}}
+        <a class="item-control" data-action="editItem" data-tooltip="GLOOM.Item.edit"><i class="fa-solid fa-pen"></i></a>
+        <a class="item-control" data-action="deleteItem" data-tooltip="GLOOM.Item.delete"><i class="fa-solid fa-trash"></i></a>
+        {{/if}}
+      </li>
+      {{else}}
+      <li class="empty">{{localize "GLOOM.Perk.none"}}</li>
+      {{/each}}
+    </ul>
+    {{#if perkIssues.length}}
+    <ul class="perk-issues">
+      {{#each perkIssues}}<li><i class="fa-solid fa-triangle-exclamation"></i> {{this}}</li>{{/each}}
+    </ul>
+    {{/if}}
+  </section>
+
+</section>

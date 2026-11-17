@@ -1,0 +1,10 @@
+<div class="grid-fields">
+  <label>{{localize "GLOOM.Background.categoryLabel"}}<select name="system.category">{{selectOptions options.category selected=system.category valueAttr="key" labelAttr="label"}}</select></label>
+  <label class="checkbox"><input type="checkbox" name="system.master"{{#if system.master}} checked{{/if}}> {{localize "GLOOM.Background.master"}}</label>
+  <label class="checkbox"><input type="checkbox" name="system.expended"{{#if system.expended}} checked{{/if}}> {{localize "GLOOM.Background.expended"}}</label>
+</div>
+{{#if system.master}}
+<label class="stacked">{{localize "GLOOM.Background.prerequisite"}}<input type="text" name="system.prerequisite" value="{{system.prerequisite}}"></label>
+{{/if}}
+<p class="hint">{{localize "GLOOM.Background.bonusHint"}} +{{testBonus}}</p>
+{{formInput systemFields.description value=system.description enriched=enriched.description toggled=true name="system.description"}}

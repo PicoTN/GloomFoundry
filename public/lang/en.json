@@ -5,7 +5,12 @@
     },
     "Item": {
       "background": "Background",
-      "perk": "Perk"
+      "perk": "Perk",
+      "skill": "Skill",
+      "talent": "Talent",
+      "equipment": "Item",
+      "class": "Class",
+      "ancestry": "Ancestry"
     },
     "Card": {
       "modifier": "Modifier Card"
@@ -15,7 +20,8 @@
     "Sheet": {
       "mercenary": "Mercenary Sheet",
       "background": "Background Sheet",
-      "perk": "Perk Sheet"
+      "perk": "Perk Sheet",
+      "item": "GloomFoundry Item Sheet"
     },
     "Attribute": {
       "cunning": {
@@ -63,7 +69,9 @@
         "biography": {
           "label": "Biography"
         }
-      }
+      },
+      "attributeMax": "max",
+      "hpFromClass": "Set by the class's health track and your level."
     },
     "Card": {
       "bless": "Bless",
@@ -107,7 +115,7 @@
       "attribute": "Attribute",
       "score": "Score",
       "bonus": "Bonus",
-      "bonusHint": "Skill bonus (half its level, rounded up) and other modifiers.",
+      "bonusHint": "Other modifiers.",
       "background": "Background",
       "total": "Total",
       "tn": "Target Number",
@@ -115,7 +123,11 @@
       "clickToTest": "Click to test this Attribute",
       "resistTitle": "Resist {condition}",
       "resistChatTitle": "Resist {condition} ({attr})",
-      "resistBackgroundHint": "Resisting costs a Background, which gives no bonus here."
+      "resistBackgroundHint": "Resisting costs a Background, which gives no bonus here.",
+      "skill": "Skill",
+      "skillHint": "Expend a ready Skill to add half its level (rounded up). Explain how it helps!",
+      "razorsEdge": "Razor's Edge",
+      "razorsEdgeHint": "A Skill expended on a Razor's Edge test also grants advantage."
     },
     "Outcome": {
       "criticalSuccess": "Critical Success",
@@ -142,24 +154,42 @@
     },
     "Background": {
       "plural": "Backgrounds",
-      "new": "New Background",
-      "create": "Add a Background",
       "none": "No Backgrounds yet.",
       "expended": "Expended",
-      "toggleExpended": "Toggle expended"
+      "toggleExpended": "Toggle expended",
+      "categoryLabel": "Category",
+      "category": {
+        "occupation": "Occupation",
+        "origin": "Origin",
+        "social": "Social"
+      },
+      "master": "Master occupation (+2)",
+      "prerequisite": "Prerequisite",
+      "bonusHint": "Expend to add to an Attribute test:",
+      "create": "Add a Background"
     },
     "Item": {
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "new": "New {type}",
+      "create": "Create",
+      "post": "Show in chat",
+      "level": "Level",
+      "levelShort": "L",
+      "initiative": "Initiative",
+      "description": "Description"
     },
     "Rest": {
       "title": "Rest",
       "quickBreath": "Quick Breath",
-      "quickBreathHint": "End of scene: recover expended powers and Backgrounds, and remove conditions.",
+      "quickBreathHint": "End of scene: optionally expend remaining Skills to heal 3 each, then recover expended powers and Backgrounds, and remove conditions.",
       "quickBreathDone": "{name} takes a Quick Breath.",
       "fullRest": "Full Rest",
-      "fullRestHint": "Recover all HP, all powers and Backgrounds, and remove conditions and Bless/Curse cards.",
-      "fullRestDone": "{name} takes a Full Rest."
+      "fullRestHint": "Recover all HP and every power (even lost), remove conditions and Bless/Curse, then choose your Skills.",
+      "fullRestDone": "{name} takes a Full Rest.",
+      "quickBreathPrompt": "You have {count} ready Skill(s) left. You may expend them to heal 3 each before recovering.",
+      "healWithSkills": "Expend them: heal {amount}",
+      "justRecover": "Just recover"
     },
     "Notify": {
       "noGM": "A GM must be connected to do this.",
@@ -208,13 +238,9 @@
       },
       "import": {
         "title": "Import perks",
-        "hint": "Choose a JSON file of perks (one class file, for example). Perks whose name already exists on this mercenary are skipped.",
-        "fromServer": "From Foundry / Forge assets",
-        "fromComputer": "From my computer",
-        "noPerks": "This file contains no perks.",
-        "done": "Imported {count} perk(s), skipped {skipped} already present.",
-        "failed": "Could not import perks: {error}"
-      }
+        "hint": "Choose a JSON file of perks (one class file, for example). Perks whose name already exists on this mercenary are skipped."
+      },
+      "taken": "taken:"
     },
     "Condition": {
       "plural": "Conditions",
@@ -279,6 +305,133 @@
         "name": "Dead",
         "hint": ""
       }
+    },
+    "Tab": {
+      "character": "Character",
+      "powers": "Powers",
+      "inventory": "Inventory",
+      "progression": "Progression",
+      "story": "Story"
+    },
+    "Power": {
+      "primary": "Primary action",
+      "secondary": "Secondary action",
+      "use": "Use (post to chat, then expend or lose)",
+      "recover": "Recover",
+      "lostOnUse": "Lost after use (instead of expended)",
+      "stateLabel": "State",
+      "state": {
+        "ready": "Ready",
+        "expended": "Expended",
+        "lost": "Lost"
+      }
+    },
+    "Skill": {
+      "sourceLabel": "Source",
+      "source": {
+        "class": "Class",
+        "ancestry": "Ancestry"
+      },
+      "bonus": "Test bonus",
+      "flavor": "Flavor text",
+      "prepared": "In the current loadout (chosen at a Full Rest)",
+      "classSkills": "Class Skills",
+      "ancestrySkills": "Ancestry Skills",
+      "loadout": "loadout",
+      "none": "No Skills yet.",
+      "healWith": "Expend to heal 3 (secondary basic action)",
+      "negate": "Lose to negate all damage from one source",
+      "negated": "{name} loses {skill} to negate all damage from one source.",
+      "legend": "Bookmark = in your loadout (2 ancestry + 4 class, chosen at each Full Rest). Click a name to show it in chat. Expended Skills come back at the end of the scene (Quick Breath), lost ones at a Full Rest."
+    },
+    "Talent": {
+      "plural": "Talents",
+      "none": "No Talents yet.",
+      "kindLabel": "Type",
+      "kind": {
+        "active": "Active",
+        "passive": "Passive"
+      },
+      "replaces": "Replaces",
+      "passiveEffect": "Passive effect"
+    },
+    "Equipment": {
+      "slotLabel": "Slot",
+      "slot": {
+        "head": "Head",
+        "body": "Body",
+        "hand": "Hand",
+        "feet": "Feet",
+        "small": "Small",
+        "none": "Other items"
+      },
+      "rarityLabel": "Rarity",
+      "rarity": {
+        "common": "Common",
+        "uncommon": "Uncommon",
+        "rare": "Rare",
+        "masterwork": "Masterwork",
+        "legendary": "Legendary"
+      },
+      "usesMax": "Uses",
+      "usesSpent": "Spent",
+      "usesLeft": "Uses left",
+      "perLabel": "Uses reset",
+      "per": {
+        "scene": "Each scene",
+        "rest": "Full Rest"
+      },
+      "cost": "Cost (g)",
+      "space": "Inventory space",
+      "quantity": "Quantity",
+      "equipped": "Equipped",
+      "consumable": "Consumable",
+      "crafting": "Crafting",
+      "effect": "Effect"
+    },
+    "Class": {
+      "hpTrackLabel": "Health",
+      "hpTrack": {
+        "low": "Low (6–14 HP)",
+        "medium": "Medium (8–20 HP)",
+        "high": "High (10–26 HP)"
+      },
+      "attributes": "Attribute points granted",
+      "startingGear": "Starting gear",
+      "specialMechanics": "Special mechanics"
+    },
+    "Ancestry": {
+      "traditionalClasses": "Traditional classes"
+    },
+    "Grants": {
+      "title": "Granted items",
+      "dropHint": "Drop Talents, Skills, perks or other items here, or import a JSON file (e.g. this class's perk file). They are added to a mercenary when this is added to them.",
+      "importTitle": "Import granted items",
+      "importHint": "Choose a JSON file of items (for example a class perk file). They will be added to this item's grants.",
+      "imported": "Added {count} granted item(s).",
+      "applied": "{name}: added {count} item(s).",
+      "onlyOne": "A mercenary can only have one {type}. Remove the current one first.",
+      "removeTitle": "Remove granted items?",
+      "removeConfirm": "Also delete the items that {name} granted to this mercenary?"
+    },
+    "Progression": {
+      "title": "Class & Ancestry",
+      "dropClass": "Drag a Class item here (or onto the sheet).",
+      "dropAncestry": "Drag an Ancestry item here (or onto the sheet).",
+      "levelHint": "Each level: 1 Perk, 1 Attribute point, more HP. Levels 2, 4, 6, 8, 9: a new class Skill. Levels 3 and 7: a passive Talent and an ancestry Skill. Level 5: upgrade active Talents and a new class Skill."
+    },
+    "Import": {
+      "title": "Import items",
+      "hint": "Choose a JSON file of items. Items whose name already exists on this mercenary are skipped.",
+      "fromServer": "From Foundry / Forge assets",
+      "fromComputer": "From my computer",
+      "nothing": "This file contains nothing to import here.",
+      "done": "Imported {count} item(s), skipped {skipped} already present.",
+      "failed": "Could not import: {error}"
+    },
+    "Heal": {
+      "healed": "{name} heals {amount}.",
+      "poisonRemoved": "{name} is healed: Poison is removed instead of healing damage."
     }
   }
 }

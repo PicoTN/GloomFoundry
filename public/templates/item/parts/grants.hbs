@@ -1,0 +1,15 @@
+<h4>
+  {{localize "GLOOM.Grants.title"}}
+  {{#if editable}}<a class="item-control" data-action="importGrants" data-tooltip="GLOOM.Grants.importTitle"><i class="fa-solid fa-file-import"></i></a>{{/if}}
+</h4>
+<div class="grants-drop">
+  <ul class="item-list">
+    {{#each grants as |g|}}
+    <li class="item" data-index="{{g.index}}">
+      <img src="{{g.img}}" alt=""> <span class="item-name">{{g.name}}</span> <span class="type-label">{{g.typeLabel}}</span>
+      {{#if ../editable}}<a class="item-control" data-action="removeGrant" data-tooltip="GLOOM.Item.delete"><i class="fa-solid fa-xmark"></i></a>{{/if}}
+    </li>
+    {{/each}}
+  </ul>
+  <p class="hint">{{localize "GLOOM.Grants.dropHint"}}</p>
+</div>

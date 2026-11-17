@@ -1,0 +1,92 @@
+<section class="tab powers-tab {{tabs.powers.cssClass}}" data-tab="powers" data-group="primary">
+  <section class="talents">
+    <h3>
+      {{localize "GLOOM.Talent.plural"}}
+      {{#if editable}}
+      <a class="item-control" data-action="importItems" data-tab="powers" data-tooltip="GLOOM.Import.title"><i class="fa-solid fa-file-import"></i></a>
+      <a class="item-control" data-action="createItem" data-type="talent" data-tooltip="GLOOM.Item.create"><i class="fa-solid fa-plus"></i></a>
+      {{/if}}
+    </h3>
+    <ul class="item-list">
+      {{#each talents as |tl|}}
+      <li class="item talent{{#if tl.locked}} locked{{/if}}" data-item-id="{{tl.id}}">
+        <img src="{{tl.img}}" alt="">
+        <a class="item-name" data-action="postItem" data-tooltip="GLOOM.Item.post">{{tl.name}}</a>
+        <span class="tag">{{localize "GLOOM.Item.levelShort"}}{{tl.level}}</span>
+        <span class="tag">{{#if tl.passive}}{{localize "GLOOM.Talent.kind.passive"}}{{else}}{{localize "GLOOM.Talent.kind.active"}}{{/if}}</span>
+        {{#if tl.initiative}}<span class="tag init" data-tooltip="GLOOM.Item.initiative">{{tl.initiative}}</span>{{/if}}
+        {{#if tl.replaces}}<span class="hint">⟵ {{tl.replaces}}</span>{{/if}}
+        {{#if @root.editable}}
+        <a class="item-control" data-action="editItem" data-tooltip="GLOOM.Item.edit"><i class="fa-solid fa-pen"></i></a>
+        <a class="item-control" data-action="deleteItem" data-tooltip="GLOOM.Item.delete"><i class="fa-solid fa-trash"></i></a>
+        {{/if}}
+      </li>
+      {{else}}<li class="empty">{{localize "GLOOM.Talent.none"}}</li>{{/each}}
+    </ul>
+  </section>
+  <section class="skills">
+    <h3>
+      {{localize "GLOOM.Skill.classSkills"}}
+      <span class="hint{{#if loadout.class.over}} over{{/if}}">{{localize "GLOOM.Skill.loadout"}} {{loadout.class.count}}/{{loadout.class.max}}</span>
+      {{#if editable}}<a class="item-control" data-action="createItem" data-type="skill" data-source="class" data-tooltip="GLOOM.Item.create"><i class="fa-solid fa-plus"></i></a>{{/if}}
+    </h3>
+    <ul class="item-list">
+      {{#each classSkills as |s|}}
+      <li class="item skill state-{{s.state}}{{#unless s.prepared}} unprepared{{/unless}}" data-item-id="{{s.id}}">
+        <a class="prep" {{#if @root.editable}}data-action="togglePrepared"{{/if}} data-tooltip="GLOOM.Skill.prepared"><i class="fa-{{#if s.prepared}}solid{{else}}regular{{/if}} fa-bookmark"></i></a>
+        <img src="{{s.img}}" alt="">
+        <a class="item-name" data-action="postItem" data-tooltip="GLOOM.Item.post">{{s.name}}</a>
+        <span class="tag">{{localize "GLOOM.Item.levelShort"}}{{s.level}}</span>
+        {{#if s.initiative}}<span class="tag init" data-tooltip="GLOOM.Item.initiative">{{s.initiative}}</span>{{/if}}
+        <span class="tag bonus" data-tooltip="GLOOM.Skill.bonus">+{{s.bonus}}</span>
+        {{#if s.lostOnUse}}<i class="fa-solid fa-skull lost-marker" data-tooltip="GLOOM.Power.lostOnUse"></i>{{/if}}
+        <span class="state">{{localize (concat "GLOOM.Power.state." s.state)}}</span>
+        {{#if @root.editable}}
+        {{#if s.ready}}
+        <a class="item-control" data-action="useItem" data-tooltip="GLOOM.Power.use"><i class="fa-solid fa-hand"></i></a>
+        <a class="item-control" data-action="healWithSkill" data-tooltip="GLOOM.Skill.healWith"><i class="fa-solid fa-heart"></i></a>
+        {{else}}
+        <a class="item-control" data-action="readyItem" data-tooltip="GLOOM.Power.recover"><i class="fa-solid fa-rotate-left"></i></a>
+        {{/if}}
+        {{#unless (eq s.state "lost")}}<a class="item-control" data-action="negateWithSkill" data-tooltip="GLOOM.Skill.negate"><i class="fa-solid fa-shield-halved"></i></a>{{/unless}}
+        <a class="item-control" data-action="editItem" data-tooltip="GLOOM.Item.edit"><i class="fa-solid fa-pen"></i></a>
+        <a class="item-control" data-action="deleteItem" data-tooltip="GLOOM.Item.delete"><i class="fa-solid fa-trash"></i></a>
+        {{/if}}
+      </li>
+      {{else}}<li class="empty">{{localize "GLOOM.Skill.none"}}</li>{{/each}}
+    </ul>
+  </section>
+  <section class="skills">
+    <h3>
+      {{localize "GLOOM.Skill.ancestrySkills"}}
+      <span class="hint{{#if loadout.ancestry.over}} over{{/if}}">{{localize "GLOOM.Skill.loadout"}} {{loadout.ancestry.count}}/{{loadout.ancestry.max}}</span>
+      {{#if editable}}<a class="item-control" data-action="createItem" data-type="skill" data-source="ancestry" data-tooltip="GLOOM.Item.create"><i class="fa-solid fa-plus"></i></a>{{/if}}
+    </h3>
+    <ul class="item-list">
+      {{#each ancestrySkills as |s|}}
+      <li class="item skill state-{{s.state}}{{#unless s.prepared}} unprepared{{/unless}}" data-item-id="{{s.id}}">
+        <a class="prep" {{#if @root.editable}}data-action="togglePrepared"{{/if}} data-tooltip="GLOOM.Skill.prepared"><i class="fa-{{#if s.prepared}}solid{{else}}regular{{/if}} fa-bookmark"></i></a>
+        <img src="{{s.img}}" alt="">
+        <a class="item-name" data-action="postItem" data-tooltip="GLOOM.Item.post">{{s.name}}</a>
+        <span class="tag">{{localize "GLOOM.Item.levelShort"}}{{s.level}}</span>
+        {{#if s.initiative}}<span class="tag init" data-tooltip="GLOOM.Item.initiative">{{s.initiative}}</span>{{/if}}
+        <span class="tag bonus" data-tooltip="GLOOM.Skill.bonus">+{{s.bonus}}</span>
+        {{#if s.lostOnUse}}<i class="fa-solid fa-skull lost-marker" data-tooltip="GLOOM.Power.lostOnUse"></i>{{/if}}
+        <span class="state">{{localize (concat "GLOOM.Power.state." s.state)}}</span>
+        {{#if @root.editable}}
+        {{#if s.ready}}
+        <a class="item-control" data-action="useItem" data-tooltip="GLOOM.Power.use"><i class="fa-solid fa-hand"></i></a>
+        <a class="item-control" data-action="healWithSkill" data-tooltip="GLOOM.Skill.healWith"><i class="fa-solid fa-heart"></i></a>
+        {{else}}
+        <a class="item-control" data-action="readyItem" data-tooltip="GLOOM.Power.recover"><i class="fa-solid fa-rotate-left"></i></a>
+        {{/if}}
+        {{#unless (eq s.state "lost")}}<a class="item-control" data-action="negateWithSkill" data-tooltip="GLOOM.Skill.negate"><i class="fa-solid fa-shield-halved"></i></a>{{/unless}}
+        <a class="item-control" data-action="editItem" data-tooltip="GLOOM.Item.edit"><i class="fa-solid fa-pen"></i></a>
+        <a class="item-control" data-action="deleteItem" data-tooltip="GLOOM.Item.delete"><i class="fa-solid fa-trash"></i></a>
+        {{/if}}
+      </li>
+      {{else}}<li class="empty">{{localize "GLOOM.Skill.none"}}</li>{{/each}}
+    </ul>
+  </section>
+  <p class="hint">{{localize "GLOOM.Skill.legend"}}</p>
+</section>

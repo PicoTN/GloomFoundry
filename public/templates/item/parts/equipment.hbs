@@ -1,0 +1,18 @@
+<div class="grid-fields">
+  <label>{{localize "GLOOM.Equipment.slotLabel"}}<select name="system.slot">{{selectOptions options.slot selected=system.slot valueAttr="key" labelAttr="label"}}</select></label>
+  <label>{{localize "GLOOM.Equipment.rarityLabel"}}<select name="system.rarity">{{selectOptions options.rarity selected=system.rarity valueAttr="key" labelAttr="label"}}</select></label>
+  <label>{{localize "GLOOM.Item.initiative"}}<input type="number" name="system.initiative" value="{{system.initiative}}" min="1" max="100" step="1"></label>
+  <label>{{localize "GLOOM.Equipment.usesMax"}}<input type="number" name="system.uses.max" value="{{system.uses.max}}" min="1" step="1" placeholder="~"></label>
+  <label>{{localize "GLOOM.Equipment.usesSpent"}}<input type="number" name="system.uses.spent" value="{{system.uses.spent}}" min="0" step="1"></label>
+  <label>{{localize "GLOOM.Equipment.perLabel"}}<select name="system.uses.per">{{selectOptions options.per selected=system.uses.per valueAttr="key" labelAttr="label"}}</select></label>
+  <label>{{localize "GLOOM.Equipment.cost"}}<input type="number" name="system.cost" value="{{system.cost}}" min="0" step="any"></label>
+  <label>{{localize "GLOOM.Equipment.space"}}<input type="number" name="system.space" value="{{system.space}}" min="0" step="any"></label>
+  <label>{{localize "GLOOM.Equipment.quantity"}}<input type="number" name="system.quantity" value="{{system.quantity}}" min="0" step="1"></label>
+  <label>{{localize "GLOOM.Power.stateLabel"}}<select name="system.state">{{selectOptions options.state selected=system.state valueAttr="key" labelAttr="label"}}</select></label>
+  <label class="checkbox"><input type="checkbox" name="system.equipped"{{#if system.equipped}} checked{{/if}}> {{localize "GLOOM.Equipment.equipped"}}</label>
+  <label class="checkbox"><input type="checkbox" name="system.consumable"{{#if system.consumable}} checked{{/if}}> {{localize "GLOOM.Equipment.consumable"}}</label>
+  <label class="checkbox"><input type="checkbox" name="system.lostOnUse"{{#if system.lostOnUse}} checked{{/if}}> {{localize "GLOOM.Power.lostOnUse"}}</label>
+</div>
+<label class="stacked">{{localize "GLOOM.Equipment.crafting"}}<input type="text" name="system.crafting" value="{{system.crafting}}"></label>
+<h4>{{localize "GLOOM.Equipment.effect"}}</h4>
+{{formInput systemFields.effect value=system.effect enriched=enriched.effect toggled=true name="system.effect"}}

@@ -13,6 +13,7 @@ import { GM_DECK_REF } from "./registry.ts";
 import { runAsGM } from "../socket.ts";
 import { conditionLabel, currentTargetActor, hasCondition } from "../conditions.ts";
 import { combineModes } from "../rules/resolution.ts";
+import { readySkills } from "../powers.ts";
 
 const t = (key: string) => game.i18n!.localize(key);
 const f = (key: string, data: Record<string, string>) => game.i18n!.format(key, data);
@@ -103,7 +104,12 @@ export async function testAttribute(deck: ModifierDeck, options: TestOptions = {
     })),
     hasActor: Boolean(attrs),
     score: options.score ?? (attribute && attrs ? attrs[attribute] : 0),
-    backgrounds: backgroundsOf(actor).map((b) => ({ id: b.id, name: b.name })),
+    backgrounds: backgroundsOf(actor).map((b) => ({
+      id: b.id, name: b.name, bonus: (b.system as unknown as { testBonus: number }).testBonus,
+    })),
+    skills: actor ? readySkills(actor).map((s) => ({
+      id: s.id, name: s.name, bonus: (s.system as unknown as { testBonus: number }).testBonus,
+    })) : [],
     modes: modeOptions(conditionMode(actor).mode),
     resist: Boolean(options.resist),
   };
@@ -117,15 +123,24 @@ export async function testAttribute(deck: ModifierDeck, options: TestOptions = {
   const chosenAttr = (form["attribute"] as AttributeKey | undefined) ?? attribute ?? undefined;
   const score = attrs && chosenAttr ? attrs[chosenAttr] : readNumber(form["score"], 0);
   const background = form["background"] ? actor?.items.get(String(form["background"])) : undefined;
+  const skill = form["skill"] ? actor?.items.get(String(form["skill"])) : undefined;
+  const razorsEdge = Boolean(form["razorsEdge"]);
+  const testBonus = (i: Item.Implementation | undefined) => (i?.system as unknown as { testBonus?: number } | undefined)?.testBonus ?? 0;
   // Resisting a condition: the Background is the cost and gives no bonus (p. 83).
-  const bonus = readNumber(form["bonus"], 0) + (background && !options.resist ? 1 : 0);
+  const backgroundBonus = background && !options.resist ? testBonus(background) : 0;
+  const skillBonus = testBonus(skill);
+  const bonus = readNumber(form["bonus"], 0) + backgroundBonus + skillBonus;
   const tnRaw = form["tn"];
   const tn = tnRaw === "" || tnRaw === null || tnRaw === undefined ? null : readNumber(tnRaw, 0);
-  const mode = (form["mode"] as DrawMode | undefined) ?? "normal";
+  const chosenMode = (form["mode"] as DrawMode | undefined) ?? "normal";
+  // Expending a Skill on a Razor's Edge test also grants advantage (p. 70).
+  const razorAdvantage = razorsEdge && Boolean(skill);
+  const mode = combineModes(chosenMode === "advantage" || razorAdvantage, chosenMode === "disadvantage");
 
   const drawn = await drawFor(deck, mode);
   if (!drawn) return;
   if (background) await background.update({ "system.expended": true } as never);
+  if (skill) await skill.update({ "system.state": "expended" } as never);
 
   const result = resolveTest({ score, bonus, tn, mode }, drawn.map((d) => d.data));
   const attrLabel = chosenAttr ? t(ATTRIBUTE_LABELS[chosenAttr].label) : t("GLOOM.Test.generic");
@@ -133,7 +148,11 @@ export async function testAttribute(deck: ModifierDeck, options: TestOptions = {
     { label: t("GLOOM.Test.score"), value: String(score) },
   ];
   if (bonus) details.push({ label: t("GLOOM.Test.bonus"), value: bonus > 0 ? `+${bonus}` : String(bonus) });
-  if (background) details.push({ label: t("GLOOM.Test.background"), value: background.name ?? "" });
+  if (skill) details.push({ label: t("GLOOM.Test.skill"), value: `${skill.name ?? ""} (+${skillBonus})` });
+  if (background) {
+    details.push({ label: t("GLOOM.Test.background"), value: `${background.name ?? ""}${backgroundBonus ? ` (+${backgroundBonus})` : ""}` });
+  }
+  if (razorsEdge) details.push({ label: t("GLOOM.Test.razorsEdge"), value: razorAdvantage ? t("GLOOM.Mode.advantage") : "✓" });
   if (result.total !== null) details.push({ label: t("GLOOM.Test.total"), value: String(result.total) });
   if (tn !== null) details.push({ label: t("GLOOM.Test.tn"), value: String(tn) });
   details.push(...conditionsDetail(conditionMode(actor).sources));
