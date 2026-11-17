@@ -2,7 +2,18 @@
 
 An unofficial [Foundry VTT](https://foundryvtt.com) system for **Gloomhaven: The Roleplaying Game** (Cephalofair Games).
 
+> [!NOTE]
+> **This is a personal test project.** It is made for my own table. It is experimental, may break between versions, and comes with no support or guarantee. You're welcome to look around or try it, but please don't rely on it for your campaign. Issues and suggestions are appreciated, though I may not act on them.
+
 > Status: early development (v0.1). It covers Modifier Decks and mercenary sheets. Combat automation, Skills and Talents, perks and enemies come later; see [PLAN.md](PLAN.md).
+
+## Installation
+
+In Foundry (or The Forge), go to **Install System** and paste this manifest URL:
+
+```
+https://github.com/PicoTN/GloomFoundry/releases/latest/download/system.json
+```
 
 ## Features
 

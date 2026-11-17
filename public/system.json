@@ -13,6 +13,8 @@
     }
   ],
   "url": "https://github.com/PicoTN/GloomFoundry",
+  "manifest": "https://github.com/PicoTN/GloomFoundry/releases/latest/download/system.json",
+  "download": "https://github.com/PicoTN/GloomFoundry/releases/download/v0.1.0/gloomfoundry.zip",
   "esmodules": [
     "gloomfoundry.mjs"
   ],
