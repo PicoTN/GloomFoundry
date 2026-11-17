@@ -1,0 +1,15 @@
+<div class="gloomfoundry gloom-draw">
+  <header>
+    <h3>{{title}}</h3>
+    {{#if subtitle}}<span class="subtitle">{{subtitle}}</span>{{/if}}
+    {{#if modeLabel}}<span class="mode mode-{{mode}}">{{modeLabel}}</span>{{/if}}
+  </header>
+  <div class="cards">
+    {{#each cards}}{{> "gloom.modifier-card" this}}{{/each}}
+  </div>
+  {{#if tie}}<p class="tie"><i class="fa-solid fa-scale-balanced"></i> {{localize "GLOOM.Draw.tie"}}</p>{{/if}}
+  <dl class="details">
+    {{#each details}}<dt>{{label}}</dt><dd>{{value}}</dd>{{/each}}
+  </dl>
+  {{#if outcome}}<div class="outcome {{outcome.css}}">{{outcome.label}}</div>{{/if}}
+</div>

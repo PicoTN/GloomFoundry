@@ -1,0 +1,16 @@
+{{!-- One modifier card. Both faces are rendered; CSS shows the one picked in the client setting. --}}
+<div class="gloom-card kind-{{kind}} sign-{{sign}}{{#if kept}} kept{{/if}}{{#if discarded}} faded{{/if}}{{#if red}} red{{/if}}" data-tooltip="{{playingCard}}{{#if effect}} — {{effect}}{{/if}}">
+  <div class="gh-face">
+    <span class="pc-index">{{rank}}{{suitSymbol}}</span>
+    {{#if (eq kind "bless")}}<span class="tag">{{localize "GLOOM.Card.bless"}}</span>{{/if}}
+    {{#if (eq kind "curse")}}<span class="tag">{{localize "GLOOM.Card.curse"}}</span>{{/if}}
+    <span class="atk">{{attack}}</span>
+    {{#if attribute}}<span class="attr">{{attribute}}</span>{{/if}}
+    {{#if effect}}<span class="effect"><i class="fa-solid fa-star"></i></span>{{/if}}
+  </div>
+  <div class="pc-face">
+    <span class="rank">{{rank}}</span>
+    <span class="suit">{{suitSymbol}}</span>
+    {{#if effect}}<span class="effect"><i class="fa-solid fa-star"></i></span>{{/if}}
+  </div>
+</div>

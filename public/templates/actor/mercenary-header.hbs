@@ -1,0 +1,22 @@
+<header class="sheet-header">
+  <img class="profile" src="{{actor.img}}" alt="{{actor.name}}" data-action="editImage" data-edit="img">
+  <div class="identity">
+    <input class="name" type="text" name="name" value="{{actor.name}}" placeholder="{{localize 'Name'}}">
+    <div class="row">
+      <label>{{localize "GLOOM.Mercenary.pronouns"}}<input type="text" name="system.pronouns" value="{{system.pronouns}}"></label>
+      <label>{{localize "GLOOM.Mercenary.ancestry"}}<input type="text" name="system.ancestry" value="{{system.ancestry}}"></label>
+      <label>{{localize "GLOOM.Mercenary.className"}}<input type="text" name="system.className" value="{{system.className}}"></label>
+    </div>
+    <div class="row stats">
+      <label>{{localize "GLOOM.Mercenary.level"}}<input type="number" name="system.level" value="{{system.level}}" min="1" step="1"></label>
+      <label class="hp">{{localize "GLOOM.Mercenary.hp"}}
+        <span class="pair">
+          <input type="number" name="system.hp.value" value="{{system.hp.value}}" min="0" step="1">
+          <span class="sep">/</span>
+          <input type="number" name="system.hp.max" value="{{system.hp.max}}" min="0" step="1">
+        </span>
+      </label>
+      <label>{{localize "GLOOM.Mercenary.gold"}}<input type="number" name="system.gold" value="{{system.gold}}" min="0" step="1"></label>
+    </div>
+  </div>
+</header>

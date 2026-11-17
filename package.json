@@ -1,0 +1,39 @@
+{
+  "name": "gloomfoundry",
+  "version": "0.1.0",
+  "description": "Gloomhaven: The Roleplaying Game system for Foundry VTT",
+  "scripts": {
+    "build": "vite build",
+    "watch": "vite build --watch --mode development",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "art": "node scripts/build-card-art.mjs",
+    "link": "node scripts/link-foundry.mjs",
+    "check": "npm run typecheck && npm run test && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PicoTN/GloomFoundry.git"
+  },
+  "keywords": [],
+  "author": "PicoTN",
+  "license": "UNLICENSED",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/PicoTN/GloomFoundry/issues"
+  },
+  "homepage": "https://github.com/PicoTN/GloomFoundry#readme",
+  "devDependencies": {
+    "@foundryvtt/foundryvtt-cli": "^3.0.5",
+    "fvtt-types": "^14.370.0-beta.20261107215328",
+    "sass": "^1.108.2",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.0"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "TYPES": {
+    "Actor": { "mercenary": "Mercenary" },
+    "Item": { "background": "Background" },
+    "Card": { "modifier": "Modifier Card" }
+  },
+  "GLOOM": {
+    "Sheet": { "mercenary": "Mercenary Sheet", "background": "Background Sheet" },
+    "Attribute": {
+      "cunning": { "label": "Cunning", "abbr": "CU" },
+      "finesse": { "label": "Finesse", "abbr": "FI" },
+      "grit": { "label": "Grit", "abbr": "GR" },
+      "intuition": { "label": "Intuition", "abbr": "IN" },
+      "logic": { "label": "Logic", "abbr": "LO" },
+      "understanding": { "label": "Understanding", "abbr": "UN" }
+    },
+    "Mercenary": {
+      "pronouns": "Pronouns",
+      "ancestry": "Ancestry",
+      "className": "Class",
+      "level": "Level",
+      "hp": "HP",
+      "gold": "Gold",
+      "attributes": "Attributes",
+      "personalGoal": "Personal Goal",
+      "biography": "Biography",
+      "FIELDS": {
+        "level": { "label": "Level" },
+        "gold": { "label": "Gold" },
+        "biography": { "label": "Biography" }
+      }
+    },
+    "Card": {
+      "bless": "Bless",
+      "curse": "Curse",
+      "critical": "Critical",
+      "null": "Null"
+    },
+    "Deck": {
+      "title": "Modifier Deck",
+      "gmDeck": "GM Modifier Deck",
+      "folderName": "Modifier Decks",
+      "drawPileName": "{name} — Modifier Deck",
+      "discardPileName": "{name} — Discard",
+      "remaining": "Cards left in the deck",
+      "discarded": "Cards in the discard pile",
+      "reshufflePending": "A Critical or Null was drawn: the deck will be reshuffled at the end of the round",
+      "reshuffle": "Reshuffle",
+      "rebuild": "Rebuild",
+      "rebuildConfirm": "Rebuild this Modifier Deck from scratch? All cards, including Bless and Curse, will be replaced by the base deck.",
+      "clearTemporary": "Remove Bless/Curse",
+      "open": "Open",
+      "recent": "Recently drawn",
+      "notReady": "This Modifier Deck has not been created yet. A GM must be connected to create it.",
+      "create": "Create deck"
+    },
+    "Draw": {
+      "draw": "Draw",
+      "tie": "Both cards are equivalent but differ in effects: the GM decides which one applies."
+    },
+    "Mode": {
+      "label": "Draw",
+      "normal": "Normal",
+      "advantage": "Advantage",
+      "disadvantage": "Disadvantage"
+    },
+    "Test": {
+      "title": "Attribute Test",
+      "titleAttr": "{attr} Test",
+      "chatTitle": "{attr} Test",
+      "generic": "Attribute",
+      "attribute": "Attribute",
+      "score": "Score",
+      "bonus": "Bonus",
+      "bonusHint": "Skill bonus (half its level, rounded up) and other modifiers.",
+      "background": "Background",
+      "total": "Total",
+      "tn": "Target Number",
+      "tnHidden": "Hidden",
+      "clickToTest": "Click to test this Attribute"
+    },
+    "Outcome": {
+      "criticalSuccess": "Critical Success",
+      "success": "Success",
+      "failure": "Failure",
+      "criticalFailure": "Critical Failure"
+    },
+    "Attack": {
+      "title": "Attack",
+      "chatTitle": "Attack",
+      "base": "Base attack",
+      "bonus": "Attack bonus",
+      "bonusHint": "Sum of +X / -X attack effects (e.g. +1 if the target is Poisoned).",
+      "value": "Attack value",
+      "shield": "Target Shield",
+      "damage": "{damage} damage",
+      "nullHit": "Hit, but no damage",
+      "effect": "Card effect"
+    },
+    "Background": {
+      "plural": "Backgrounds",
+      "new": "New Background",
+      "create": "Add a Background",
+      "none": "No Backgrounds yet.",
+      "expended": "Expended",
+      "toggleExpended": "Toggle expended"
+    },
+    "Item": { "edit": "Edit", "delete": "Delete" },
+    "Rest": {
+      "title": "Rest",
+      "quickBreath": "Quick Breath",
+      "quickBreathHint": "End of scene: recover expended powers and Backgrounds.",
+      "quickBreathDone": "{name} takes a Quick Breath.",
+      "fullRest": "Full Rest",
+      "fullRestHint": "Recover all HP, all powers and Backgrounds, and remove Bless/Curse cards.",
+      "fullRestDone": "{name} takes a Full Rest."
+    },
+    "Notify": {
+      "noGM": "A GM must be connected to do this.",
+      "notDeckOwner": "You do not own this Modifier Deck.",
+      "deckEmpty": "Not enough cards in the Modifier Deck.",
+      "capReached": "Maximum number of {kind} cards reached (6)."
+    },
+    "Settings": {
+      "cardFace": {
+        "name": "Modifier card faces",
+        "hint": "How modifier cards are displayed for you: Gloomhaven-style faces, or the matching playing card (for groups using a poker deck).",
+        "gloomhaven": "Gloomhaven",
+        "playing": "Playing cards"
+      }
+    }
+  }
+}

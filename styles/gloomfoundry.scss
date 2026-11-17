@@ -1,0 +1,187 @@
+// GloomFoundry styles. Everything is scoped under .gloomfoundry or .gloom-* classes.
+
+:root {
+  --gloom-parchment: #f3e6c9;
+  --gloom-ink: #2b1d10;
+  --gloom-brown: #5b3a1a;
+  --gloom-gold: #d9a441;
+  --gloom-red: #c0392b;
+  --gloom-green: #2e8b57;
+  --gloom-grey: #8c7a64;
+  --gloom-purple: #7d4fa3;
+  --gloom-bless: #e0b84a;
+  --gloom-curse: #6c3483;
+  --gloom-card-w: 52px;
+  --gloom-card-h: 74px;
+}
+
+// ---------------------------------------------------------------------------
+// Modifier cards (chat, sheets, GM deck)
+// ---------------------------------------------------------------------------
+
+.gloom-card {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--gloom-card-w);
+  height: var(--gloom-card-h);
+  border-radius: 6px;
+  border: 2px solid var(--gloom-brown);
+  background: var(--gloom-parchment);
+  color: var(--gloom-ink);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 40%);
+  overflow: hidden;
+  user-select: none;
+
+  &.faded { opacity: 0.45; transform: scale(0.92); }
+  &.kept { outline: 3px solid var(--gloom-gold); outline-offset: 1px; }
+
+  .gh-face, .pc-face { position: absolute; inset: 0; }
+
+  // Gloomhaven-style face: attack modifier in a circle, attribute value in a hexagon.
+  .gh-face {
+    .pc-index { position: absolute; top: 2px; left: 4px; font-size: 10px; font-weight: bold; opacity: 0.7; }
+    .tag { position: absolute; top: 2px; right: 3px; font-size: 8px; text-transform: uppercase; font-weight: bold; }
+    .atk {
+      position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%);
+      width: 30px; height: 30px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 14px; font-weight: bold; color: white;
+      background: var(--gloom-grey);
+      border: 2px solid rgb(0 0 0 / 35%);
+    }
+    .attr {
+      position: absolute; right: 3px; bottom: 3px; width: 18px; height: 16px;
+      display: grid; place-items: center;
+      font-size: 11px; font-weight: bold; color: var(--gloom-ink);
+      background: var(--gloom-gold);
+      clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+    }
+  }
+  .effect { position: absolute; left: 4px; bottom: 3px; font-size: 9px; color: var(--gloom-purple); }
+
+  // Playing-card face, shown when the client setting asks for it.
+  .pc-face {
+    display: none;
+    background: white;
+    .rank { position: absolute; top: 3px; left: 5px; font-size: 15px; font-weight: bold; }
+    .suit { position: absolute; left: 50%; top: 52%; transform: translate(-50%, -50%); font-size: 28px; }
+  }
+  &.red .pc-face { color: var(--gloom-red); }
+
+  &.kind-critical .atk, &.kind-bless .atk { background: var(--gloom-purple); }
+  &.kind-null .atk, &.kind-curse .atk { background: #3a2a1a; }
+  &.kind-bless { border-color: var(--gloom-bless); }
+  &.kind-curse { border-color: var(--gloom-curse); }
+  &.sign-pos .atk { background: var(--gloom-green); }
+  &.sign-neg .atk { background: var(--gloom-red); }
+}
+
+body.gloom-face-playing .gloom-card {
+  .gh-face { display: none; }
+  .pc-face { display: block; }
+}
+
+// ---------------------------------------------------------------------------
+// Chat card
+// ---------------------------------------------------------------------------
+
+.gloom-draw {
+  header {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.5rem;
+    h3 { margin: 0; border: none; font-size: 1.05rem; }
+    .subtitle { font-size: 0.8rem; opacity: 0.75; }
+    .mode { margin-left: auto; font-size: 0.75rem; padding: 0 0.4rem; border-radius: 3px; color: white; }
+    .mode-advantage { background: var(--gloom-green); }
+    .mode-disadvantage { background: var(--gloom-red); }
+  }
+  .cards { display: flex; gap: 0.5rem; justify-content: center; margin: 0.5rem 0; }
+  .tie { font-size: 0.8rem; font-style: italic; margin: 0.25rem 0; }
+  .details {
+    display: grid; grid-template-columns: 1fr auto; gap: 0 0.5rem; margin: 0.25rem 0; font-size: 0.85rem;
+    dt { opacity: 0.8; }
+    dd { margin: 0; text-align: right; font-weight: bold; }
+  }
+  .outcome {
+    text-align: center; font-weight: bold; font-size: 1rem; padding: 0.2rem; border-radius: 4px; color: white;
+    &.crit-success { background: var(--gloom-purple); }
+    &.success { background: var(--gloom-green); }
+    &.failure { background: var(--gloom-red); }
+    &.crit-failure { background: #222; }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Deck panel (sheet + GM window)
+// ---------------------------------------------------------------------------
+
+.gloom-deck-panel {
+  .deck-counts {
+    display: flex; gap: 1rem; align-items: center; margin-bottom: 0.5rem;
+    .bless { color: var(--gloom-bless); }
+    .curse { color: var(--gloom-purple); }
+    .pending { color: var(--gloom-red); }
+  }
+  .deck-buttons {
+    display: flex; flex-wrap: wrap; gap: 0.25rem; margin-bottom: 0.25rem;
+    button { flex: 1 1 auto; white-space: nowrap; }
+    &.small button { font-size: 0.8rem; flex: 0 1 auto; }
+  }
+  .cards { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  h4 { margin: 0.5rem 0 0.25rem; }
+}
+
+.gloomfoundry.gm-deck .window-content { padding: 0.75rem; }
+
+// ---------------------------------------------------------------------------
+// Sheets
+// ---------------------------------------------------------------------------
+
+.gloomfoundry.sheet {
+  .window-content { padding: 0.5rem 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
+
+  .sheet-header {
+    display: flex; gap: 0.75rem; align-items: flex-start;
+    .profile { width: 96px; height: 96px; object-fit: cover; border-radius: 4px; cursor: pointer; }
+    .identity { flex: 1; display: flex; flex-direction: column; gap: 0.35rem; }
+    .name { font-size: 1.5rem; height: auto; }
+    .row {
+      display: flex; gap: 0.5rem;
+      label { flex: 1; display: flex; flex-direction: column; font-size: 0.75rem; }
+    }
+    .stats input { text-align: center; }
+    .hp .pair { display: flex; align-items: center; gap: 0.2rem; }
+  }
+
+  h3 {
+    border-bottom: 1px solid var(--gloom-brown); margin: 0.5rem 0 0.35rem;
+    display: flex; align-items: center; gap: 0.5rem;
+    .item-control { margin-left: auto; font-size: 0.85rem; }
+  }
+
+  .attribute-grid {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.4rem;
+    .attribute { display: flex; flex-direction: column; align-items: stretch; gap: 0.2rem; }
+    .test {
+      display: flex; flex-direction: column; line-height: 1.1; padding: 0.25rem 0;
+      .abbr { font-weight: bold; font-size: 1rem; }
+      .label { font-size: 0.65rem; }
+    }
+    input { text-align: center; font-size: 1.1rem; font-weight: bold; }
+  }
+
+  .item-list {
+    list-style: none; margin: 0; padding: 0;
+    .item {
+      display: flex; align-items: center; gap: 0.5rem; padding: 0.15rem 0;
+      img { width: 24px; height: 24px; border: none; }
+      .item-name { flex: 1; }
+      &.expended .item-name { text-decoration: line-through; opacity: 0.6; }
+    }
+    .empty { font-style: italic; opacity: 0.7; }
+  }
+
+  .biography prose-mirror { min-height: 8rem; }
+  .checkbox { display: flex; align-items: center; gap: 0.35rem; }
+}
+
+.gloom-open-gm-deck { flex: 0 0 100%; margin-top: 0.25rem; }

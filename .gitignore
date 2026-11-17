@@ -1,0 +1,16 @@
+# Source material: never commit (backer copy, not for distribution)
+*.pdf
+*.pdf.*
+scans/
+
+node_modules/
+dist/
+packs/**/*.ldb
+packs/**/LOCK
+packs/**/LOG*
+packs/**/MANIFEST-*
+packs/**/CURRENT
+*.log
+.env
+foundry.config.json
+.DS_Store

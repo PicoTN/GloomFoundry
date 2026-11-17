@@ -1,0 +1,54 @@
+{
+  "id": "gloomfoundry",
+  "title": "Gloomhaven: The Roleplaying Game",
+  "description": "Unofficial Foundry VTT system for Gloomhaven: The Roleplaying Game (Cephalofair Games). Modifier decks, mercenary sheets and more.",
+  "version": "0.1.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "14"
+  },
+  "authors": [
+    {
+      "name": "PicoTN"
+    }
+  ],
+  "url": "https://github.com/PicoTN/GloomFoundry",
+  "esmodules": [
+    "gloomfoundry.mjs"
+  ],
+  "styles": [
+    "gloomfoundry.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "documentTypes": {
+    "Actor": {
+      "mercenary": {
+        "htmlFields": [
+          "biography"
+        ]
+      }
+    },
+    "Item": {
+      "background": {
+        "htmlFields": [
+          "description"
+        ]
+      }
+    },
+    "Card": {
+      "modifier": {}
+    }
+  },
+  "socket": true,
+  "grid": {
+    "distance": 1,
+    "units": "hex"
+  },
+  "primaryTokenAttribute": "hp"
+}

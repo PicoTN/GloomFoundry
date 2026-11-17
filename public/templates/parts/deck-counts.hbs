@@ -1,0 +1,7 @@
+<div class="deck-counts">
+  <span data-tooltip="GLOOM.Deck.remaining"><i class="fa-solid fa-layer-group"></i> {{remaining}}</span>
+  <span data-tooltip="GLOOM.Deck.discarded"><i class="fa-solid fa-inbox"></i> {{discarded}}</span>
+  <span class="bless" data-tooltip="GLOOM.Card.bless"><i class="fa-solid fa-sun"></i> {{bless}}</span>
+  <span class="curse" data-tooltip="GLOOM.Card.curse"><i class="fa-solid fa-skull"></i> {{curse}}</span>
+  {{#if reshufflePending}}<span class="pending" data-tooltip="GLOOM.Deck.reshufflePending"><i class="fa-solid fa-shuffle"></i></span>{{/if}}
+</div>

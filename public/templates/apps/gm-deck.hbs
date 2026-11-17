@@ -1,0 +1,23 @@
+<section class="gloom-deck-panel">
+  {{#if deck}}
+  {{> "gloom.deck-counts" deck}}
+  <div class="deck-buttons">
+    <button type="button" data-action="test"><i class="fa-solid fa-dice-d6"></i> {{localize "GLOOM.Test.title"}}</button>
+    <button type="button" data-action="attack"><i class="fa-solid fa-swords"></i> {{localize "GLOOM.Attack.title"}}</button>
+  </div>
+  <div class="deck-buttons small">
+    <button type="button" data-action="addBless">+ {{localize "GLOOM.Card.bless"}}</button>
+    <button type="button" data-action="addCurse">+ {{localize "GLOOM.Card.curse"}}</button>
+    <button type="button" data-action="clearTemporary">{{localize "GLOOM.Deck.clearTemporary"}}</button>
+    <button type="button" data-action="reshuffle"><i class="fa-solid fa-shuffle"></i> {{localize "GLOOM.Deck.reshuffle"}}</button>
+    <button type="button" data-action="rebuild"><i class="fa-solid fa-rotate"></i> {{localize "GLOOM.Deck.rebuild"}}</button>
+  </div>
+  {{#if deck.recent.length}}
+  <h4>{{localize "GLOOM.Deck.recent"}}</h4>
+  <div class="cards">{{#each deck.recent}}{{> "gloom.modifier-card" this}}{{/each}}</div>
+  {{/if}}
+  {{else}}
+  <p class="notes">{{localize "GLOOM.Deck.notReady"}}</p>
+  <button type="button" data-action="reshuffle">{{localize "GLOOM.Deck.create"}}</button>
+  {{/if}}
+</section>
