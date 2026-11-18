@@ -1,0 +1,193 @@
+<div class="creation">
+  <nav class="steps">
+    {{#each steps}}
+    <a class="{{#if active}}active{{/if}} {{#if done}}done{{/if}}" data-action="goto" data-step="{{key}}">
+      <span class="n">{{#if done}}<i class="fa-solid fa-check"></i>{{else}}{{n}}{{/if}}</span> {{label}}
+    </a>
+    {{/each}}
+  </nav>
+
+  <section class="step-body">
+    {{#if noContent}}<p class="notice">{{localize "GLOOM.Creation.noContent"}}</p>{{/if}}
+
+    {{#if (eq step "identity")}}
+    <h2>{{localize "GLOOM.Creation.step.identity"}}</h2>
+    <div class="identity">
+      <img src="{{state.img}}" data-action="pickImage" data-tooltip="GLOOM.Creation.pickImage" alt="">
+      <div>
+        <label>{{localize "Name"}}<input type="text" data-field="name" value="{{state.name}}" autofocus></label>
+        <label>{{localize "GLOOM.Mercenary.pronouns"}}<input type="text" data-field="pronouns" value="{{state.pronouns}}"></label>
+      </div>
+    </div>
+    <p class="hint">{{localize "GLOOM.Creation.hint.identity"}}</p>
+    {{/if}}
+
+    {{#if (eq step "ancestry")}}
+    <h2>{{localize "GLOOM.Creation.step.ancestry"}}</h2>
+    <p class="hint">{{localize "GLOOM.Creation.hint.ancestry"}}</p>
+    <div class="choices">
+      {{#each ancestries}}
+      <a class="choice {{#if selected}}selected{{/if}}" data-action="choose" data-kind="ancestry" data-uuid="{{uuid}}" data-tooltip="{{source}}">
+        <img src="{{img}}" alt=""><span>{{name}}</span>
+      </a>
+      {{/each}}
+    </div>
+    {{#if ancestry}}
+    <div class="detail">
+      <h3>{{ancestry.name}}</h3>
+      {{{ancestry.description}}}
+      {{#if ancestry.grants.length}}<p><strong>{{localize "GLOOM.Creation.grants"}}</strong>
+        {{#each ancestry.grants}}{{name}} ({{type}}){{#unless @last}}, {{/unless}}{{/each}}</p>{{/if}}
+    </div>
+    {{/if}}
+    {{/if}}
+
+    {{#if (eq step "class")}}
+    <h2>{{localize "GLOOM.Creation.step.class"}}</h2>
+    <p class="hint">{{localize "GLOOM.Creation.hint.class"}}</p>
+    <div class="choices">
+      {{#each classes}}
+      <a class="choice {{#if selected}}selected{{/if}}" data-action="choose" data-kind="class" data-uuid="{{uuid}}" data-tooltip="{{source}}">
+        <img src="{{img}}" alt=""><span>{{name}}</span>
+      </a>
+      {{/each}}
+    </div>
+    {{#if cls}}
+    <div class="detail">
+      <h3>{{cls.name}}</h3>
+      <p class="tags"><span>{{localize "GLOOM.Class.hpTrackLabel"}}: {{cls.hpTrack}}</span>
+        {{#if cls.bonus}}<span>{{localize "GLOOM.Class.attributes"}}: {{cls.bonus}}</span>{{/if}}</p>
+      {{{cls.description}}}
+      {{#if cls.grants.length}}<p><strong>{{localize "GLOOM.Creation.grants"}}</strong>
+        {{#each cls.grants}}{{name}} ({{type}}){{#unless @last}}, {{/unless}}{{/each}}</p>{{/if}}
+    </div>
+    {{/if}}
+    {{/if}}
+
+    {{#if (eq step "faction")}}
+    <h2>{{localize "GLOOM.Creation.step.faction"}}</h2>
+    <p class="hint">{{localize "GLOOM.Creation.hint.faction"}} ({{localize "GLOOM.Creation.tier"}} {{startingTier}})</p>
+    {{#if factions.length}}
+    <div class="choices">
+      {{#each factions}}
+      <a class="choice {{#if selected}}selected{{/if}}" data-action="choose" data-kind="faction" data-uuid="{{uuid}}" data-tooltip="{{source}}">
+        <img src="{{img}}" alt=""><span>{{name}}</span>
+      </a>
+      {{/each}}
+    </div>
+    {{#if faction}}<div class="detail"><h3>{{faction.name}}</h3>{{{faction.description}}}</div>{{/if}}
+    {{else}}
+    <p class="notice">{{localize "GLOOM.Creation.noFactions"}}</p>
+    {{/if}}
+    {{/if}}
+
+    {{#if (eq step "attributes")}}
+    <h2>{{localize "GLOOM.Creation.step.attributes"}}</h2>
+    <p class="hint">{{localize "GLOOM.Creation.hint.attributes"}}</p>
+    <p class="points">{{localize "GLOOM.Creation.pointsLeft"}} <strong>{{pointsLeft}}</strong> / {{points}}</p>
+    <table class="attributes">
+      <thead><tr><th></th><th>{{localize "GLOOM.Creation.fromClass"}}</th><th>{{localize "GLOOM.Creation.assigned"}}</th><th>{{localize "GLOOM.Creation.total"}}</th></tr></thead>
+      <tbody>
+        {{#each attributes}}
+        <tr>
+          <th>{{label}}</th>
+          <td>{{#if bonus}}+{{bonus}}{{else}}–{{/if}}</td>
+          <td class="spin">
+            <button type="button" data-action="point" data-attribute="{{key}}" data-delta="-1" {{#unless canRemove}}disabled{{/unless}}><i class="fa-solid fa-minus"></i></button>
+            <span>{{assigned}}</span>
+            <button type="button" data-action="point" data-attribute="{{key}}" data-delta="1" {{#unless canAdd}}disabled{{/unless}}><i class="fa-solid fa-plus"></i></button>
+          </td>
+          <td class="total">{{total}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+
+    {{#if (eq step "backgrounds")}}
+    <h2>{{localize "GLOOM.Creation.step.backgrounds"}} ({{backgroundCount}}/{{backgroundMax}})</h2>
+    <p class="hint">{{localize "GLOOM.Creation.hint.backgrounds"}}</p>
+    <div class="background-groups">
+      {{#each backgroundGroups}}
+      <div class="group">
+        <h3>{{label}} <span class="count">({{count}})</span></h3>
+        {{#each items}}
+        <a class="bg {{#if selected}}selected{{/if}}" data-action="toggleBackground" data-uuid="{{uuid}}">
+          <i class="fa-regular {{#if selected}}fa-square-check{{else}}fa-square{{/if}}"></i> {{name}}
+        </a>
+        {{/each}}
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{#if (eq step "inventory")}}
+    <h2>{{localize "GLOOM.Creation.step.inventory"}}</h2>
+    <p class="hint">{{localize "GLOOM.Creation.hint.inventory"}}</p>
+    <label class="radio"><input type="radio" name="inventory" value="starting" {{#if (eq state.inventory "starting")}}checked{{/if}}> {{localize "GLOOM.Creation.startingGear"}}</label>
+    {{#if (eq state.inventory "starting")}}
+    <div class="detail">
+      {{#if startingItems.length}}
+      <ul>{{#each startingItems}}<li>{{#if (gt quantity 1)}}{{quantity}} × {{/if}}{{name}}</li>{{/each}}</ul>
+      <p>{{localize "GLOOM.Mercenary.gold"}}: {{startingGold}} g</p>
+      {{else if cls}}
+      <p>{{cls.startingGear}}</p>
+      <p class="notice">{{localize "GLOOM.Creation.gearTextOnly"}}</p>
+      {{else}}
+      <p class="notice">{{localize "GLOOM.Creation.issue.class"}}</p>
+      {{/if}}
+    </div>
+    {{/if}}
+    <label class="radio"><input type="radio" name="inventory" value="shop" {{#if (eq state.inventory "shop")}}checked{{/if}} {{#unless hasEquipment}}disabled{{/unless}}> {{localize "GLOOM.Creation.shop"}} ({{budget}} g)</label>
+    {{#if (eq state.inventory "shop")}}
+    <p class="points">{{localize "GLOOM.Creation.spent"}} <strong>{{cartTotal}}</strong> / {{budget}} g</p>
+    <table class="shop">
+      <tbody>
+        {{#each shop}}
+        <tr class="{{#if qty}}in-cart{{/if}}">
+          <td><img src="{{img}}" alt=""></td><td>{{name}}</td><td>{{cost}} g</td>
+          <td class="spin">
+            <button type="button" data-action="cart" data-uuid="{{uuid}}" data-delta="-1" {{#unless qty}}disabled{{/unless}}><i class="fa-solid fa-minus"></i></button>
+            <span>{{qty}}</span>
+            <button type="button" data-action="cart" data-uuid="{{uuid}}" data-delta="1"><i class="fa-solid fa-plus"></i></button>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{/if}}
+    {{/if}}
+
+    {{#if (eq step "quest")}}
+    <h2>{{localize "GLOOM.Creation.step.quest"}}</h2>
+    <p class="hint">{{localize "GLOOM.Creation.hint.quest"}}</p>
+    <textarea data-field="quest" rows="5">{{state.quest}}</textarea>
+    {{/if}}
+
+    {{#if (eq step "review")}}
+    <h2>{{localize "GLOOM.Creation.step.review"}}</h2>
+    <dl class="summary">
+      <dt>{{localize "Name"}}</dt><dd>{{state.name}}{{#if state.pronouns}} ({{state.pronouns}}){{/if}}</dd>
+      <dt>{{localize "GLOOM.Mercenary.ancestry"}}</dt><dd>{{ancestry.name}}</dd>
+      <dt>{{localize "GLOOM.Mercenary.className"}}</dt><dd>{{cls.name}}</dd>
+      {{#if faction}}<dt>{{localize "GLOOM.Creation.step.faction"}}</dt><dd>{{faction.name}} ({{localize "GLOOM.Creation.tier"}} {{startingTier}})</dd>{{/if}}
+      <dt>{{localize "GLOOM.Mercenary.attributes"}}</dt><dd>{{summary.attributes}}</dd>
+      <dt>{{localize "GLOOM.Creation.step.backgrounds"}}</dt><dd>{{summary.backgrounds}}</dd>
+      <dt>{{localize "GLOOM.Mercenary.personalGoal"}}</dt><dd>{{state.quest}}</dd>
+    </dl>
+    {{/if}}
+
+    {{#if issues.length}}
+    <ul class="issues">{{#each issues}}<li><i class="fa-solid fa-triangle-exclamation"></i> {{this}}</li>{{/each}}</ul>
+    {{/if}}
+  </section>
+
+  <footer class="nav">
+    <button type="button" data-action="back" {{#if isFirst}}disabled{{/if}}><i class="fa-solid fa-arrow-left"></i> {{localize "GLOOM.Creation.back"}}</button>
+    {{#if isLast}}
+    <button type="button" class="finish" data-action="finish"><i class="fa-solid fa-user-check"></i> {{localize "GLOOM.Creation.finish"}}</button>
+    {{else}}
+    <button type="button" data-action="next">{{localize "GLOOM.Creation.next"}} <i class="fa-solid fa-arrow-right"></i></button>
+    {{/if}}
+  </footer>
+</div>

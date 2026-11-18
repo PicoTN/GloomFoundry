@@ -142,6 +142,9 @@ function defineClassSchema() {
     ),
     specialMechanics: html(),
     startingGear: text(),
+    /** Starting inventory offered at character creation (raw equipment Item data) and gold. */
+    startingItems: grants(),
+    startingGold: int(0),
     grants: grants(),
   };
 }

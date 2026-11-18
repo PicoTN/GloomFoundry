@@ -2,6 +2,7 @@
   <img class="profile" src="{{actor.img}}" alt="{{actor.name}}" data-action="editImage" data-edit="img">
   <div class="identity">
     <input class="name" type="text" name="name" value="{{actor.name}}" placeholder="{{localize 'Name'}}">
+    {{#if isBlank}}<button type="button" class="gloom-open-creation" data-action="openCreation"><i class="fa-solid fa-user-plus"></i> {{localize "GLOOM.Creation.openWizard"}}</button>{{/if}}
     <div class="row">
       <label>{{localize "GLOOM.Mercenary.pronouns"}}<input type="text" name="system.pronouns" value="{{system.pronouns}}"></label>
       <label>{{localize "GLOOM.Mercenary.ancestry"}}<input type="text" name="system.ancestry" value="{{system.ancestry}}"{{#if ancestryItem}} disabled{{/if}}></label>

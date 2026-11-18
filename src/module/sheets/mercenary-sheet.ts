@@ -11,6 +11,7 @@ import {
 } from "../powers.ts";
 import { EQUIPMENT_SLOTS, SKILL_LOADOUT, slotCapacity, type EquipmentSlot } from "../rules/progression.ts";
 import { runAsGM } from "../socket.ts";
+import { isBlankMercenary, maybeOfferCreation, openCreationWizard } from "../apps/creation.ts";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const t = (key: string) => game.i18n!.localize(key);
@@ -41,6 +42,7 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
     form: { submitOnChange: true },
     actions: {
       testAttribute: MercenarySheet.#onTestAttribute,
+      openCreation: MercenarySheet.#onOpenCreation,
       drawAttack: MercenarySheet.#onDrawAttack,
       addBless: MercenarySheet.#onAddBless,
       addCurse: MercenarySheet.#onAddCurse,
@@ -119,6 +121,7 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
     const skillView = (i: Item.Implementation) => {
       const s = sysOf(i);
       return {
+      isBlank: isBlankMercenary(actor) && actor.isOwner,
         ...brief(i), level: s.level, initiative: s.initiative, bonus: s.testBonus, state: s.state,
         prepared: s.prepared, lostOnUse: s.lostOnUse, ready: s.state === "ready",
       };
@@ -220,6 +223,18 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
   // -------------------------------------------------------------------------
   // Deck & tests
   // -------------------------------------------------------------------------
+
+  protected override async _onFirstRender(
+    context: Parameters<foundry.applications.sheets.ActorSheetV2["_onFirstRender"]>[0],
+    options: Parameters<foundry.applications.sheets.ActorSheetV2["_onFirstRender"]>[1],
+  ): Promise<void> {
+    await super._onFirstRender(context, options);
+    maybeOfferCreation(this.document);
+  }
+
+  static #onOpenCreation(this: MercenarySheet) {
+    openCreationWizard(this.document);
+  }
 
   static async #onTestAttribute(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {
     const deck = this.deck;

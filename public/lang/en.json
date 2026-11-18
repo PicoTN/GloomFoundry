@@ -611,6 +611,70 @@
         "social": "Social",
         "other": "Other"
       }
+    },
+    "Creation": {
+      "title": "Create a mercenary",
+      "titleFor": "Create a mercenary: {name}",
+      "newMercenary": "New mercenary",
+      "openWizard": "Character creation",
+      "world": "World items",
+      "defaultName": "New mercenary",
+      "step": {
+        "identity": "Identity",
+        "ancestry": "Ancestry",
+        "class": "Class",
+        "faction": "Faction",
+        "attributes": "Attributes",
+        "backgrounds": "Backgrounds",
+        "inventory": "Starting inventory",
+        "quest": "Personal quest",
+        "review": "Review"
+      },
+      "hint": {
+        "identity": "Name your mercenary. Click the portrait to choose an image.",
+        "ancestry": "Your ancestry sets your origins and gives you its Level 1 Skills.",
+        "class": "Your class gives you Attribute points, a health track, its Talents and Level 1 Skills, and its perks.",
+        "faction": "Your faction is the organization you owe allegiance to. You start at",
+        "attributes": "After your class's points, distribute 6 points among the six Attributes. No Attribute may go above 3.",
+        "backgrounds": "Choose 4 Backgrounds. The usual choice is 1 occupation, 1 origin and 2 social, but any mix is allowed. Master occupations are earned through play.",
+        "inventory": "Take your class's starting gear, or buy 50 g worth of common gear. Your weapons and basic equipment are assumed and need no item.",
+        "quest": "A goal that, once completed, lets your mercenary retire. Make it big and personal."
+      },
+      "category": {
+        "occupation": "Occupation",
+        "origin": "Origin",
+        "social": "Social"
+      },
+      "grants": "Gives:",
+      "tier": "Tier",
+      "pickImage": "Choose a portrait",
+      "pointsLeft": "Points left:",
+      "fromClass": "Class",
+      "assigned": "Assigned",
+      "total": "Total",
+      "startingGear": "Class starting gear",
+      "shop": "Buy common gear",
+      "spent": "Spent:",
+      "gearTextOnly": "This class has no starting items in its data yet: add them to the sheet by hand.",
+      "noContent": "No ancestries or classes found. Import your content (Settings > Import content) or create Ancestry and Class items first.",
+      "noFactions": "No factions found in your items or compendiums. You can skip this step.",
+      "back": "Back",
+      "next": "Next",
+      "finish": "Create mercenary",
+      "incomplete": "Some steps are incomplete. Create the mercenary anyway?",
+      "done": "{name} is ready.",
+      "failed": "Character creation failed: {error}",
+      "issue": {
+        "name": "Enter a name.",
+        "ancestry": "Choose an ancestry.",
+        "class": "Choose a class.",
+        "faction": "Choose a faction.",
+        "points": "{n} Attribute points left to assign.",
+        "backgrounds": "{n} of {max} Backgrounds chosen.",
+        "tooManyBackgrounds": "You already have {max} Backgrounds: remove one first.",
+        "overBudget": "Your purchases cost more than 50 g.",
+        "quest": "Write a personal quest."
+      }
     }
   }
 }
