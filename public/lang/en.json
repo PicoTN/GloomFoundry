@@ -731,6 +731,20 @@
       "title": "Gloomhaven",
       "select": "Select tokens",
       "levelUp": "Allow leveling up (shows a Level up button on mercenary sheets)"
+    },
+    "PerkText": {
+      "replace": "Replace {removed} with {added}.",
+      "remove": "Remove {removed}.",
+      "add": "Add {added}.",
+      "card": "{n} {card} card",
+      "cards": "{n} {card} cards",
+      "and": " and ",
+      "count": {
+        "1": "one",
+        "2": "two",
+        "3": "three",
+        "4": "four"
+      }
     }
   }
 }

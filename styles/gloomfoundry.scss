@@ -533,3 +533,17 @@ body.gloom-face-playing .gloomfoundry .perk .perk-desc { display: inline; }
   footer.nav { display: flex; justify-content: flex-end; padding: 0.5rem 1rem; border-top: 1px solid rgb(0 0 0 / 15%);
     .finish { flex: 0 0 auto; width: auto; background: var(--gloom-green); color: white; } }
 }
+
+// Inline modifier card faces in perk wording: attack in a circle, Attribute in a hexagon.
+.gloom-face {
+  display: inline-flex; align-items: center; gap: 0.2em; vertical-align: middle;
+  .atk { display: inline-grid; place-items: center; min-width: 1.7em; height: 1.7em; padding: 0 0.15em; border-radius: 1em;
+    font-weight: bold; font-size: 0.85em; color: white; background: #6b5a45; border: 1px solid rgb(0 0 0 / 30%);
+    &.pos { background: var(--gloom-green); } &.neg { background: var(--gloom-red); }
+    &.critical { background: var(--gloom-gold); color: var(--gloom-ink); } &.null { background: #222; } }
+  .attr { display: inline-grid; place-items: center; width: 1.8em; height: 1.6em; font-weight: bold; font-size: 0.85em;
+    color: var(--gloom-ink); background: var(--gloom-gold);
+    clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
+  .effect { font-size: 0.9em; }
+}
+.gloom-inline-icon { height: 1.35em; width: auto; vertical-align: middle; border: none; margin: 0 0.05em; }

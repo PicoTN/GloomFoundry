@@ -36,7 +36,7 @@
     <ul class="pick-list">
       {{#each perks}}
       <li class="pick {{#if selected}}selected{{/if}}" data-action="pick" data-key="perk" data-value="{{id}}">
-        <i class="fa-regular {{#if selected}}fa-circle-dot{{else}}fa-circle{{/if}}"></i> {{name}} <span class="hint">{{taken}}/{{boxes}}</span>
+        <i class="fa-regular {{#if selected}}fa-circle-dot{{else}}fa-circle{{/if}}"></i> {{#if html}}{{{html}}}{{else}}{{name}}{{/if}} <span class="hint">{{taken}}/{{boxes}}</span>
       </li>
       {{else}}
       <li class="hint">{{localize "GLOOM.LevelUp.noPerks"}}</li>

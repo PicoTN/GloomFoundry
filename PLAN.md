@@ -1,6 +1,6 @@
 # Gloomhaven RPG for FoundryVTT: Project Plan
 
-Status: phases 0–8 implemented (latest release v0.9.0). Only v0.1 has been play-tested on Forge; everything after it is typechecked and unit-tested but not yet tried in a live game. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
+Status: phases 0–8 implemented (latest release v0.9.1). Only v0.1 has been play-tested on Forge; everything after it is typechecked and unit-tested but not yet tried in a live game. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
 
 > PDF page numbers are the printed page number **+3** (printed p.343 is PDF page 346).
 
@@ -235,6 +235,7 @@ This only matters on scenes with Token Vision enabled. Targeting is not blocked 
 | v0.7.1 | Nested compendium folders (Talents, Skills/Level N, Perks; Backgrounds by category) |
 | v0.8.0 | Character creation wizard, factions, Equipment and Factions compendiums, per-round item uses |
 | v0.9.0 | Level up dialog behind a GM toggle (Gloomhaven scene controls), perks worded like the class chapters |
+| v0.9.1 | Perks drawn from their card data: attack circle, Attribute hexagon, effect icons from the icon pack |
 
 ## 10. What remains
 
@@ -256,7 +257,7 @@ Character, factions and items:
 NPCs and content:
 - Class summons as ready-made `npc` actors linked to their controller.
 - Fill the Rogue Mercenary's missing "bandit commander" base actions if the book ever prints them.
-- Use the stat icons (attack, move, range…) in chat cards and stat blocks, on a light backdrop since many are black.
+- Use the icon pack in chat cards, modifier card effects and NPC action text (perks already do).
 
 Polish:
 - Scanned card art once the physical decks arrive (replace the generated faces via the icon pack's `card.<key>` entries).

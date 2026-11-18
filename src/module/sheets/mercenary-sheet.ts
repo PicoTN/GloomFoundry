@@ -12,6 +12,8 @@ import {
 import { EQUIPMENT_SLOTS, SKILL_LOADOUT, slotCapacity, type EquipmentSlot } from "../rules/progression.ts";
 import { runAsGM } from "../socket.ts";
 import { recordRequest, type FactionStanding } from "../rules/factions.ts";
+import type { PerkStep } from "../rules/perks.ts";
+import { perkHTML } from "../perks/display.ts";
 import { isBlankMercenary, maybeOfferCreation, openCreationWizard } from "../apps/creation.ts";
 import { levelUpEnabled, openLevelUp } from "../apps/level-up.ts";
 
@@ -210,9 +212,13 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       // Progression
       classItem: cls ? brief(cls) : null,
       ancestryItem: ancestry ? brief(ancestry) : null,
-      perks: perkItems(actor).map((p) => {
-        const s = p.system as unknown as { description: string; taken: number; steps: unknown[] };
-        return { id: p.id, name: p.name, description: s.description, boxes: s.steps.map((_, i) => ({ index: i, ticked: i < s.taken })) };
+      perks: perkItems(actor).map((p, _i, all) => {
+        const s = p.system as unknown as { description: string; taken: number; steps: PerkStep[] };
+        const html = perkHTML(s.steps, all.map((o) => o.system as unknown as { steps: PerkStep[] }));
+        return {
+          id: p.id, name: p.name, html, description: s.description,
+          boxes: s.steps.map((_, i) => ({ index: i, ticked: i < s.taken })),
+        };
       }),
       perksTaken: perkItems(actor).reduce((n, p) => n + (p.system as unknown as { taken: number }).taken, 0),
       perkIssues: composeActorDeck(actor).issues.map((issue) =>

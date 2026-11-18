@@ -7,6 +7,8 @@
 import { ATTRIBUTES, SYSTEM_ID, templatePath, type AttributeKey } from "../config.ts";
 import { attributeMax, levelGains, MAX_LEVEL, maxHp, type HpTrack } from "../rules/progression.ts";
 import { collectItems, itemData, type Option } from "./creation.ts";
+import { perkHTML } from "../perks/display.ts";
+import type { PerkStep } from "../rules/perks.ts";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const t = (key: string) => game.i18n!.localize(key);
@@ -91,9 +93,10 @@ export class LevelUpApp extends HandlebarsApplicationMixin(ApplicationV2) {
       selected: c[key] === o.uuid,
       detail: [o.system["primary"], o.system["secondary"], o.system["passive"]].filter(Boolean).join(""),
     });
-    const perks = this.actor.items.filter((i) => i.type === "perk").map((i) => {
-      const s = i.system as unknown as { steps: unknown[]; taken: number; description: string };
-      return { id: i.id, name: i.name, taken: s.taken, boxes: s.steps.length, full: s.taken >= s.steps.length, selected: c.perk === i.id };
+    const perkDocs = this.actor.items.filter((i) => i.type === "perk");
+    const perks = perkDocs.map((i) => {
+      const s = i.system as unknown as { steps: PerkStep[]; taken: number; description: string };
+      return { id: i.id, name: i.name, html: perkHTML(s.steps, perkDocs.map((o) => o.system as unknown as { steps: PerkStep[] })), taken: s.taken, boxes: s.steps.length, full: s.taken >= s.steps.length, selected: c.perk === i.id };
     });
     return {
       ...context,
