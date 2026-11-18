@@ -5,6 +5,7 @@
 import { templatePath } from "../config.ts";
 import { companyMembers, gainTemporaryBenefit, useBenefit } from "../company.ts";
 import { missionCompleted } from "../shop.ts";
+import { takeFromStash } from "../equipment.ts";
 import { BENEFITS_PER_LEVEL, COMPANY_MAX_LEVEL } from "../data/company.ts";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -29,6 +30,7 @@ export class CompanySheet extends HandlebarsApplicationMixin(foundry.application
       deleteItem: CompanySheet.#onDeleteItem,
       openMember: CompanySheet.#onOpenMember,
       removeMember: CompanySheet.#onRemoveMember,
+      takeItem: CompanySheet.#onTakeItem,
     } satisfies Record<string, Handler>,
   } as never;
 
@@ -37,6 +39,7 @@ export class CompanySheet extends HandlebarsApplicationMixin(foundry.application
     tabs: { template: "templates/generic/tab-navigation.hbs" },
     overview: { template: templatePath("actor/company-overview.hbs"), scrollable: [""] },
     benefits: { template: templatePath("actor/company-benefits.hbs"), scrollable: [""] },
+    stash: { template: templatePath("actor/company-stash.hbs"), scrollable: [""] },
     story: { template: templatePath("actor/company-story.hbs"), scrollable: [""] },
   };
 
@@ -45,6 +48,7 @@ export class CompanySheet extends HandlebarsApplicationMixin(foundry.application
       tabs: [
         { id: "overview", icon: "fa-solid fa-flag" },
         { id: "benefits", icon: "fa-solid fa-star" },
+        { id: "stash", icon: "fa-solid fa-box-archive" },
         { id: "story", icon: "fa-solid fa-book" },
       ],
       initial: "overview",
@@ -59,6 +63,8 @@ export class CompanySheet extends HandlebarsApplicationMixin(foundry.application
     const TextEditor = foundry.applications.ux.TextEditor.implementation;
     const enrich = (v: unknown) => TextEditor.enrichHTML(String(v ?? ""), { relativeTo: actor, secrets: actor.isOwner } as never);
     const members = companyMembers(actor);
+    const takers = members.filter((m) => m.isOwner);
+    const taker = takers.find((m) => m.id === this.#takerId) ?? takers.find((m) => m.id === game.user?.character?.id) ?? takers[0];
     const benefits = actor.items.filter((i) => i.type === "companyBenefit").map((i) => {
       const s = i.system as unknown as { kind: string; level: number; description: string; automation: string; used: boolean; reason: string };
       return { id: i.id, name: i.name, img: i.img, ...s, usable: ACTIVE.has(s.automation), reasonLabel: s.reason ? t(`GLOOM.Company.reasons.${s.reason}`) : "" };
@@ -84,11 +90,35 @@ export class CompanySheet extends HandlebarsApplicationMixin(foundry.application
       temporary: benefits.filter((b) => b.kind === "temporary"),
       permanent: benefits.filter((b) => b.kind === "permanent"),
       wardPending: system.pending.ward,
+      takers,
+      takerId: taker?.id ?? "",
+      takerOptions: Object.fromEntries(takers.map((m) => [m.id, m.name])),
+      stash: actor.items.filter((i) => i.type === "equipment").map((i) => {
+        const s = i.system as unknown as { slot: string; quantity: number };
+        return { id: i.id, name: i.name, img: i.img, quantity: s.quantity, slotLabel: t(`GLOOM.Equipment.slot.${s.slot}`) };
+      }).sort((a, b) => (a.name ?? "").localeCompare(b.name ?? "")),
       enrichedConcept: await enrich(system["concept"]),
       enrichedMissions: await enrich(system["missions"]),
       enrichedRelationships: await enrich(system["relationships"]),
       enrichedNotes: await enrich(system["notes"]),
     };
+  }
+
+  #takerId = "";
+
+  override async _onRender(context: never, options: never): Promise<void> {
+    await super._onRender(context, options);
+    this.element.querySelector<HTMLSelectElement>("select[data-taker]")?.addEventListener("change", (ev) => {
+      ev.stopPropagation();
+      this.#takerId = (ev.currentTarget as HTMLSelectElement).value;
+    });
+  }
+
+  static async #onTakeItem(this: CompanySheet, _event: PointerEvent, target: HTMLElement) {
+    const item = this.document.items.get(target.closest<HTMLElement>("[data-item-id]")?.dataset["itemId"] ?? "");
+    const select = this.element.querySelector<HTMLSelectElement>("select[data-taker]");
+    const taker = companyMembers(this.document).find((m) => m.id === (select?.value ?? this.#takerId));
+    if (item && taker) await takeFromStash(this.document, item as Item.Implementation, taker);
   }
 
   /** Dropping a mercenary adds it to the company. */

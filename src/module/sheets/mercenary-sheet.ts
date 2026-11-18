@@ -9,13 +9,15 @@ import { promptImportItems, promptImportPerks } from "../perks/import.ts";
 import {
   expendSkillToHeal, heal, loseSkillToNegate, postItemCard, readySkills, recoverPowers, spendPower,
 } from "../powers.ts";
-import { EQUIPMENT_SLOTS, SKILL_LOADOUT, slotCapacity, type EquipmentSlot } from "../rules/progression.ts";
+import { EQUIPMENT_SLOTS, SKILL_LOADOUT, type EquipmentSlot } from "../rules/progression.ts";
 import { runAsGM } from "../socket.ts";
 import { recordRequest, type FactionStanding } from "../rules/factions.ts";
 import { powerDetails } from "../combat/power-actions.ts";
 import { classPanel, classPanelAction } from "../class-mechanics.ts";
 import { refreshFromCompendiums } from "../refresh.ts";
 import { companiesOf } from "../company.ts";
+import { gearList, gearOf, inventoryOf, stashItem, toggleEquipped } from "../equipment.ts";
+import { capacity as slotCapacityWithGear, used as usedSlots } from "../rules/equipment.ts";
 import { availablePowers, getPlan, submitPlan } from "../combat/planning.ts";
 import { getPhase } from "../combat/combat.ts";
 import type { PerkStep } from "../rules/perks.ts";
@@ -86,6 +88,7 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       negateWithSkill: MercenarySheet.#onNegateWithSkill,
       togglePrepared: MercenarySheet.#onTogglePrepared,
       toggleEquipped: MercenarySheet.#onToggleEquipped,
+      stashItem: MercenarySheet.#onStashItem,
       toggleExpended: MercenarySheet.#onToggleExpended,
       toggleCondition: MercenarySheet.#onToggleCondition,
       resistCondition: MercenarySheet.#onResistCondition,
@@ -173,10 +176,12 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
     const preparedCount = (list: Item.Implementation[]) => list.filter((s) => sysOf(s).prepared).length;
 
     const equipment = ofType("equipment");
+    const gear = gearList(actor);
+    const hasCompany = companiesOf(actor).length > 0;
     const slots = EQUIPMENT_SLOTS.map((slot) => {
       const inSlot = equipment.filter((e) => (sysOf(e).slot ?? "none") === slot);
-      const capacity = slotCapacity(slot, system.level);
-      const equipped = inSlot.filter((e) => sysOf(e).equipped).length;
+      const capacity = slotCapacityWithGear(slot, system.level, gear);
+      const equipped = usedSlots(slot, gear);
       return {
         slot,
         label: t(`GLOOM.Equipment.slot.${slot}`),
@@ -187,7 +192,7 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
           const s = sysOf(e);
           return {
             ...brief(e), equipped: s.equipped, state: s.state, ready: s.state === "ready", quantity: s.quantity,
-            consumable: s.consumable, initiative: s.initiative,
+            consumable: s.consumable, initiative: s.initiative, twoHanded: gearOf(e).hands === 2, canStash: hasCompany,
             uses: s.uses?.max ? `${s.uses.max - s.uses.spent}/${s.uses.max}` : null,
           };
         }),
@@ -253,6 +258,7 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       },
       // Inventory
       slots,
+      inventory: inventoryOf(actor),
       // Progression
       classItem: cls ? brief(cls) : null,
       ancestryItem: ancestry ? brief(ancestry) : null,
@@ -536,7 +542,12 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
 
   static async #onToggleEquipped(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {
     const item = this.#itemFrom(target);
-    if (item) await item.update({ "system.equipped": !sysOf(item).equipped } as never);
+    if (item) await toggleEquipped(this.document, item);
+  }
+
+  static async #onStashItem(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {
+    const item = this.#itemFrom(target);
+    if (item) await stashItem(this.document, item);
   }
 
   static async #onToggleExpended(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {

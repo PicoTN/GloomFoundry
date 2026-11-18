@@ -7,6 +7,8 @@
   <label>{{localize "GLOOM.Equipment.perLabel"}}<select name="system.uses.per">{{selectOptions options.per selected=system.uses.per valueAttr="key" labelAttr="label"}}</select></label>
   <label>{{localize "GLOOM.Equipment.cost"}}<input type="number" name="system.cost" value="{{system.cost}}" min="0" step="any"></label>
   <label>{{localize "GLOOM.Equipment.space"}}<input type="number" name="system.space" value="{{system.space}}" min="0" step="any"></label>
+  {{#if (eq system.slot "hand")}}<label>{{localize "GLOOM.Equipment.hands"}}<input type="number" name="system.hands" value="{{system.hands}}" min="1" max="2" step="1"></label>{{/if}}
+  <label>{{localize "GLOOM.Equipment.smallSlots"}}<input type="number" name="system.smallSlots" value="{{system.smallSlots}}" min="0" step="1"></label>
   <label>{{localize "GLOOM.Equipment.quantity"}}<input type="number" name="system.quantity" value="{{system.quantity}}" min="0" step="1"></label>
   <label>{{localize "GLOOM.Power.stateLabel"}}<select name="system.state">{{selectOptions options.state selected=system.state valueAttr="key" labelAttr="label"}}</select></label>
   <label class="checkbox"><input type="checkbox" name="system.equipped"{{#if system.equipped}} checked{{/if}}> {{localize "GLOOM.Equipment.equipped"}}</label>

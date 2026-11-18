@@ -7,6 +7,7 @@ import { SYSTEM_ID } from "./config.ts";
 import { collectItems, type Option } from "./apps/creation.ts";
 import { companiesOf, companyMembers, gainTemporaryBenefit } from "./company.ts";
 import { runAsGM } from "./socket.ts";
+import { inventoryOf } from "./equipment.ts";
 import { recordRequest, type FactionStanding } from "./rules/factions.ts";
 import {
   buyPrice, canBuyAtShops, defaultDisplayCount, goldPerMercenary, highestRarity, levelAllows, MISSION_GOLD, REQUEST_GOLD,
@@ -89,13 +90,19 @@ export async function buyFromShop(shop: Actor.Implementation, itemId: string, bu
     return void ui.notifications?.warn(check.reason);
   }
   const stock = itemSys(item).quantity;
+  const companies = companiesOf(buyer).filter((c) => c.isOwner);
+  const inv = inventoryOf(buyer);
+  const space = (item.system as unknown as { space?: number }).space ?? 1;
+  const overflow = inv.used + space > inv.max;
   const content = `
     <p>${f("GLOOM.Shop.buyPrompt", { buyer: escape(buyer.name ?? ""), item: escape(item.name ?? ""), gold: String(goldOf(buyer)) })}</p>
     ${check.reason ? `<p class="notice">${escape(check.reason)} ${t("GLOOM.Shop.gmOverride")}</p>` : ""}
     <label>${t("GLOOM.Shop.quantity")} <input type="number" name="quantity" value="1" min="1" max="${stock}" step="1"></label>
     ${discounts.filter((d) => !d.once).map((d) => `<p class="hint"><i class="fa-solid fa-tag"></i> ${escape(d.label)} −${d.percent}%</p>`).join("")}
     ${onceOptions.map((d, i) => `<label class="checkbox"><input type="checkbox" name="once${i}"> ${f("GLOOM.Shop.useOnce", { name: escape(d.label), n: String(d.percent) })}</label>`).join("")}
-    <p class="hint">${f("GLOOM.Shop.unitPrice", { n: String(check.unit) })}</p>`;
+    <p class="hint">${f("GLOOM.Shop.unitPrice", { n: String(check.unit) })}</p>
+    ${companies.length ? `<label class="checkbox"><input type="checkbox" name="stash"${overflow ? " checked" : ""}> ${f("GLOOM.Shop.toStash", { company: escape(companies[0]!.name ?? "") })}</label>
+      <p class="hint">${f("GLOOM.Shop.space", { used: String(inv.used), max: String(inv.max), item: String(space) })}</p>` : ""}`;
   const form = (await foundry.applications.api.DialogV2.input({
     window: { title: f("GLOOM.Shop.buyTitle", { item: item.name ?? "" }) }, content, rejectClose: false,
   } as never)) as Record<string, unknown> | null;
@@ -105,6 +112,7 @@ export async function buyFromShop(shop: Actor.Implementation, itemId: string, bu
   await runAsGM({
     action: "shopBuy", shop: shop.uuid ?? "", item: itemId, buyer: buyer.uuid ?? "", quantity,
     once: used.map((d) => d.once!), user: game.user?.id ?? "",
+    stash: form["stash"] ? companies[0]?.uuid ?? "" : "",
   });
 }
 
@@ -164,7 +172,7 @@ async function removeQuantity(item: Item.Implementation, quantity: number, delet
 }
 
 export async function handleShopBuy(req: {
-  shop: string; item: string; buyer: string; quantity: number; once: { company: string; item: string }[]; user: string;
+  shop: string; item: string; buyer: string; quantity: number; once: { company: string; item: string }[]; user: string; stash?: string;
 }): Promise<void> {
   const shop = (await fromUuid(req.shop)) as Actor.Implementation | null;
   const buyer = (await fromUuid(req.buyer)) as Actor.Implementation | null;
@@ -185,7 +193,9 @@ export async function handleShopBuy(req: {
   }
   if (goldOf(buyer) < q.price) return void ui.notifications?.warn(t("GLOOM.Shop.notEnoughGold"));
   await buyer.update({ "system.gold": goldOf(buyer) - q.price } as never);
-  await addItem(buyer, item, quantity, itemSys(item).consumable);
+  const stash = req.stash ? (await fromUuid(req.stash)) as Actor.Implementation | null : null;
+  const destination = stash?.type === "company" && companiesOf(buyer).includes(stash) ? stash : buyer;
+  await addItem(destination, item, quantity, itemSys(item).consumable || destination !== buyer);
   await removeQuantity(item, quantity, false);
   for (const d of once) {
     const company = (await fromUuid(d.once!.company)) as Actor.Implementation | null;

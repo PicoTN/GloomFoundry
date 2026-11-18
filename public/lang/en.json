@@ -332,7 +332,8 @@
       "benefits": "Benefits",
       "stock": "Stock",
       "sell": "Sell",
-      "description": "Description"
+      "description": "Description",
+      "stash": "Shared inventory"
     },
     "Power": {
       "primary": "Primary action",
@@ -409,7 +410,9 @@
       "equipped": "Equipped",
       "consumable": "Consumable",
       "crafting": "Crafting",
-      "effect": "Effect"
+      "effect": "Effect",
+      "hands": "Hand slots used",
+      "smallSlots": "Extra Small slots"
     },
     "Class": {
       "hpTrackLabel": "Health",
@@ -998,7 +1001,9 @@
       "rulesHint": "Prosperity sets the rarest items on display (p. 269). Haggling (contested CU or LO against CU) is up to the GM: change the price % or the stock by hand.",
       "settingLevelLimit": "Limit shop rarity by level",
       "settingLevelLimitHint": "Players can't buy Rare items before Level 4 or Masterwork items before Level 7 (Core Rulebook p. 93). The GM can always sell anything.",
-      "newShop": "New shop"
+      "newShop": "New shop",
+      "toStash": "Deliver to {company}'s shared inventory",
+      "space": "Inventory space: {used}/{max} used; this item takes {item}."
     },
     "Mission": {
       "title": "Mission completed",
@@ -1018,6 +1023,33 @@
       "levelUp": "Allow level-ups (each mercenary gains a level after a mission)",
       "benefit": "{company} gains a temporary benefit",
       "levelUpOpen": "Level-ups are open: use the Level up button on your sheet."
+    },
+    "Equip": {
+      "title": "Equipment",
+      "gmOverride": "As GM, do it anyway?",
+      "stunned": "Stunned: you can't swap items.",
+      "forbidden": "In combat you can only swap Hand or Small items ({slot} can't change).",
+      "full": "No free slot for {item}. Choose what to unequip (at least {n} slot(s)):",
+      "swapTitle": "Swap items",
+      "notEnough": "That doesn't free enough slots.",
+      "smallOverflow": "{n} Small item(s) too many are equipped: unequip some.",
+      "inventoryFull": "{name} carries {used}/{max} inventory space: leave items in the company's shared inventory.",
+      "swapped": "{actor} swaps {off} for {on}.",
+      "equipped": "{actor} equips {on}.",
+      "unequipped": "{actor} unequips {off}.",
+      "primaryAction": "primary action",
+      "twoHanded": "Takes both Hand slots",
+      "spaceHint": "Inventory space used by unequipped items (5 available, p. 87).",
+      "stashTitle": "Shared inventory",
+      "stash": "Leave in {company}'s shared inventory",
+      "stashed": "{item} is now in {company}'s shared inventory.",
+      "stashHint": "Leave in the company's shared inventory",
+      "noCompany": "Join a company first (drop this mercenary on a company sheet).",
+      "take": "Take into {name}'s inventory",
+      "takeAs": "Take as",
+      "takeButton": "Take",
+      "stashEmpty": "The shared inventory is empty. Members leave items here from their Inventory tab.",
+      "stashRules": "Items here stay at the company base. A member can take one when needed; it then uses their inventory space until the end of the mission (p. 87)."
     }
   }
 }

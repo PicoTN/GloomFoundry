@@ -113,6 +113,10 @@ function defineEquipmentSchema() {
     cost: new fields.NumberField({ required: true, nullable: false, min: 0, initial: 0 }),
     /** Inventory space when carried unequipped (5 available, p. 87). */
     space: new fields.NumberField({ required: true, nullable: false, min: 0, initial: 1 }),
+    /** Hand slots used: 2 for "(2)" items (p. 99). */
+    hands: new fields.NumberField({ required: true, nullable: false, integer: true, min: 1, max: 2, initial: 1 }),
+    /** Extra Small slots while equipped (Cloak of Pockets). */
+    smallSlots: new fields.NumberField({ required: true, nullable: false, integer: true, min: 0, initial: 0 }),
     consumable: new fields.BooleanField({ required: true, initial: false }),
     quantity: int(1),
     equipped: new fields.BooleanField({ required: true, initial: false }),
