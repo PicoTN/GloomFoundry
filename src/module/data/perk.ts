@@ -9,6 +9,8 @@ function cardSpecField() {
     attackValue: new fields.NumberField({ required: true, nullable: false, integer: true, initial: 0 }),
     attribute: new fields.NumberField({ required: false, nullable: true, integer: true, min: 0, max: 9, initial: null }),
     effect: new fields.StringField({ required: true, blank: true, initial: "" }),
+    /** Structured effect (see rules/power-actions.ts). */
+    actions: new fields.ArrayField(new fields.ObjectField()),
   });
 }
 
@@ -55,6 +57,7 @@ export class PerkModel extends foundry.abstract.TypeDataModel<PerkSchema, Item.I
           attackValue: a.attackValue,
           attribute: a.attribute ?? null,
           effect: a.effect,
+          ...(a.actions?.length ? { actions: a.actions as unknown as NonNullable<PerkStep["add"][number]["actions"]> } : {}),
         })),
       })),
     };

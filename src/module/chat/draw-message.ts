@@ -59,6 +59,8 @@ export interface DrawMessageContext {
   outcome?: { label: string; css: string };
   /** "Apply damage" button (attacks). */
   damageButton?: { label: string };
+  /** Buttons for the kept card's effect (apply Wound, Infuse Fire...). */
+  effectActs?: string;
 }
 
 export async function postDrawMessage(

@@ -76,7 +76,11 @@ export class GloomCombat extends Combat {
 // ---------------------------------------------------------------------------
 
 async function startTurn(combat: Combat.Implementation, combatant: Combatant.Implementation): Promise<void> {
-  await combatant.setFlag(SYSTEM_ID as never, "turnStartedAt" as never, timelinePosition(combat.round, combat.turn) as never);
+  await combatant.update({
+    [`flags.${SYSTEM_ID}.turnStartedAt`]: timelinePosition(combat.round, combat.turn),
+    // Each element can be used once per turn (p. 82): reset this character's uses.
+    [`flags.${SYSTEM_ID}.elementsUsed`]: [],
+  } as never);
   const actor = combatant.actor as Actor.Implementation | null;
   if (!actor) return;
   // Regenerate happens first and removes Wound before it deals damage (p. 84).

@@ -12,6 +12,8 @@ const fields = foundry.data.fields;
 
 const text = () => new fields.StringField({ required: true, blank: true, initial: "" });
 const html = () => new fields.HTMLField({ required: true, blank: true, initial: "" });
+/** Structured actions by text field (primary, secondary, effect...): see rules/power-actions.ts. */
+const actions = () => new fields.ObjectField({ required: true, initial: () => ({}) as never });
 const int = (initial: number, min = 0) =>
   new fields.NumberField({ required: true, nullable: false, integer: true, min, initial });
 const optionalInt = (min = 0, max?: number) =>
@@ -42,6 +44,7 @@ function defineSkillSchema() {
     /** Chosen for the current loadout (2 ancestry + 4 class, picked at each Full Rest). */
     prepared: new fields.BooleanField({ required: true, initial: false }),
     state: state(),
+    actions: actions(),
   };
 }
 export type SkillSchema = ReturnType<typeof defineSkillSchema>;
@@ -77,6 +80,7 @@ function defineTalentSchema() {
     passive: html(),
     /** Name of the Talent this one replaces (upgrades at Level 5). */
     replaces: text(),
+    actions: actions(),
   };
 }
 export type TalentSchema = ReturnType<typeof defineTalentSchema>;
@@ -115,6 +119,7 @@ function defineEquipmentSchema() {
     lostOnUse: new fields.BooleanField({ required: true, initial: false }),
     state: state(),
     crafting: text(),
+    actions: actions(),
   };
 }
 export type EquipmentSchema = ReturnType<typeof defineEquipmentSchema>;

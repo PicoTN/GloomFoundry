@@ -15,6 +15,8 @@ function defineModifierCardSchema() {
     }),
     attribute: new fields.NumberField({ required: false, nullable: true, integer: true, min: 0, initial: null }),
     effect: new fields.StringField({ required: true, blank: true, initial: "" }),
+    /** Structured effect (see rules/power-actions.ts). */
+    actions: new fields.ArrayField(new fields.ObjectField()),
     playingCard: new fields.SchemaField({
       rank: new fields.StringField({ required: true, initial: "A" }),
       suit: new fields.StringField({ required: true, initial: "hearts" }),
@@ -37,6 +39,7 @@ export class ModifierCardModel extends foundry.abstract.TypeDataModel<ModifierCa
       attack: { kind: this.attack.kind as ModifierCardData["attack"]["kind"], value: this.attack.value },
       attribute: this.attribute ?? null,
       effect: this.effect,
+      ...(this.actions.length ? { actions: this.actions as unknown as NonNullable<ModifierCardData["actions"]> } : {}),
       playingCard: {
         rank: this.playingCard.rank as ModifierCardData["playingCard"]["rank"],
         suit: this.playingCard.suit as ModifierCardData["playingCard"]["suit"],

@@ -767,7 +767,22 @@
       "chooseElement": "Infuse which element?",
       "notYours": "Only this character's owner can use this action.",
       "actions": "Actions",
-      "details": "Details"
+      "details": "Details",
+      "anyElement": "any element",
+      "attackWord": "attack",
+      "rangeWord": "range",
+      "targetWord": "target",
+      "healWord": "heal",
+      "move": "Move",
+      "jump": "Jump",
+      "flying": "flying",
+      "ally": "ally",
+      "choose": "Choose {n}:",
+      "chooseElementUsed": "Which element do you use?",
+      "elementInactive": "Not active: {list}.",
+      "elementUsed": "Already used this turn by this character: {list} (each element once per turn).",
+      "elementCheck": "Element check",
+      "useAnyway": "Use it anyway?"
     },
     "Place": {
       "needHex": "Placing areas needs a scene with a hex grid.",
@@ -781,7 +796,8 @@
         "adjacent": "{n} adjacent spaces",
         "circle": "{n}-space circle",
         "cone": "cone",
-        "arc": "{n}-space arc"
+        "arc": "{n}-space arc",
+        "all": "all within range {n}"
       },
       "clearAreas": "Remove placed areas"
     }

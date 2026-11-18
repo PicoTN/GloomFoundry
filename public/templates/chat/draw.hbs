@@ -13,5 +13,6 @@
     {{#each details}}<dt>{{label}}</dt><dd>{{value}}</dd>{{/each}}
   </dl>
   {{#if outcome}}<div class="outcome {{outcome.css}}">{{outcome.label}}</div>{{/if}}
+  {{#if effectActs}}{{{effectActs}}}{{/if}}
   {{#if damageButton}}<button type="button" class="apply-damage" data-gloom-apply-damage><i class="fa-solid fa-burst"></i> {{damageButton.label}}</button>{{/if}}
 </div>

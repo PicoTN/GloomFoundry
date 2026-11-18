@@ -134,6 +134,8 @@ function defineNpcActionSchema() {
     /** Nemesis-only unique action (adds Threat beyond the first). */
     nemesisOnly: new fields.BooleanField({ required: true, initial: false }),
     description: new fields.HTMLField({ required: true, blank: true, initial: "" }),
+    /** Structured actions of the description (see rules/power-actions.ts). */
+    actions: new fields.ObjectField({ required: true, initial: () => ({}) as never }),
   };
 }
 

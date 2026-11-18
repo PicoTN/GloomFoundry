@@ -7,6 +7,7 @@
  */
 import { BASE_DECK, type AttackKind, type ModifierCardData } from "./modifier.ts";
 import { formatCardCode, parseCardCode, parseCardList, sameCard } from "./playing-cards.ts";
+import type { PowerAction } from "./power-actions.ts";
 
 export interface PerkCardSpec {
   /** Playing-card code, e.g. "7♥". */
@@ -15,6 +16,8 @@ export interface PerkCardSpec {
   attackValue: number;
   attribute: number | null;
   effect: string;
+  /** The effect as structured actions. */
+  actions?: PowerAction[];
 }
 
 export interface PerkStep {
@@ -53,6 +56,7 @@ export function specToCard(spec: PerkCardSpec): ModifierCardData | null {
     attack: { kind: spec.attackKind, value: spec.attackKind === "number" ? spec.attackValue : spec.attackKind === "critical" ? 2 : 0 },
     attribute: spec.attribute ?? null,
     effect: spec.effect.trim(),
+    ...(spec.actions?.length ? { actions: spec.actions } : {}),
     playingCard,
   };
 }

@@ -2,6 +2,7 @@
  * High-level draw actions: prompt the user, draw, resolve with the rules engine,
  * post the chat card, and apply side effects (expending a Background, ...).
  */
+import { actionButtonsHTML } from "../combat/power-actions.ts";
 import { ATTRIBUTE_LABELS, ATTRIBUTES, templatePath, type AttributeKey } from "../config.ts";
 import { cardView, postDrawMessage, type DrawMessageContext } from "../chat/draw-message.ts";
 import {
@@ -245,6 +246,9 @@ export async function drawAttack(deck: ModifierDeck, options: AttackOptions = {}
       tie: result.tie,
       details: effect ? [...details, { label: t("GLOOM.Attack.effect"), value: effect }] : details,
       outcome,
+      ...(kept?.data.effect && attacker
+        ? { effectActs: actionButtonsHTML(attacker, kept.data.actions?.length ? kept.data.actions : kept.data.effect) }
+        : {}),
       damageButton: {
         label: target
           ? f("GLOOM.Damage.applyTo", { name: target.name ?? "", amount: String(result.damage) })

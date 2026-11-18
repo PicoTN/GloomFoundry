@@ -4,6 +4,8 @@
  * Appendix "Playing Cards as Modifiers" (p. 343).
  */
 
+import type { PowerAction } from "./power-actions.ts";
+
 export type Suit = "hearts" | "diamonds" | "clubs" | "spades";
 export type JokerColor = "red" | "black";
 export type Rank = "A" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" | "10" | "J" | "Q" | "K" | "joker";
@@ -23,8 +25,10 @@ export interface ModifierCardData {
   attack: { kind: AttackKind; value: number };
   /** Attribute modifier (1-6). `null` for Critical/Null/Bless/Curse cards. */
   attribute: number | null;
-  /** Extra effect printed on the card (perk cards), plain text for now. */
+  /** Extra effect printed on the card (perk cards). */
   effect: string;
+  /** The effect as structured actions (Wound, Infuse Fire, Heal 1 yourself...), when known. */
+  actions?: PowerAction[];
   playingCard: PlayingCardId;
 }
 

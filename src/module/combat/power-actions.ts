@@ -10,11 +10,11 @@ import { addTemporary, drawAttack } from "../deck/actions.ts";
 import { deckForActor } from "../deck/registry.ts";
 import { dispositionOf } from "../npc.ts";
 import { heal } from "../powers.ts";
-import { parsePowerActions, type Area, type PowerAction } from "../rules/power-actions.ts";
+import { parsePowerActions, type Area, type Bonus, type PowerAction, type StoredActions } from "../rules/power-actions.ts";
 import { areOpposed } from "../rules/sides.ts";
 import { runAsGM } from "../socket.ts";
 import type { ElementId } from "../rules/combat.ts";
-import { changeElement } from "./elements.ts";
+import { changeElement, getBoard } from "./elements.ts";
 
 const t = (key: string) => game.i18n!.localize(key);
 const f = (key: string, data: Record<string, string>) => game.i18n!.format(key, data);
@@ -30,38 +30,117 @@ function npcAttack(actor: Actor.Implementation): number {
   return (actor.system as unknown as { current?: { attack: number } }).current?.attack ?? 2;
 }
 
-function label(actor: Actor.Implementation, a: PowerAction): { icon: string; text: string } {
+const ELEMENTS = ["air", "dark", "earth", "fire", "ice", "light"] as const;
+const cond = (c: string) => game.i18n!.localize(`GLOOM.Condition.${c.toLowerCase()}.name`);
+const el = (e: string) => t(`GLOOM.Element.${e}`);
+
+/** Apply a bonus to its action ("if Fire is active, add +1 attack, Wound"). */
+export function withBonus(a: PowerAction, b: Bonus): PowerAction {
+  const conditions = (list: string[]) => [...list, ...(b.conditions ?? []).filter((c) => !list.includes(c))];
   switch (a.kind) {
-    case "attack": {
-      const base = a.relative ? npcAttack(actor) + a.value : a.value;
-      const extra = [a.area && areaLabel(a.area), a.targets > 1 && f("GLOOM.Act.targets", { n: String(a.targets) })].filter(Boolean);
-      return { icon: "fa-swords", text: `${f("GLOOM.Act.attack", { n: String(base) })}${extra.length ? ` · ${extra.join(" · ")}` : ""}` };
-    }
-    case "heal": return { icon: "fa-heart", text: f(a.self ? "GLOOM.Act.healSelf" : "GLOOM.Act.heal", { n: String(a.value) }) };
-    case "condition": return { icon: "fa-bolt", text: game.i18n!.localize(`GLOOM.Condition.${a.id}.name`) + (a.self ? ` (${t("GLOOM.Act.self")})` : "") };
-    case "infuse": return { icon: "fa-fire", text: f("GLOOM.Act.infuse", { list: a.elements.map((e) => t(`GLOOM.Element.${e}`)).join(a.either ? " / " : " + ") }) };
-    case "area": return { icon: "fa-draw-polygon", text: f("GLOOM.Act.place", { what: areaLabel(a.area) }) };
-    case "trap": return { icon: "fa-triangle-exclamation", text: f("GLOOM.Act.trap", { n: String(a.count), damage: String(a.damage), effects: a.effects.join(", ") }) };
-    case "obstacle": return { icon: "fa-cube", text: f("GLOOM.Act.obstacle", { n: String(a.count) }) };
-    case "summon": return { icon: "fa-ghost", text: t("GLOOM.Act.summon") };
+    case "attack": return {
+      ...a, value: a.value + (b.attack ?? 0), range: a.range === null ? null : a.range + (b.range ?? 0),
+      targets: a.targets + (b.targets ?? 0), pierce: a.pierce + (b.pierce ?? 0),
+      push: (a.push ?? 0) + (b.push ?? 0) || undefined, pull: (a.pull ?? 0) + (b.pull ?? 0) || undefined,
+      area: b.area ?? a.area, conditions: conditions(a.conditions), bonuses: [],
+    };
+    case "heal": return { ...a, value: a.value + (b.heal ?? 0), range: a.range === null ? null : a.range + (b.range ?? 0), conditions: conditions(a.conditions), bonuses: [] };
+    case "move": return { ...a, value: a.value + (b.move ?? 0), bonuses: [] };
+    case "shield": return { ...a, value: a.value + (b.shield ?? 0), bonuses: [] };
+    case "retaliate": return { ...a, value: a.value + (b.retaliate ?? 0), bonuses: [] };
+    default: return a;
   }
 }
 
-/** Buttons for one power text. */
-export function actionButtonsHTML(actor: Actor.Implementation | null, text: string): string {
-  if (!actor || !text) return "";
-  const actions = parsePowerActions(text);
-  // Conditions carried by an attack or heal get their own button too (to apply after the hit).
-  const extra: PowerAction[] = actions.flatMap((a) =>
-    a.kind === "attack" || a.kind === "heal"
-      ? a.conditions.map((c) => ({ kind: "condition", id: c.toLowerCase(), self: false }) as PowerAction)
-      : []);
-  const all = [...actions, ...extra];
-  if (!all.length) return "";
-  return `<div class="gloom-acts">${all.map((a) => {
-    const l = label(actor, a);
-    return `<button type="button" class="gloom-act act-${a.kind}" data-gloom-act="${escape(JSON.stringify(a))}" data-actor="${escape(actor.uuid ?? "")}"><i class="fa-solid ${l.icon}"></i> ${escape(l.text)}</button>`;
-  }).join("")}</div>`;
+/** Is the bonus's element requirement met on the scene's element board? */
+function bonusActive(b: Bonus): boolean | null {
+  const board = getBoard();
+  const active = (e: string) => (board.states[e as ElementId] ?? 0) > 0;
+  if (b.anyElement) return ELEMENTS.some(active);
+  if (!b.elements?.length) return null;
+  return b.anyOf ? b.elements.some(active) : b.elements.every(active);
+}
+
+function bonusLabel(b: Bonus): string {
+  const trigger = b.anyElement ? t("GLOOM.Act.anyElement") : b.elements?.length ? b.elements.map(el).join(b.anyOf ? "/" : "+") : b.when ?? "";
+  const parts = [
+    b.attack && `+${b.attack} ${t("GLOOM.Act.attackWord")}`, b.range && `+${b.range} ${t("GLOOM.Act.rangeWord")}`,
+    b.targets && `+${b.targets} ${t("GLOOM.Act.targetWord")}`, b.heal && `+${b.heal} ${t("GLOOM.Act.healWord")}`,
+    b.pierce && `Pierce ${b.pierce}`, b.push && `Push ${b.push}`, b.pull && `Pull ${b.pull}`,
+    ...(b.conditions ?? []).map(cond), b.area && areaLabel(b.area), b.text,
+  ].filter(Boolean);
+  return `${trigger}: ${parts.join(", ")}`;
+}
+
+function label(actor: Actor.Implementation, a: PowerAction): { icon: string; text: string; button: boolean } {
+  switch (a.kind) {
+    case "attack": {
+      const base = a.relative ? npcAttack(actor) + a.value : a.value;
+      const extra = [
+        a.area && areaLabel(a.area), a.targets > 1 && f("GLOOM.Act.targets", { n: String(a.targets) }),
+        a.range && `${t("GLOOM.Act.rangeWord")} ${a.range}`, a.pierce && `Pierce ${a.pierce}`,
+        a.push && `Push ${a.push}`, a.pull && `Pull ${a.pull}`,
+      ].filter(Boolean);
+      return { icon: "fa-swords", button: true, text: `${f("GLOOM.Act.attack", { n: String(base) })}${extra.length ? ` · ${extra.join(" · ")}` : ""}` };
+    }
+    case "heal": return { icon: "fa-heart", button: true, text: f(a.self ? "GLOOM.Act.healSelf" : "GLOOM.Act.heal", { n: String(a.value) }) + (a.range ? ` · ${t("GLOOM.Act.rangeWord")} ${a.range}` : "") };
+    case "move": {
+      const v = a.relative ? (a.value >= 0 ? `+${a.value}` : String(a.value)) : String(a.value);
+      return { icon: a.jump ? "fa-person-running" : "fa-shoe-prints", button: false, text: `${t(a.jump ? "GLOOM.Act.jump" : "GLOOM.Act.move")} ${v}${a.flying ? ` (${t("GLOOM.Act.flying")})` : ""}` };
+    }
+    case "shield": return { icon: "fa-shield", button: false, text: `Shield ${a.value}${a.self ? "" : ` (${t("GLOOM.Act.ally")})`}` };
+    case "retaliate": return { icon: "fa-hand-fist", button: false, text: `Retaliate ${a.value}${a.range ? ` · ${t("GLOOM.Act.rangeWord")} ${a.range}` : ""}` };
+    case "condition": return { icon: "fa-bolt", button: true, text: cond(a.id) + (a.self ? ` (${t("GLOOM.Act.self")})` : "") };
+    case "infuse": return { icon: "fa-fire", button: true, text: a.any ? f("GLOOM.Act.infuse", { list: t("GLOOM.Act.anyElement") }) : f("GLOOM.Act.infuse", { list: a.elements.map(el).join(a.either ? " / " : " + ") }) };
+    case "area": return { icon: "fa-draw-polygon", button: true, text: f("GLOOM.Act.place", { what: areaLabel(a.area) }) };
+    case "trap": return { icon: "fa-triangle-exclamation", button: true, text: f("GLOOM.Act.trap", { n: String(a.count), damage: String(a.damage), effects: a.effects.join(", ") }) };
+    case "obstacle": return { icon: "fa-cube", button: true, text: f("GLOOM.Act.obstacle", { n: String(a.count) }) };
+    case "summon": return { icon: "fa-ghost", button: true, text: a.name ? `${t("GLOOM.Act.summon")}: ${a.name}` : t("GLOOM.Act.summon") };
+    case "choice": return { icon: "fa-list-check", button: false, text: f("GLOOM.Act.choose", { n: String(a.pick) }) };
+    case "text": return { icon: "fa-circle-info", button: false, text: a.text };
+  }
+}
+
+function oneHTML(actor: Actor.Implementation, a: PowerAction): string {
+  const l = label(actor, a);
+  const uuid = escape(actor.uuid ?? "");
+  const note = a.note ? `<span class="act-note">${escape(a.note)}</span>` : "";
+  if (a.kind === "choice") {
+    return `<div class="gloom-act-choice"><span class="gloom-act-chip"><i class="fa-solid ${l.icon}"></i> ${escape(l.text)}</span>${
+      a.options.map((opt) => `<div class="option">${opt.map((o) => oneHTML(actor, o)).join("")}</div>`).join("")}${note}</div>`;
+  }
+  const main = l.button
+    ? `<button type="button" class="gloom-act act-${a.kind}" data-gloom-act="${escape(JSON.stringify(a))}" data-actor="${uuid}"><i class="fa-solid ${l.icon}"></i> ${escape(l.text)}</button>`
+    : `<span class="gloom-act-chip act-${a.kind}"><i class="fa-solid ${l.icon}"></i> ${escape(l.text)}</span>`;
+  // Bonus variants: the same action with the extras applied; highlighted when the element is active.
+  const bonuses = (a.bonuses ?? []).map((b) => {
+    const state = bonusActive(b);
+    const css = state === null ? "" : state ? " active" : " inactive";
+    const merged = withBonus(a, b);
+    const trigger = escape(JSON.stringify({ elements: b.elements ?? [], anyOf: !!b.anyOf, anyElement: !!b.anyElement, consume: !!b.consume }));
+    return l.button
+      ? `<button type="button" class="gloom-act bonus${css}" data-gloom-act="${escape(JSON.stringify(merged))}" data-bonus="${trigger}" data-actor="${uuid}"><i class="fa-solid fa-plus"></i> ${escape(bonusLabel(b))}</button>`
+      : `<span class="gloom-act-chip bonus${css}"><i class="fa-solid fa-plus"></i> ${escape(bonusLabel(b))}</span>`;
+  });
+  // Conditions carried by an attack or heal also get their own button (applied after the hit).
+  const carried = a.kind === "attack" || a.kind === "heal"
+    ? a.conditions.map((c) => oneHTML(actor, { kind: "condition", id: c.toLowerCase(), self: a.kind === "heal" && a.self }))
+    : [];
+  return [main, ...bonuses, ...carried].join("") + note;
+}
+
+/** Stored actions for a text field of an item, or the parsed text as a fallback. */
+export function actionsFor(item: Item.Implementation | null, key: string, text: string): PowerAction[] {
+  const stored = (item?.system as unknown as { actions?: StoredActions } | undefined)?.actions?.[key as keyof StoredActions];
+  return Array.isArray(stored) && stored.length ? stored : parsePowerActions(text);
+}
+
+/** Buttons (and chips for Move, Shield...) for a list of actions. */
+export function actionButtonsHTML(actor: Actor.Implementation | null, actionsOrText: PowerAction[] | string): string {
+  if (!actor || !actionsOrText) return "";
+  const actions = typeof actionsOrText === "string" ? parsePowerActions(actionsOrText) : actionsOrText;
+  if (!actions.length) return "";
+  return `<div class="gloom-acts">${actions.map((a) => oneHTML(actor, a)).join("")}</div>`;
 }
 
 // ---------------------------------------------------------------------------
@@ -185,7 +264,7 @@ export async function runPowerAction(actor: Actor.Implementation, a: PowerAction
       for (const target of targets) await applyCondition(target, a.id);
       return;
     }
-    case "infuse": return onInfuse(a);
+    case "infuse": return onInfuse(a.any ? { ...a, elements: [...ELEMENTS], either: true } : a);
     case "area": {
       const cells = await pickHexes({ area: a.area, origin: actingToken(actor), hint: t("GLOOM.Place.hint") });
       if (!cells) return;
@@ -207,6 +286,7 @@ export async function runPowerAction(actor: Actor.Implementation, a: PowerAction
       return;
     }
     case "summon": return onSummon(actor);
+    default: return;
   }
 }
 
@@ -252,6 +332,58 @@ export async function clearAreas(scene: Scene.Implementation | null | undefined,
   if (ids.length) await scene.deleteEmbeddedDocuments("Region", ids);
 }
 
+interface ElementUse { elements: string[]; anyOf: boolean; anyElement: boolean; consume: boolean }
+
+/** This actor's combatant in the current combat (element uses are tracked per turn on it). */
+function combatantOf(actor: Actor.Implementation): Combatant.Implementation | null {
+  const combat = game.combat as Combat.Implementation | null;
+  if (!combat?.started) return null;
+  return (combat.combatants.find((c) => c.actor === actor || c.actor?.id === actor.id) as Combatant.Implementation | undefined) ?? null;
+}
+
+/**
+ * Use elements for a bonus: pick which one for "any"/"or" bonuses, warn if this character
+ * already used it this turn (each element once per turn, p. 82), consume it if the effect says so.
+ * Returns false if cancelled.
+ */
+async function useElements(actor: Actor.Implementation, use: ElementUse): Promise<boolean> {
+  const board = getBoard();
+  const active = (e: string) => (board.states[e as ElementId] ?? 0) > 0;
+  let chosen = use.anyElement ? ELEMENTS.filter(active) as string[] : use.elements;
+  if (use.anyElement || use.anyOf) {
+    const options = (use.anyElement ? chosen : use.elements.filter(active));
+    const pool = options.length ? options : use.anyElement ? [...ELEMENTS] : use.elements;
+    if (pool.length > 1) {
+      const pick = await foundry.applications.api.DialogV2.wait({
+        window: { title: t("GLOOM.Act.chooseElementUsed") }, content: "",
+        buttons: pool.map((e) => ({ action: e, label: el(e) })), rejectClose: false,
+      } as never);
+      if (!pick) return false;
+      chosen = [String(pick)];
+    } else chosen = pool;
+  }
+  const inactive = chosen.filter((e) => !active(e));
+  const combatant = combatantOf(actor);
+  const used = (combatant?.getFlag(SYSTEM_ID as never, "elementsUsed" as never) as string[] | undefined) ?? [];
+  const again = chosen.filter((e) => used.includes(e));
+  const problems = [
+    ...(inactive.length ? [f("GLOOM.Act.elementInactive", { list: inactive.map(el).join(", ") })] : []),
+    ...(again.length ? [f("GLOOM.Act.elementUsed", { list: again.map(el).join(", ") })] : []),
+  ];
+  if (problems.length) {
+    const ok = await foundry.applications.api.DialogV2.confirm({
+      window: { title: t("GLOOM.Act.elementCheck") },
+      content: `<p>${problems.join("</p><p>")}</p><p>${t("GLOOM.Act.useAnyway")}</p>`,
+    } as never);
+    if (!ok) return false;
+  }
+  if (combatant?.isOwner) {
+    await combatant.setFlag(SYSTEM_ID as never, "elementsUsed" as never, [...new Set([...used, ...chosen])] as never);
+  }
+  if (use.consume) for (const e of chosen) await changeElement(e as ElementId, 0 as never);
+  return true;
+}
+
 export function registerPowerActionButtons(): void {
   // Areas from a finished combat go away (traps and obstacles stay).
   Hooks.on("deleteCombat", (combat) => {
@@ -265,6 +397,7 @@ export function registerPowerActionButtons(): void {
     const actor = (await fromUuid(button.dataset["actor"] ?? "")) as Actor.Implementation | null;
     if (!actor?.isOwner) return void ui.notifications?.warn("GLOOM.Act.notYours", { localize: true });
     try {
+      if (button.dataset["bonus"] && !(await useElements(actor, JSON.parse(button.dataset["bonus"]) as ElementUse))) return;
       await runPowerAction(actor, JSON.parse(button.dataset["gloomAct"] ?? "{}") as PowerAction);
     } catch (err) {
       console.error("GloomFoundry | Power action failed", err);
@@ -282,7 +415,7 @@ export async function powerDetails(item: Item.Implementation): Promise<Record<st
     const v = s[key];
     if (typeof v !== "string" || !v) continue;
     out[key] = await TextEditor.enrichHTML(v, { relativeTo: item } as never);
-    if (key !== "passive") out[`${key}Acts`] = actionButtonsHTML(actor, v);
+    if (key !== "passive") out[`${key}Acts`] = actionButtonsHTML(actor, actionsFor(item, key, v));
   }
   return out;
 }

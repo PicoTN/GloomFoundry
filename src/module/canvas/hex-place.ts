@@ -22,42 +22,72 @@ const rotate = (c: Cube, steps: number): Cube => {
 const dist = (c: Cube) => Math.max(Math.abs(c.q), Math.abs(c.r), Math.abs(c.s));
 const ZERO: Cube = { q: 0, r: 0, s: 0 };
 
+/** Mirror a cube coordinate (areas may be mirrored, p. 79). */
+const mirror = (c: Cube): Cube => ({ q: c.q, r: c.s, s: c.r });
+
+/** Angle (degrees) of a cube offset in hex space, 0 along DIRS[0]. */
+function angleOf(c: Cube): number {
+  const x = Math.sqrt(3) * (c.q + c.r / 2);
+  const y = 1.5 * c.r;
+  const base = Math.atan2(1.5 * DIRS[0]!.r, Math.sqrt(3) * (DIRS[0]!.q + DIRS[0]!.r / 2));
+  let a = ((Math.atan2(y, x) - base) * 180) / Math.PI;
+  while (a <= -180) a += 360;
+  while (a > 180) a -= 360;
+  return a;
+}
+
 /**
- * Cells of an area relative to its anchor, before rotation. "Anchored" shapes (adjacent, cone,
- * arc) start next to the anchor, which is the acting character's hex.
+ * Cells of an area relative to its anchor, before rotation. "Anchored" areas start next to the
+ * acting character (whose hex is the origin); others follow the cursor.
  */
 export function areaCells(area: Area): { cells: Cube[]; anchored: boolean } {
   const n = Math.max(1, area.size);
+  const adjacent = area.anchor === "adjacent";
   switch (area.shape) {
-    case "line":
-      return { cells: Array.from({ length: n }, (_, k) => scale(DIRS[0]!, k)), anchored: false };
-    case "adjacent":
-      return { cells: Array.from({ length: Math.min(6, n) }, (_, k) => DIRS[k]!), anchored: true };
+    case "line": {
+      const start = adjacent ? 1 : 0;
+      return { cells: Array.from({ length: n }, (_, k) => scale(DIRS[0]!, k + start)), anchored: adjacent };
+    }
     case "cone":
     case "arc": {
-      // Hexes in a 60° (cone) or 120° (arc) wedge, nearest first.
-      const wedge = (c: Cube) => area.shape === "cone"
-        ? c.q > 0 && c.r <= 0 && c.s <= 0
-        : c.q >= 0 && c.s <= 0 && !(c.q === 0 && c.s === 0);
-      const cells: Cube[] = [];
-      for (let radius = 1; cells.length < n && radius < 10; radius++) {
-        for (let q = -radius; q <= radius; q++) for (let r = -radius; r <= radius; r++) {
-          const c = { q, r, s: -q - r };
-          if (dist(c) === radius && wedge(c) && cells.length < n) cells.push(c);
-        }
+      // Nearest hexes within the arc's angle, centered on a direction (60° for a cone).
+      const degrees = area.shape === "cone" ? 60 : area.degrees ?? Math.min(360, n * 60);
+      const center = degrees / 60 % 2 === 0 ? 30 : 0;
+      const candidates: { c: Cube; d: number; a: number }[] = [];
+      for (let q = -5; q <= 5; q++) for (let r = -5; r <= 5; r++) {
+        const c = { q, r, s: -q - r };
+        const d = dist(c);
+        if (d === 0 || d > 5) continue;
+        const a = Math.abs(angleOf(c) - center);
+        if (a <= degrees / 2 + 0.01) candidates.push({ c, d, a });
       }
-      return { cells, anchored: true };
+      candidates.sort((x, y) => x.d - y.d || x.a - y.a);
+      return { cells: candidates.slice(0, n).map((x) => x.c), anchored: true };
     }
     default: {
-      // Cluster / circle: 2 = pair, 3 = triangle, 4 = rhombus, 7 = flower.
-      if (n === 4) return { cells: [ZERO, DIRS[0]!, DIRS[1]!, add(DIRS[0]!, DIRS[1]!)], anchored: false };
-      const cells = [ZERO, ...DIRS].slice(0, Math.min(7, n));
-      for (let ring = 2; cells.length < n; ring++) {
-        for (const d of DIRS) if (cells.length < n) cells.push(scale(d, ring));
+      // Cluster / circle, "as rounded as possible": 2 = pair, 3 = triangle, 4 = rhombus, 7 = flower.
+      let cells: Cube[];
+      if (n === 4) cells = [ZERO, DIRS[0]!, DIRS[1]!, add(DIRS[0]!, DIRS[1]!)];
+      else {
+        cells = [ZERO, ...DIRS].slice(0, Math.min(7, n));
+        for (let ring = 2; cells.length < n; ring++) {
+          for (const d of DIRS) if (cells.length < n) cells.push(scale(d, ring));
+        }
       }
-      return { cells, anchored: false };
+      // Adjacent clusters touch the character: shift them one step away from the origin.
+      return { cells: adjacent ? cells.map((c) => add(c, DIRS[0]!)) : cells, anchored: adjacent };
     }
   }
+}
+
+/** Hexes within `radius` of a center (for "All, range X"). */
+export function cellsWithin(radius: number): Cube[] {
+  const out: Cube[] = [];
+  for (let q = -radius; q <= radius; q++) for (let r = -radius; r <= radius; r++) {
+    const c = { q, r, s: -q - r };
+    if (dist(c) <= radius) out.push(c);
+  }
+  return out;
 }
 
 function hexGrid() {
@@ -100,6 +130,7 @@ export function pickHexes(options: PlaceOptions): Promise<Offset[] | null> {
   const count = Math.max(1, options.count ?? 1);
   const picked: Offset[] = [];
   let rotation = 0;
+  let mirrored = false;
   const g = new PIXI.Graphics();
   (canvas.controls ?? canvas.stage).addChild(g as never);
   if (options.hint) ui.notifications?.info(options.hint);
@@ -108,14 +139,14 @@ export function pickHexes(options: PlaceOptions): Promise<Offset[] | null> {
     const p = (canvas as unknown as { mousePosition: { x: number; y: number } }).mousePosition;
     return grid.offsetToCube(grid.getOffset(p));
   };
+  const transform = (c: Cube) => rotate(mirrored ? mirror(c) : c, rotation);
   const currentCells = (): Offset[] => {
     if (!shape) return [grid.cubeToOffset(mouseCube())];
-    if (shape.anchored && originCube) {
-      // Rotate toward the cursor: pick the direction closest to the mouse.
-      return shape.cells.map((c) => grid.cubeToOffset(add(originCube, rotate(c, rotation))));
+    if (options.area?.shape === "all" && originCube) {
+      return cellsWithin(options.area.size).map((c) => grid.cubeToOffset(add(originCube, c)));
     }
-    const anchor = mouseCube();
-    return shape.cells.map((c) => grid.cubeToOffset(add(anchor, rotate(c, rotation))));
+    const anchor = shape.anchored && originCube ? originCube : mouseCube();
+    return shape.cells.map((c) => grid.cubeToOffset(add(anchor, transform(c))));
   };
   const draw = () => {
     g.clear();
@@ -157,12 +188,14 @@ export function pickHexes(options: PlaceOptions): Promise<Offset[] | null> {
       if (!onCanvas(e) || !shape) return;
       e.stopPropagation();
       e.preventDefault();
-      rotation += e.deltaY > 0 ? 1 : -1;
+      if (e.shiftKey) mirrored = !mirrored;
+      else rotation += e.deltaY > 0 ? 1 : -1;
       draw();
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") { e.stopPropagation(); finish(null); }
       if ((e.key === "r" || e.key === "R") && shape) { rotation += e.shiftKey ? -1 : 1; draw(); }
+      if ((e.key === "m" || e.key === "M") && shape) { mirrored = !mirrored; draw(); }
     };
     const onContext = (e: Event) => { if (onCanvas(e)) e.preventDefault(); };
     window.addEventListener("pointermove", onMove, true);
