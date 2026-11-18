@@ -11,6 +11,7 @@ import {
 } from "../powers.ts";
 import { EQUIPMENT_SLOTS, SKILL_LOADOUT, slotCapacity, type EquipmentSlot } from "../rules/progression.ts";
 import { runAsGM } from "../socket.ts";
+import { recordRequest, type FactionStanding } from "../rules/factions.ts";
 import { isBlankMercenary, maybeOfferCreation, openCreationWizard } from "../apps/creation.ts";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -57,6 +58,8 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       importPerks: MercenarySheet.#onImportPerks,
       togglePerkBox: MercenarySheet.#onTogglePerkBox,
       editItem: MercenarySheet.#onEditItem,
+      factionRequest: MercenarySheet.#onFactionRequest,
+      factionActive: MercenarySheet.#onFactionActive,
       deleteItem: MercenarySheet.#onDeleteItem,
       postItem: MercenarySheet.#onPostItem,
       useItem: MercenarySheet.#onUseItem,
@@ -216,6 +219,22 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
         const s = sysOf(i);
         return { ...brief(i), expended: s.expended, master: s.master, bonus: s.testBonus, category: t(`GLOOM.Background.category.${s.category}`) };
       }),
+      factions: await Promise.all(ofType("faction").map(async (i) => {
+        const s = i.system as unknown as {
+          tier: number; member: boolean; successes: number; failures: number; active: boolean; major: boolean;
+          tierKey: string; tierTitle: string; currentBenefits: string; successesNeeded: number | null; failuresLimit: number | null;
+        };
+        return {
+          ...brief(i), tier: s.tier, member: s.member, active: s.active, hostile: s.tier === 0,
+          tierLabel: t(`GLOOM.Faction.tier.${s.tierKey}`), title: s.tierTitle,
+          progress: s.member && s.successesNeeded !== null
+            ? f("GLOOM.Faction.progress", {
+              s: String(s.successes), need: String(s.successesNeeded), f: String(s.failures), limit: String(s.failuresLimit ?? "–"),
+            })
+            : s.member ? "" : t("GLOOM.Faction.nonMember"),
+          benefits: s.tier >= 2 ? await TextEditor.enrichHTML(s.currentBenefits, { relativeTo: i } as never) : "",
+        };
+      })),
       enrichedBiography: await TextEditor.enrichHTML(system.biography, { secrets: actor.isOwner, relativeTo: actor } as never),
     };
   }
@@ -325,6 +344,35 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
 
   static async #onEditItem(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {
     await this.#itemFrom(target)?.sheet?.render(true);
+  }
+
+  static async #onFactionRequest(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {
+    const item = this.#itemFrom(target);
+    if (!item) return;
+    const s = item.system as unknown as FactionStanding;
+    const next = recordRequest(
+      { tier: s.tier, member: s.member, successes: s.successes, failures: s.failures },
+      target.dataset["success"] === "true",
+    );
+    await item.update({ system: next } as never);
+    if (next.tier !== s.tier) {
+      await ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor: this.document as Actor.Stored }),
+        content: `<p class="gloom-faction"><i class="fa-solid fa-flag"></i> ${f(next.tier > s.tier ? "GLOOM.Faction.rose" : "GLOOM.Faction.fell", {
+          name: this.document.name ?? "", tier: String(next.tier), faction: item.name ?? "",
+        })}</p>`,
+      } as never);
+    }
+  }
+
+  /** Only one faction's benefits apply per mission. */
+  static async #onFactionActive(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {
+    const item = this.#itemFrom(target);
+    if (!item) return;
+    const turnOn = !(item.system as unknown as { active: boolean }).active;
+    const updates = this.document.items.filter((i) => i.type === "faction")
+      .map((i) => ({ _id: i.id, "system.active": turnOn && i.id === item.id }));
+    await this.document.updateEmbeddedDocuments("Item", updates as never);
   }
 
   static async #onDeleteItem(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {

@@ -12,7 +12,8 @@
       "equipment": "Item",
       "class": "Class",
       "ancestry": "Ancestry",
-      "npcAction": "NPC Action"
+      "npcAction": "NPC Action",
+      "faction": "Faction"
     },
     "Card": {
       "modifier": "Modifier Card"
@@ -676,6 +677,34 @@
         "overBudget": "Your purchases cost more than 50 g.",
         "quest": "Write a personal quest."
       }
+    },
+    "Faction": {
+      "plural": "Factions",
+      "major": "Major faction",
+      "tierLabel": "Tier",
+      "member": "Member",
+      "active": "Benefits this mission",
+      "activeHint": "With a positive reputation in several factions, choose one at the start of each mission whose benefits apply.",
+      "tier": {
+        "hostile": "Hostile",
+        "neutral": "Neutral",
+        "positive": "Positive",
+        "novice": "Novice Member",
+        "junior": "Junior Member",
+        "senior": "Senior Member"
+      },
+      "successes": "Successes",
+      "failures": "Failures",
+      "requestSuccess": "Request succeeded",
+      "requestFailure": "Request failed",
+      "tiers": "Tiers",
+      "boons": "Boons",
+      "benefits": "Current benefits",
+      "none": "No faction yet: drag one from a compendium.",
+      "rose": "{name} rises to Tier {tier} with {faction}.",
+      "fell": "{name} falls to Tier {tier} with {faction}.",
+      "nonMember": "Not a member: requests don't change the tier (join through a faction request).",
+      "progress": "{s}/{need} successes to rise · {f}/{limit} failures to drop"
     }
   }
 }

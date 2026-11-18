@@ -3,6 +3,7 @@ import type { NpcActionModel, NpcModel } from "./module/data/npc.ts";
 import type { BackgroundModel } from "./module/data/background.ts";
 import type { PerkModel } from "./module/data/perk.ts";
 import type { AncestryModel, ClassModel, EquipmentModel, SkillModel, TalentModel } from "./module/data/powers.ts";
+import type { FactionModel } from "./module/data/faction.ts";
 import type { ModifierCardModel } from "./module/data/modifier-card.ts";
 
 declare module "fvtt-types/configuration" {
@@ -15,6 +16,7 @@ declare module "fvtt-types/configuration" {
       talent: typeof TalentModel;
       equipment: typeof EquipmentModel;
       class: typeof ClassModel;
+      faction: typeof FactionModel;
       ancestry: typeof AncestryModel;
       npcAction: typeof NpcActionModel;
     };

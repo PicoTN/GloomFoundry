@@ -498,3 +498,11 @@ body.gloom-face-playing .gloom-card {
     button { flex: 0 0 auto; width: auto; } .finish { background: var(--gloom-green); color: white; } }
 }
 .gloom-new-mercenary { flex: 1 0 100%; }
+
+.gloomfoundry .factions {
+  .faction .item-name { flex: 1; .hint { font-size: 0.75rem; opacity: 0.75; } details summary { font-size: 0.8rem; cursor: pointer; } }
+  .faction.hostile { background: rgb(192 57 43 / 10%); }
+  .faction.active { box-shadow: inset 3px 0 0 var(--gloom-gold); }
+  .item-control.on { color: var(--gloom-gold); }
+}
+.gloomfoundry dl.faction-tiers { dt.current, dd.current { background: rgb(217 164 65 / 18%); } dd { margin: 0 0 0.4rem 0.8rem; } }

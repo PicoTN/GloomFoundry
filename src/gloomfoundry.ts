@@ -15,6 +15,7 @@ import { MercenaryModel } from "./module/data/mercenary.ts";
 import { NpcActionModel, NpcModel } from "./module/data/npc.ts";
 import { PerkModel } from "./module/data/perk.ts";
 import { AncestryModel, ClassModel, EquipmentModel, SkillModel, TalentModel } from "./module/data/powers.ts";
+import { FactionModel } from "./module/data/faction.ts";
 import { ModifierCardModel } from "./module/data/modifier-card.ts";
 import { addTemporary, drawAttack, testAttribute } from "./module/deck/actions.ts";
 import { registerCombatHooks } from "./module/deck/combat-hooks.ts";
@@ -61,6 +62,7 @@ Hooks.once("init", async () => {
     talent: TalentModel,
     equipment: EquipmentModel,
     class: ClassModel,
+    faction: FactionModel,
     ancestry: AncestryModel,
     npcAction: NpcActionModel,
   });

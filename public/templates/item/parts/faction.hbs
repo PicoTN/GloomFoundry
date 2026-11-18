@@ -1,0 +1,20 @@
+<div class="grid-fields">
+  <label>{{localize "GLOOM.Faction.tierLabel"}}<select name="system.tier" data-dtype="Number">{{selectOptions options.tier selected=system.tier valueAttr="key" labelAttr="label"}}</select></label>
+  <label class="checkbox"><input type="checkbox" name="system.member"{{#if system.member}} checked{{/if}}> {{localize "GLOOM.Faction.member"}}</label>
+  <label>{{localize "GLOOM.Faction.successes"}}<input type="number" name="system.successes" value="{{system.successes}}" min="0" step="1"></label>
+  <label>{{localize "GLOOM.Faction.failures"}}<input type="number" name="system.failures" value="{{system.failures}}" min="0" step="1"></label>
+  <label class="checkbox"><input type="checkbox" name="system.major"{{#if system.major}} checked{{/if}}> {{localize "GLOOM.Faction.major"}}</label>
+</div>
+{{#if system.tiers.length}}
+<h4>{{localize "GLOOM.Faction.tiers"}}</h4>
+<dl class="faction-tiers">
+  {{#each system.tiers}}
+  <dt class="{{#if (eq tier ../system.tier)}}current{{/if}}">{{tier}}{{#if title}} · {{title}}{{/if}}</dt>
+  <dd class="{{#if (eq tier ../system.tier)}}current{{/if}}">{{{benefits}}}</dd>
+  {{/each}}
+</dl>
+{{/if}}
+<h4>{{localize "GLOOM.Item.description"}}</h4>
+{{formInput systemFields.description value=system.description enriched=enriched.description toggled=true name="system.description"}}
+<h4>{{localize "GLOOM.Faction.boons"}}</h4>
+{{formInput systemFields.boons value=system.boons enriched=enriched.boons toggled=true name="system.boons"}}

@@ -5,6 +5,7 @@
  * system itself ships no content.
  */
 import { ATTRIBUTES, SYSTEM_ID, templatePath, type AttributeKey } from "../config.ts";
+import { STARTING_TIER } from "../rules/factions.ts";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const t = (key: string) => game.i18n!.localize(key);
@@ -15,7 +16,6 @@ export const CREATION_POINTS = 6;
 export const CREATION_MAX = 3;
 export const CREATION_BACKGROUNDS = 4;
 export const SHOPPING_GOLD = 50;
-const STARTING_TIER = 2;
 
 const STEPS = ["identity", "ancestry", "class", "faction", "attributes", "backgrounds", "inventory", "quest", "review"] as const;
 type Step = (typeof STEPS)[number];
@@ -200,7 +200,8 @@ export class CreationWizard extends HandlebarsApplicationMixin(ApplicationV2) {
       state: s,
       ancestries: o.ancestry.map((a) => ({ ...a, selected: a.uuid === s.ancestry })),
       classes: o.class.map((c) => ({ ...c, selected: c.uuid === s.class })),
-      factions: o.faction.map((x) => ({ ...x, selected: x.uuid === s.faction })),
+      // You start with a major faction (p. 115).
+      factions: o.faction.filter((x) => x.system["major"] !== false).map((x) => ({ ...x, selected: x.uuid === s.faction })),
       ancestry: ancestry && { ...ancestry, description: await enrich(ancestry.system["description"]), grants: grantsOf(ancestry) },
       cls: cls && {
         ...cls, description: await enrich(cls.system["description"]), grants: grantsOf(cls),
@@ -388,7 +389,7 @@ async function createMercenary(
 
   const others: Record<string, unknown>[] = [];
   if (s.faction) {
-    const data = await itemData(s.faction, { system: { tier: STARTING_TIER } });
+    const data = await itemData(s.faction, { system: { tier: STARTING_TIER, member: true, successes: 0, failures: 0, active: true } });
     if (data) others.push(data);
   }
   for (const u of s.backgrounds) {
