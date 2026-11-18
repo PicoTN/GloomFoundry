@@ -1,6 +1,6 @@
 # Gloomhaven RPG for FoundryVTT: Project Plan
 
-Status: in progress (phases 0–1 implemented, untested in Foundry). Written 2026-11-17. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
+Status: phases 0–6 implemented (latest release v0.6.1). Only v0.1 has been play-tested on Forge; everything after it is typechecked and unit-tested but not yet tried in a live game. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
 
 > PDF page numbers are the printed page number **+3** (printed p.343 is PDF page 346).
 
@@ -98,7 +98,7 @@ The face cards cover the temporary cards:
 - **Sheets:** ApplicationV2 + `HandlebarsApplicationMixin` (ActorSheetV2 / ItemSheetV2). No jQuery, no v1 apps. Editors are ProseMirror only.
 - **Active Effects:** in v14 they are V2, with `system.changes`. Use them for conditions and for item or perk bonuses.
 - **Packs:** sources are JSON or YAML in the repo. `@foundryvtt/foundryvtt-cli` (`compilePack`/`extractPack`) builds the LevelDB packs.
-- **Tooling:** plain ES modules plus a small build step (Vite, or just Sass and the CLI). Start without TypeScript to keep friction low. We can add JSDoc types and `@league-of-foundry-developers/foundry-vtt-types` later if wanted.
+- **Tooling:** TypeScript 7 with fvtt-types, Vite (library build to `dist/`), Sass and Vitest. Pure rules live in `src/module/rules/` with no Foundry imports and are unit-tested.
 - **Reference code:** Foundry's own *Crucible* system, *Daggerheart (Foundryborne)* and dnd5e for modern DataModel + AppV2 patterns. Use *SWADE* for card mechanics built on the core Cards API. The asacolips boilerplate is useful for layout only, because its sheets are outdated.
 - **Card modules:** use **none as a hard dependency**. Card modules historically die at major Foundry versions (Monarch and Card Support are dead). *Complete Card Management* (verified on v14) could get optional, soft integration later.
 
@@ -131,6 +131,8 @@ The face cards cover the temporary cards:
 ---
 
 ## 3. Data model (first cut)
+
+> Superseded in places by the implementation: enemies, allies and summons are one `npc` actor type, `gear` became `equipment`, and NPC actions are `npcAction` items. See `src/module/data/`.
 
 **Actors**
 
@@ -165,15 +167,15 @@ The face cards cover the temporary cards:
 
 | Phase | Deliverable |
 |---|---|
-| **0. Scaffold** | Repo, `system.json`, build, fvtt-cli pack pipeline, dev symlink into the Foundry data dir, CI lint. Spike Card subtypes. |
-| **1. Modifier deck** | Card model, base 20-card deck generator, per-actor and GM decks, draw/test/attack chat cards, advantage/disadvantage, Critical/Null reshuffle, Bless/Curse, poker/GH face toggle. **This is the MVP; the game is playable with it plus notes.** |
-| **2. Mercenary sheet** | Attributes with click-to-test (TN prompt, background and skill bonuses), HP, rests (Quick Breath / Full Rest automation), backgrounds. |
+| **0. Scaffold** ✅ | Repo, `system.json`, build, fvtt-cli pack pipeline, dev symlink into the Foundry data dir, CI lint. Spike Card subtypes. |
+| **1. Modifier deck** ✅ | Card model, base 20-card deck generator, per-actor and GM decks, draw/test/attack chat cards, advantage/disadvantage, Critical/Null reshuffle, Bless/Curse, poker/GH face toggle. **This is the MVP; the game is playable with it plus notes.** |
+| **2. Mercenary sheet** ✅ | Attributes with click-to-test (TN prompt, background and skill bonuses), HP, rests (Quick Breath / Full Rest automation), backgrounds. |
 | **3. Powers** ✅ | Talent, Skill, equipment, Class and Ancestry item types; ready/expended/lost; Skill loadout (2+4); Skill test bonus and Razor's Edge; heal 3 / lose to negate; Quick Breath and Full Rest recovery; equipment slots; classes/ancestries grant items and set HP by health track. Backgrounds have categories and Master (+2). Content (Skill/Talent text) is entered by players or kept in the local `content/` folder. |
 | **4. Perks** ✅ | Generic perk editor (no class data bundled: players enter perks from their own book); ticking boxes rebuilds the deck, keeping Bless/Curse. |
 | **4b. Conditions** ✅ | Gloomhaven conditions replace Foundry's token statuses (plus Unconscious/Dead). Sheet toggles with resist tests; Strengthen/Muddle and the target's Poison/Ward pre-fill the draw dialogs; Bless/Curse from the token HUD add deck cards; rests and end of combat clear conditions; Unconscious follows HP. Durations wait for combat (phase 5). |
 | **5. Combat** ✅ (first pass) | Planning phase each round: mercenaries pick primary/secondary powers and initiative, the GM picks enemy speeds (no repeat), elites before normals, summons before their controller; ascending order. Then the action phase. Turn start: Regenerate, then Wound. Turn end: infusions become Strong, "until end of next turn" conditions expire, planned Skills/items are expended or lost. Round end: elements decay, Critical/Null decks reshuffle. Element tracker in the combat sidebar. "Apply damage" on attack cards (Ward, Regenerate). End of combat: unconscious mercenaries heal 1. Not yet: persistent/round effects, surprise, targeting rules for Invisible. |
-| **6. NPCs** ✅ | One `npc` actor for enemies, allies, summons and townsfolk. Bestiary stat block by CL (normal/elite, Attribute columns, DFNS/OFNS markers), or manual stats. Adversary and nemesis derived stats. NPC actions (F/N/S, elite-only, break/stunt). Uses the GM deck, or the controller's deck for summons. Switch side (sheet + token HUD), new NPCs Hostile at the current CL. GM window shows M, CL, the Combat Challenge values and scene Threat vs the difficulty max. Next: bestiary transcription into `content/`, summon actors for class summons. |
-| **7. Content** | Compendia (see IP note). |
+| **6. NPCs** ✅ | One `npc` actor for enemies, allies, summons and townsfolk. Bestiary stat block by CL (normal/elite, Attribute columns, DFNS/OFNS markers), or manual stats. Adversary and nemesis derived stats. NPC actions (F/N/S, elite-only, break/stunt). Uses the GM deck, or the controller's deck for summons. Switch side (sheet + token HUD), new NPCs Hostile at the current CL. GM window shows M, CL, the Combat Challenge values and scene Threat vs the difficulty max. Printed nemeses (final stats, HP and Threat ×M) are supported. Bestiary transcribed into `content/` (49 actors with portraits). Next: summon actors for class summons. |
+| **7. Content** (local only) | Done in the git-ignored `content/` folder: perks (16 classes, checked against the class chapters), 46 Backgrounds, 16 classes and 8 ancestries with their Talents and Skills, 49 bestiary actors with portraits, and an icon pack (13 conditions, 7 elements, 17 stats). The system loads an icon pack from a JSON manifest (Settings > Icon pack). No compendia are published (see IP note). |
 
 ---
 
@@ -184,13 +186,13 @@ The face cards cover the temporary cards:
   - Keep **rules text, skill and talent wording, art and icons** out of a public repo.
 - Mechanics data is lower risk: card values and stat numbers. Short labels like condition names are fine.
 - Full content compendia should wait for Cephalofair's community/fan-content policy, or live in a private/separate content module.
-- Iconography (circle and hexagon, element and condition glyphs) needs to be our own or openly licensed, for example game-icons.net (CC BY 3.0).
+- Iconography (circle and hexagon, element and condition glyphs) needs to be our own or openly licensed, for example game-icons.net (CC BY 3.0). Official icons are only used through a local icon pack the user uploads to their own server.
 
 ---
 
 ## 6. Decisions (2026-11-17)
 
-- Private repo for now: git@github.com:PicoTN/GloomFoundry.git
+- Repo: git@github.com:PicoTN/GloomFoundry.git, public since v0.1 (personal test project, no official assets). Releases are built by GitHub Actions on `v*` tags; the manifest is `releases/latest/download/system.json`.
 - Gloomhaven-style card faces by default. Generated placeholders for now; scans or other art can replace them later. Playing-card faces are a per-client setting.
 - Scope: deck + sheet first. Combat automation later, but planned.
 - TypeScript from day one (TS 7, fvtt-types, Vite, Vitest).
@@ -212,3 +214,36 @@ This only matters on scenes with Token Vision enabled. Targeting is not blocked 
 
 1. **Advantage + disadvantage together.** The rulebook doesn't say how they combine; we currently cancel them out.
 2. **Critical damage.** "Twice your base damage": we currently double the value after +X/−X attack effects, before Shield and Ward.
+
+## 9. Releases
+
+| Version | Content |
+|---|---|
+| v0.1.0–v0.1.1 | Scaffold, Modifier Decks (personal + GM), mercenary sheet, attribute tests, attack draws, release workflow |
+| v0.2.0 | Ward after Shield, perks editor and JSON import |
+| v0.3.0 | Gloomhaven conditions as token statuses, opposed-side Invisible, switch side |
+| v0.4.0 | Powers: Skills, Talents, equipment, classes, ancestries, richer Backgrounds |
+| v0.5.0 | NPCs: enemies, allies, summons, stat blocks by CL, Threat |
+| v0.6.0 | Combat flow (planning/action/cleanup), element tracker, damage application, icon packs |
+| v0.6.1 | Printed nemeses |
+
+## 10. What remains
+
+**First: play-test v0.6.1 on Forge.** Run a mercenary with a class, perks and powers against a few imported bestiary enemies through a full combat round, and fix what breaks. The sheets' tabs, planning dialogs and tracker panel have never run in a live Foundry.
+
+Combat:
+- Persistent and round effects (bonuses that last a round, or until a condition is met).
+- Surprise rounds.
+- Invisible: block targeting by opposed tokens, not just vision.
+- Retaliate, Pierce, Push/Pull and other attack effects are text only; decide how much to automate.
+- Nemesis Break actions at half HP and Stunts per round.
+
+NPCs and content:
+- Class summons as ready-made `npc` actors linked to their controller.
+- Fill the Rogue Mercenary's missing "bandit commander" base actions if the book ever prints them.
+- Use the stat icons (attack, move, range…) in chat cards and stat blocks, on a light backdrop since many are black.
+
+Polish:
+- Scanned card art once the physical decks arrive (replace the generated faces via the icon pack's `card.<key>` entries).
+- Compendium build pipeline (`fvtt-cli`) for anything shippable, if a fan-content policy allows it.
+- Other languages (all strings are already in `lang/en.json`).
