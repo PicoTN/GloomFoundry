@@ -40,7 +40,32 @@ export function mechanicsOwner(actor: Actor.Implementation): Actor.Implementatio
 }
 
 export function mechanicsOf(actor: Actor.Implementation): Mechanic[] {
-  return (mechanicsOwner(actor).system as unknown as { mechanics?: Mechanic[] }).mechanics ?? [];
+  const owner = mechanicsOwner(actor);
+  const all = (owner.system as unknown as { mechanics?: Mechanic[] }).mechanics ?? [];
+  // Talent-dependent mechanics (e.g. Concentrated Rage tokens) only once the talent is known.
+  return all.filter((m) => !m.talent || owner.items.some((i) => i.type === "talent" && i.name === m.talent));
+}
+
+/** All class counters of an actor's mercenary, flattened (counter id -> value). */
+export function allCounters(actor: Actor.Implementation): Record<string, number> {
+  const owner = mechanicsOwner(actor);
+  const counters = (owner.system as unknown as { classState?: ClassState }).classState?.counters ?? {};
+  return Object.assign({}, ...Object.values(counters));
+}
+
+/** Spend class counters (e.g. 3 rage tokens). Returns false if there aren't enough. */
+export async function spendCounters(actor: Actor.Implementation, spend: Record<string, number>): Promise<boolean> {
+  const owner = mechanicsOwner(actor);
+  const state = stateOf(owner);
+  const counters = foundry.utils.deepClone(state.counters ?? {});
+  for (const [id, n] of Object.entries(spend)) {
+    const mechId = Object.keys(counters).find((m) => (counters[m]?.[id] ?? 0) >= n);
+    if (!mechId) return false;
+    counters[mechId]![id] = (counters[mechId]![id] ?? 0) - n;
+  }
+  state.counters = counters;
+  await saveState(owner, state);
+  return true;
 }
 
 export function statesOf(actor: Actor.Implementation): string[] {

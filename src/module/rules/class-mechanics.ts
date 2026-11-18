@@ -15,9 +15,13 @@ import type { PowerAction } from "./power-actions.ts";
 
 export interface MechanicOption { name: string; text: string; group?: string; actions?: PowerAction[] }
 
-export type Mechanic =
+/** Every mechanic may depend on a talent (shown only once the character has it). */
+export type Mechanic = MechanicBase & { talent?: string };
+type MechanicBase =
   | { type: "state"; id: string; label: string; rule: "hpHalfOrLess"; text?: string }
-  | { type: "counters"; id: string; label: string; counters: { id: string; label: string }[]; max: number; text?: string }
+  | { type: "counters"; id: string; label: string; counters: { id: string; label: string }[]; max: number; text?: string;
+      /** Gain 1 of the first counter automatically, e.g. whenever your companion attacks. */
+      gainOn?: "companionAttack" }
   | { type: "slot"; id: string; label: string; max: number; text?: string }
   | { type: "mark"; id: string; label: string; on: "enemy" | "ally" | "any"; stacking?: boolean; single?: boolean;
       options?: MechanicOption[]; text?: string }

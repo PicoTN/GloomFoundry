@@ -38,6 +38,8 @@ export interface Bonus {
   perTargetMark?: string;
   /** An ally must carry this mark (e.g. "prescription"). */
   allyMark?: string;
+  /** Class counters needed and spent when used (e.g. Concentrated Rage: {"concentrated": 3}). */
+  spend?: Record<string, number>;
   attack?: number; range?: number; targets?: number; pierce?: number; push?: number; pull?: number;
   heal?: number; move?: number; shield?: number; retaliate?: number;
   conditions?: string[];
@@ -61,6 +63,8 @@ export interface Requirement {
   counters?: Record<string, number>;
   /** Class counters mechanic emptied when used (playing a Song removes all Notes). */
   clearCounters?: string;
+  /** Class counters spent when used. */
+  spend?: Record<string, number>;
 }
 
 interface Common {
@@ -90,6 +94,8 @@ export type PowerAction =
   | (Common & { kind: "area"; area: Area })
   | (Common & { kind: "trap"; count: number; damage: number; effects: string[]; range?: number | null })
   | (Common & { kind: "obstacle"; count: number; range?: number | null })
+  /** "Mark a space within range 3: ..." — a persistent marked space with an effect (like a trap). */
+  | (Common & { kind: "space"; label: string; effect: string; count?: number; range?: number | null })
   | (Common & { kind: "summon"; name?: string })
   | (Common & { kind: "choice"; pick: number; options: PowerAction[][] })
   | (Common & { kind: "mark"; id: string; count?: number; option?: string; group?: string; targets?: number; range?: number | null })

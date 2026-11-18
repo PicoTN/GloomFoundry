@@ -801,7 +801,10 @@
         "ally": "Ally",
         "enemy": "Controlled enemy",
         "self": ""
-      }
+      },
+      "space": "Mark {n} space(s): {label}",
+      "spend": "spend {list}",
+      "notEnough": "Not enough tokens: {list}."
     },
     "Place": {
       "needHex": "Placing areas needs a scene with a hex grid.",
