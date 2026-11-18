@@ -2,7 +2,7 @@
  * Perk wording as HTML: attack values in a circle, Attribute values in a hexagon (the system's
  * own style), and effect keywords as icons when the loaded icon pack has them.
  */
-import { describePerk, knownFaces, tokenizeEffect, type CardFace, type FaceGroup } from "../rules/perk-text.ts";
+import { describePerk, ICON_WORDS, knownFaces, tokenizeEffect, type CardFace, type EffectToken, type FaceGroup } from "../rules/perk-text.ts";
 import type { PerkStep } from "../rules/perks.ts";
 
 const t = (key: string) => game.i18n!.localize(key);
@@ -13,13 +13,47 @@ const escape = (s: string) =>
 
 /** Effect text with icons from the icon pack (plain words when the pack lacks them). */
 export function effectHTML(text: string): string {
-  return tokenizeEffect(text).map((tok) => {
-    if ("text" in tok) return escape(tok.text);
-    const src = CONFIG.GLOOM?.icons[tok.icon];
-    return src
-      ? `<img class="gloom-inline-icon" src="${escape(src)}" alt="${escape(tok.label)}" data-tooltip="${escape(tok.label)}">`
-      : escape(tok.label);
-  }).join("");
+  return tokenizeEffect(text).map(tokenHTML).join("");
+}
+
+const img = (src: string, label: string) =>
+  `<img class="gloom-inline-icon" src="${escape(src)}" alt="${escape(label)}" data-tooltip="${escape(label)}">`;
+
+function tokenHTML(tok: EffectToken): string {
+  if ("text" in tok) return escape(tok.text);
+  if ("infuse" in tok) {
+    const srcs = tok.infuse.map((e) => CONFIG.GLOOM?.icons[`element.${e}`]);
+    if (srcs.some((s) => !s)) return escape(tok.label);
+    // Like the book: the element icons alone, "/" meaning either.
+    return `<span class="gloom-infuse" data-tooltip="${escape(tok.label)}">${srcs.map((s, i) => img(s!, tok.infuse[i]!)).join("/")}</span>`;
+  }
+  const src = CONFIG.GLOOM?.icons[tok.icon];
+  return src ? img(src, tok.label) : escape(tok.label);
+}
+
+/** Item types whose rules text gets icons when enriched. */
+const ICON_ITEM_TYPES = new Set(["skill", "talent", "equipment", "npcAction", "perk"]);
+
+/**
+ * Text enricher: game keywords in power, item and NPC action texts become icons from the icon
+ * pack (only for those items, or when enrichHTML is called with `gloomIcons: true`).
+ */
+export function registerIconEnricher(): void {
+  CONFIG.TextEditor.enrichers.push({
+    id: "gloomIcons",
+    pattern: new RegExp(ICON_WORDS.source, "g"),
+    enricher: async (match: RegExpMatchArray, options?: { relativeTo?: { documentName?: string; type?: string }; gloomIcons?: boolean }) => {
+      const rel = options?.relativeTo;
+      const wanted = options?.gloomIcons || (rel?.documentName === "Item" && ICON_ITEM_TYPES.has(rel.type ?? ""));
+      if (!wanted || !Object.keys(CONFIG.GLOOM?.icons ?? {}).length) return null;
+      const html = tokenizeEffect(match[0]).map(tokenHTML).join("");
+      if (!html.includes("<img")) return null;
+      const span = document.createElement("span");
+      span.className = "gloom-iconized";
+      span.innerHTML = html;
+      return span;
+    },
+  } as never);
 }
 
 function attackText(face: CardFace): string {

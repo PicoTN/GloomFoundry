@@ -7,6 +7,7 @@
   <div class="cards">
     {{#each cards}}{{> "gloom.modifier-card" this}}{{/each}}
   </div>
+  {{#each cards}}{{#if effectHTML}}{{#unless discarded}}<p class="card-effect"><i class="fa-solid fa-star"></i> {{{effectHTML}}}</p>{{/unless}}{{/if}}{{/each}}
   {{#if tie}}<p class="tie"><i class="fa-solid fa-scale-balanced"></i> {{localize "GLOOM.Draw.tie"}}</p>{{/if}}
   <dl class="details">
     {{#each details}}<dt>{{label}}</dt><dd>{{value}}</dd>{{/each}}

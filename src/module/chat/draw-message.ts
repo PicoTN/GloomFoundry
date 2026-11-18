@@ -1,4 +1,5 @@
 import { SYSTEM_ID, templatePath } from "../config.ts";
+import { effectHTML } from "../perks/display.ts";
 import type { DrawnCard } from "../deck/modifier-deck.ts";
 import { attackLabel, playingCardLabel, SUIT_SYMBOLS, type ModifierCardData } from "../rules/modifier.ts";
 
@@ -18,6 +19,8 @@ export interface CardView {
   img: string;
   kept: boolean;
   discarded: boolean;
+  /** The card's effect with icons (when the icon pack has them). */
+  effectHTML: string;
 }
 
 export function cardView(card: DrawnCard, kept: boolean, discarded = false): CardView {
@@ -33,6 +36,7 @@ export function cardView(card: DrawnCard, kept: boolean, discarded = false): Car
     attack: attackLabel(d),
     attribute: d.attribute,
     effect: d.effect,
+    effectHTML: d.effect ? effectHTML(d.effect) : "",
     rank: pc.rank === "joker" ? "★" : pc.rank,
     suitSymbol: pc.rank === "joker" ? "" : SUIT_SYMBOLS[pc.suit],
     red: pc.suit === "hearts" || pc.suit === "diamonds" || pc.suit === "red",

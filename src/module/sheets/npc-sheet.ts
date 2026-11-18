@@ -115,10 +115,10 @@ export class NpcSheet extends HandlebarsApplicationMixin(foundry.applications.sh
         id: c.id, kind: c.kind, active: hasCondition(actor, c.id), label: t(conditionLabel(c.id)),
         img: CONFIG.statusEffects.find((s) => s.id === c.id)?.img ?? "",
       })),
-      actions: actor.items
+      actions: await Promise.all(actor.items
         .filter((i) => i.type === "npcAction")
         .sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
-        .map((i) => {
+        .map(async (i) => {
           const s = i.system as unknown as {
             speedLabel: string; kind: string; eliteOnly: boolean; nemesisOnly: boolean; availableTo(c: string): boolean;
           };
@@ -126,8 +126,9 @@ export class NpcSheet extends HandlebarsApplicationMixin(foundry.applications.sh
             id: i.id, name: i.name, img: i.img, speeds: s.speedLabel, kind: s.kind,
             kindLabel: s.kind === "action" ? "" : t(`GLOOM.NpcAction.kind.${s.kind}`),
             elite: s.eliteOnly, nemesis: s.nemesisOnly, available: s.availableTo(system.category),
+            text: await TextEditor.enrichHTML((s as unknown as { description: string }).description ?? "", { relativeTo: i } as never),
           };
-        }),
+        })),
       enrichedDescription: await enrich(system.description),
       enrichedTactics: await enrich(system.tacticsText),
     };

@@ -32,12 +32,16 @@ describe("describePerk", () => {
 });
 
 describe("tokenizeEffect", () => {
-  it("finds conditions, stats and elements", () => {
+  it("finds conditions, stats and infusions", () => {
     expect(tokenizeEffect("Wound")).toEqual([{ icon: "condition.wound", label: "Wound" }]);
     expect(tokenizeEffect("Heal 1, yourself")).toEqual([{ icon: "stat.heal", label: "Heal" }, { text: " 1, yourself" }]);
-    expect(tokenizeEffect("Infuse Air/Dark")).toEqual([
-      { text: "Infuse " }, { icon: "element.air", label: "Air" }, { text: "/" }, { icon: "element.dark", label: "Dark" },
-    ]);
+    expect(tokenizeEffect("Infuse Air/Dark")).toEqual([{ infuse: ["air", "dark"], label: "Infuse Air/Dark" }]);
+    expect(tokenizeEffect("Infuse Fire or Ice")).toEqual([{ infuse: ["fire", "ice"], label: "Infuse Fire or Ice" }]);
+  });
+
+  it("leaves prose alone", () => {
     expect(tokenizeEffect("Gain a random item")).toEqual([{ text: "Gain a random item" }]);
+    expect(tokenizeEffect("suffer damage 2 to add +2 attack")).toEqual([{ text: "suffer damage 2 to add +2 attack" }]);
+    expect(tokenizeEffect("When an enemy attacks you")).toEqual([{ text: "When an enemy attacks you" }]);
   });
 });

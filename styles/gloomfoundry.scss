@@ -372,6 +372,8 @@ body.gloom-face-playing .gloom-card {
   }
   .attribute .score { text-align: center; font-size: 1.1rem; font-weight: bold; }
   .npc-action {
+    flex-wrap: wrap;
+    .action-text { flex: 1 0 100%; font-size: 0.85rem; padding: 0 0 0.2rem 3.2rem; p { margin: 0.1rem 0; } }
     .speeds { background: var(--gloom-gold); color: var(--gloom-ink); min-width: 2.6rem; text-align: center; }
     &.elite .item-name { color: #9a6b00; }
     &.unavailable { opacity: 0.4; }
@@ -536,7 +538,8 @@ body.gloom-face-playing .gloomfoundry .perk .perk-desc { display: inline; }
 
 // Inline modifier card faces in perk wording: attack in a circle, Attribute in a hexagon.
 .gloom-face {
-  display: inline-flex; align-items: center; gap: 0.2em; vertical-align: middle;
+  display: inline; white-space: normal;
+  > * { margin-right: 0.15em; vertical-align: middle; }
   .atk { display: inline-grid; place-items: center; min-width: 1.7em; height: 1.7em; padding: 0 0.15em; border-radius: 1em;
     font-weight: bold; font-size: 0.85em; color: white; background: #6b5a45; border: 1px solid rgb(0 0 0 / 30%);
     &.pos { background: var(--gloom-green); } &.neg { background: var(--gloom-red); }
@@ -544,6 +547,8 @@ body.gloom-face-playing .gloomfoundry .perk .perk-desc { display: inline; }
   .attr { display: inline-grid; place-items: center; width: 1.8em; height: 1.6em; font-weight: bold; font-size: 0.85em;
     color: var(--gloom-ink); background: var(--gloom-gold);
     clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%); }
-  .effect { font-size: 0.9em; }
+  .effect { font-size: 0.9em; display: inline; }
 }
+.gloom-infuse { white-space: nowrap; }
+.gloom-draw .card-effect { margin: 0.2rem 0; font-size: 0.9rem; i.fa-star { color: var(--gloom-gold); } }
 .gloom-inline-icon { height: 1.35em; width: auto; vertical-align: middle; border: none; margin: 0 0.05em; }

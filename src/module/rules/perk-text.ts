@@ -63,30 +63,30 @@ export function describePerk(steps: PerkStep[], known: Map<string, CardFace>): P
   return lines;
 }
 
-export type EffectToken = { text: string } | { icon: string; label: string };
+export type EffectToken = { text: string } | { icon: string; label: string } | { infuse: string[]; label: string };
 
-const CONDITIONS = ["bless", "curse", "immobilize", "invisible", "muddle", "pacify", "poison", "regenerate", "safeguard", "strengthen", "stun", "ward", "wound"];
-const STATS = ["attack", "damage", "heal", "jump", "move", "pierce", "pull", "push", "range", "retaliate", "shield", "target", "persistent"];
-const ELEMENTS = ["air", "dark", "earth", "fire", "ice", "light"];
-const WORD = new RegExp(`\\b(infuse\\s+(?:(?:${ELEMENTS.join("|")})(?:\\s*/\\s*)?)+|${[...CONDITIONS, ...STATS].join("|")})\\b`, "gi");
+const CONDITIONS = ["Bless", "Curse", "Immobilize", "Invisible", "Muddle", "Pacify", "Poison", "Regenerate", "Safeguard", "Strengthen", "Stun", "Ward", "Wound"];
+const STATS = ["Attack", "Damage", "Heal", "Jump", "Move", "Pierce", "Pull", "Push", "Range", "Retaliate", "Shield", "Target", "Persistent"];
+const ELEMENTS = ["Air", "Dark", "Earth", "Fire", "Ice", "Light"];
+const EL = `(?:${ELEMENTS.join("|")})`;
 
-/** Split an effect text into plain text and icon keys ("condition.wound", "element.fire", "stat.heal"). */
+/**
+ * Keywords that get icons: capitalized game terms only ("Attack 2", "Wound", "Infuse Fire or Air"),
+ * so ordinary prose ("when an enemy attacks", "suffer damage") stays text.
+ */
+export const ICON_WORDS = new RegExp(`\\b(Infuse\\s+${EL}(?:\\s*(?:/|or)\\s*${EL})*|${[...CONDITIONS, ...STATS].join("|")})\\b`, "g");
+
+/** Split a text into plain text and icon tokens ("condition.wound", "stat.heal", infused elements). */
 export function tokenizeEffect(text: string): EffectToken[] {
   const tokens: EffectToken[] = [];
   let last = 0;
-  for (const m of text.matchAll(WORD)) {
+  for (const m of text.matchAll(new RegExp(ICON_WORDS.source, "g"))) {
     if (m.index! > last) tokens.push({ text: text.slice(last, m.index) });
     const word = m[0];
-    const lower = word.toLowerCase();
-    if (lower.startsWith("infuse")) {
-      tokens.push({ text: word.slice(0, 6) + " " });
-      const els = lower.slice(6).split("/").map((e) => e.trim()).filter(Boolean);
-      els.forEach((el, i) => {
-        if (i) tokens.push({ text: "/" });
-        tokens.push({ icon: `element.${el}`, label: el[0]!.toUpperCase() + el.slice(1) });
-      });
+    if (word.startsWith("Infuse")) {
+      tokens.push({ infuse: [...word.matchAll(new RegExp(EL, "g"))].map((e) => e[0].toLowerCase()), label: word });
     } else {
-      tokens.push({ icon: `${CONDITIONS.includes(lower) ? "condition" : "stat"}.${lower}`, label: word });
+      tokens.push({ icon: `${CONDITIONS.includes(word) ? "condition" : "stat"}.${word.toLowerCase()}`, label: word });
     }
     last = m.index! + word.length;
   }

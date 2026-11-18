@@ -128,8 +128,6 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
     const skillView = (i: Item.Implementation) => {
       const s = sysOf(i);
       return {
-      isBlank: isBlankMercenary(actor) && actor.isOwner,
-      canLevelUp: levelUpEnabled() && actor.isOwner && system.level < 9,
         ...brief(i), level: s.level, initiative: s.initiative, bonus: s.testBonus, state: s.state,
         prepared: s.prepared, lostOnUse: s.lostOnUse, ready: s.state === "ready",
       };
@@ -166,6 +164,8 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
 
     return {
       ...context,
+      isBlank: isBlankMercenary(actor) && actor.isOwner,
+      canLevelUp: levelUpEnabled() && actor.isOwner && system.level < 9,
       tabs: this._prepareTabs("primary"),
       actor,
       system,

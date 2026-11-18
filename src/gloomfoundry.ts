@@ -29,6 +29,7 @@ import { GloomItemSheet, ITEM_SHEET_TYPES } from "./module/sheets/item-sheet.ts"
 import { registerPowerHooks } from "./module/powers.ts";
 import { openCreationWizard, registerCreationHooks } from "./module/apps/creation.ts";
 import { registerLevelUpControls } from "./module/apps/level-up.ts";
+import { registerIconEnricher } from "./module/perks/display.ts";
 import { MercenarySheet } from "./module/sheets/mercenary-sheet.ts";
 import { PerkSheet } from "./module/sheets/perk-sheet.ts";
 import { NpcSheet } from "./module/sheets/npc-sheet.ts";
@@ -102,6 +103,7 @@ Hooks.once("init", async () => {
   registerPowerHooks();
   registerCreationHooks();
   registerLevelUpControls();
+  registerIconEnricher();
   registerNpcHooks();
   registerCombatFlow();
   registerDamageButtons();
