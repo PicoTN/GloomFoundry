@@ -1,5 +1,5 @@
 import { ATTRIBUTE_LABELS, ATTRIBUTES, templatePath, type AttributeKey } from "../config.ts";
-import { actionButtonsHTML } from "../combat/power-actions.ts";
+import { itemActsHTML } from "../combat/power-actions.ts";
 import { conditionLabel, hasCondition, TOGGLE_CONDITIONS } from "../conditions.ts";
 import { drawAttack, testAttribute } from "../deck/actions.ts";
 import { deckForActor } from "../deck/registry.ts";
@@ -123,12 +123,14 @@ export class NpcSheet extends HandlebarsApplicationMixin(foundry.applications.sh
           const s = i.system as unknown as {
             speedLabel: string; kind: string; eliteOnly: boolean; nemesisOnly: boolean; availableTo(c: string): boolean;
           };
+          const description = (s as unknown as { description: string }).description ?? "";
+          const acts = itemActsHTML(actor, i as Item.Implementation, "description", description);
           return {
             id: i.id, name: i.name, img: i.img, speeds: s.speedLabel, kind: s.kind,
             kindLabel: s.kind === "action" ? "" : t(`GLOOM.NpcAction.kind.${s.kind}`),
             elite: s.eliteOnly, nemesis: s.nemesisOnly, available: s.availableTo(system.category),
-            text: await TextEditor.enrichHTML((s as unknown as { description: string }).description ?? "", { relativeTo: i } as never),
-            acts: actionButtonsHTML(actor, (s as unknown as { description: string }).description ?? ""),
+            text: acts.covered ? "" : await TextEditor.enrichHTML(description, { relativeTo: i } as never),
+            acts: acts.html,
           };
         })),
       enrichedDescription: await enrich(system.description),

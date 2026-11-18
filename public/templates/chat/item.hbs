@@ -7,9 +7,9 @@
     </div>
   </header>
   {{#if system.flavor}}<p class="flavor">{{system.flavor}}</p>{{/if}}
-  {{#if primary}}<div class="action primary"><span class="tag">{{localize "GLOOM.Power.primary"}}</span>{{{primary}}}{{{primaryActs}}}</div>{{/if}}
-  {{#if secondary}}<div class="action secondary"><span class="tag">{{localize "GLOOM.Power.secondary"}}</span>{{{secondary}}}{{{secondaryActs}}}</div>{{/if}}
+  {{#if primary}}<div class="action primary"><span class="tag">{{localize "GLOOM.Power.primary"}}</span>{{#unless primaryCovered}}{{{primary}}}{{/unless}}{{{primaryActs}}}</div>{{/if}}
+  {{#if secondary}}<div class="action secondary"><span class="tag">{{localize "GLOOM.Power.secondary"}}</span>{{#unless secondaryCovered}}{{{secondary}}}{{/unless}}{{{secondaryActs}}}</div>{{/if}}
   {{#if passive}}<div class="action passive">{{{passive}}}</div>{{/if}}
-  {{#if effect}}<div class="action effect">{{{effect}}}{{{effectActs}}}</div>{{/if}}
-  {{#if description}}<div class="action description">{{{description}}}{{{descriptionActs}}}</div>{{/if}}
+  {{#if effect}}<div class="action effect">{{#unless effectCovered}}{{{effect}}}{{/unless}}{{{effectActs}}}</div>{{/if}}
+  {{#if description}}<div class="action description">{{#unless descriptionCovered}}{{{description}}}{{/unless}}{{{descriptionActs}}}</div>{{/if}}
 </div>

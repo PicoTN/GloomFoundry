@@ -258,6 +258,7 @@ This only matters on scenes with Token Vision enabled. Targeting is not blocked 
 | v0.16.1 | Teleporting status; Push/Pull respects movement walls and flying targets |
 | v0.16.2 | Teleport X button: empty spaces within range, walls ignored, only the destination triggers terrain; optional line-of-sight house rule |
 | v0.17.0 | Terrain rebuilt on Foundry's Region Behaviors and movement actions (traps and hazards now trigger, including along a path; difficult terrain costs movement); Fly/Jump/Teleport are Foundry movement actions |
+| v0.17.1 | Stored actions replace the action text (sheets, chat cards, NPC actions); the wording stays in an info tooltip. NPC actions use their stored actions. Play-test: traps trigger along a walking path, not when jumping, flying or teleporting |
 
 ## 10. What remains
 

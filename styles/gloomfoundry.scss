@@ -707,3 +707,4 @@ img.gloom-inline-icon:not(.icon-stat), img.gloom-act-icon:not(.icon-stat),
 .gloom-terrain-form, .gloom-lasting-form { display: flex; flex-direction: column; gap: 0.3rem;
   > label { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; input[type="number"] { width: 5rem; flex: 0 0 auto; } } }
 .gloom-surprised { margin-left: 0.3rem; color: var(--gloom-gold); }
+.gloom-acts .act-source { align-self: center; opacity: 0.5; font-size: 0.8rem; cursor: help; &:hover { opacity: 0.9; } }

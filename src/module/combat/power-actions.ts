@@ -220,6 +220,26 @@ function oneHTML(actor: Actor.Implementation, a: PowerAction): string {
   return [main, ...bonuses, ...carried].join("") + note;
 }
 
+/** Does the item store actions for this field? Then its buttons replace the text (p. n/a: UI). */
+export function hasStoredActions(item: Item.Implementation | null, key: string): boolean {
+  const stored = (item?.system as unknown as { actions?: StoredActions } | undefined)?.actions?.[key as keyof StoredActions];
+  return Array.isArray(stored) && stored.length > 0;
+}
+
+/**
+ * Buttons for an item's text field. When the actions are stored, they stand in for the text
+ * (anything they don't cover is a text chip); the original wording stays in an info tooltip.
+ */
+export function itemActsHTML(actor: Actor.Implementation | null, item: Item.Implementation | null, key: string, text: string): { html: string; covered: boolean } {
+  const covered = hasStoredActions(item, key);
+  let html = actionButtonsHTML(actor, actionsFor(item, key, text));
+  if (covered && html) {
+    const plainText = text.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    html = html.replace(/<\/div>$/, `<span class="act-source" data-tooltip="${escape(plainText)}"><i class="fa-solid fa-circle-info"></i></span></div>`);
+  }
+  return { html, covered: covered && !!html };
+}
+
 /** Stored actions for a text field of an item, or the parsed text as a fallback. */
 export function actionsFor(item: Item.Implementation | null, key: string, text: string): PowerAction[] {
   const stored = (item?.system as unknown as { actions?: StoredActions } | undefined)?.actions?.[key as keyof StoredActions];
@@ -734,7 +754,9 @@ export async function powerDetails(item: Item.Implementation): Promise<Record<st
     if (typeof v !== "string" || !v) continue;
     out[key] = await TextEditor.enrichHTML(v, { relativeTo: item } as never);
     if (key === "passive") continue;
-    out[`${key}Acts`] = actionButtonsHTML(actor, actionsFor(item, key, v));
+    const acts = itemActsHTML(actor, item, key, v);
+    out[`${key}Acts`] = acts.html;
+    if (acts.covered) out[`${key}Covered`] = "1";
     // Round/persistent effects can be tracked (rules/lasting.ts).
     if (actor && parseLasting(v)) {
       const button = `<button type="button" class="gloom-act act-lasting" data-gloom-lasting data-item="${escape(item.uuid ?? "")}" data-key="${key}">`
