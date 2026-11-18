@@ -27,7 +27,7 @@ export type SocketRequest =
   | { action: "deleteItem"; actor: string; item: string }
   | { action: "heal"; actor: string; amount: number; source: string }
   | { action: "createRegion"; scene: string; name: string; color: string; polygons: number[][]; flags: Record<string, unknown> }
-  | { action: "spawnSummon"; scene: string; actor: string; x: number; y: number; controller: string; disposition: number };
+  | { action: "spawnSummon"; scene: string; actor: string; x: number; y: number; controller: string; disposition: number; user?: string };
 
 async function handle(req: SocketRequest): Promise<void> {
   switch (req.action) {
@@ -88,7 +88,7 @@ async function handle(req: SocketRequest): Promise<void> {
     case "createRegion":
       return createRegion(req.scene, req.name, req.color, req.polygons, req.flags);
     case "spawnSummon":
-      return spawnSummon(req.scene, req.actor, req.x, req.y, req.controller, req.disposition);
+      return spawnSummon(req.scene, req.actor, req.x, req.y, req.controller, req.disposition, req.user ?? "");
     case "applyDamage": {
       const actor = (await fromUuid(req.actor)) as Actor.Implementation | null;
       if (actor) await sufferDamage(actor, req.amount, req.options);

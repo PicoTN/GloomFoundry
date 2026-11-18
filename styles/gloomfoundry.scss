@@ -137,7 +137,9 @@ body.gloom-face-playing .gloom-card {
 // ---------------------------------------------------------------------------
 
 .gloomfoundry.sheet {
-  .window-content { padding: 0.5rem 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .window-content { padding: 0.5rem 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; overflow: hidden; }
+  // The header and tabs stay put; the active tab scrolls.
+  .window-content > .tab.active { flex: 1 1 auto; min-height: 0; overflow-y: auto; scrollbar-gutter: stable; padding-right: 0.25rem; }
 
   .sheet-header {
     display: flex; gap: 0.75rem; align-items: flex-start;
@@ -638,3 +640,18 @@ img.gloom-inline-icon {
 .gloom-benefit-choices { display: flex; flex-direction: column; gap: 0.3rem; max-height: 420px; overflow-y: auto;
   .choice { display: block; padding: 0.3rem; border: 1px solid rgb(127 127 127 / 30%); border-radius: 4px; .desc { font-size: 0.85rem; margin-left: 1.4rem; } } }
 .gloomfoundry .companies .company-link { display: inline-flex; align-items: center; gap: 0.4rem; img { width: 28px; height: 28px; border: none; } }
+
+// Icons inside action buttons and chips.
+img.gloom-act-icon {
+  display: inline-block !important; height: 1.25em !important; width: auto !important; max-width: none !important;
+  vertical-align: middle; border: none !important; margin: 0 !important; padding: 0;
+  &.icon-stat { background: #efe3c6 !important; border-radius: 3px; padding: 1px !important; box-sizing: content-box; }
+}
+
+// Dark icons on transparent backgrounds: a thin light outline keeps them readable on dark UI.
+img.gloom-inline-icon:not(.icon-stat), img.gloom-act-icon:not(.icon-stat),
+.gloomfoundry.sheet .conditions .condition img,
+#token-hud .status-effects img.effect-control {
+  filter: drop-shadow(0 0 0.5px #fff) drop-shadow(0 0 0.5px #fff) drop-shadow(0 0 1px rgb(255 255 255 / 70%));
+}
+#token-hud .status-effects img.effect-control.active { filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 2px var(--gloom-gold, #d9a441)); }

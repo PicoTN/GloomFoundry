@@ -58,6 +58,7 @@
     },
     "Mercenary": {
       "pronouns": "Pronouns",
+      "player": "Player",
       "ancestry": "Ancestry",
       "className": "Class",
       "level": "Level",

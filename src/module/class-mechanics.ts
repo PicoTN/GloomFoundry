@@ -298,7 +298,7 @@ export async function placeSummonByName(actor: Actor.Implementation, name: strin
   const p = grid.getTopLeftPoint(cells[0]);
   await runAsGM({
     action: "spawnSummon", scene: canvas.scene.uuid ?? "", actor: uuid, x: p.x, y: p.y,
-    controller: owner.uuid ?? "", disposition: dispositionOf(owner),
+    controller: owner.uuid ?? "", disposition: dispositionOf(owner), user: game.user?.id ?? "",
   });
   return true;
 }
@@ -405,5 +405,12 @@ export function registerClassMechanicHooks(): void {
     const pool = ((item as Item.Implementation).flags as Record<string, { pool?: { owner?: string; mechanic?: string; item?: string } }>)[SYSTEM_ID]?.pool;
     if (!pool?.owner || !pool.mechanic || !pool.item) return;
     void returnToPool(pool.owner, pool.mechanic, pool.item);
+  });
+  // Choosing a mercenary's player gives that user ownership of it.
+  Hooks.on("updateActor", (actor, changes, _options, userId) => {
+    if (userId !== game.user?.id || !game.user?.isGM) return;
+    const player = (changes as { system?: { player?: string } }).system?.player;
+    if (!player || (actor as Actor.Implementation).type !== "mercenary") return;
+    void (actor as Actor.Implementation).update({ [`ownership.${player}`]: CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER } as never);
   });
 }

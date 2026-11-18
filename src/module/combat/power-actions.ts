@@ -147,6 +147,27 @@ function requirementLabel(r: Requirement): string {
   return triggerLabel(r);
 }
 
+/** Icon-pack key for an action (attack, heal, conditions, elements...), when there is one. */
+function iconKey(a: PowerAction): string | null {
+  switch (a.kind) {
+    case "attack": case "heal": case "shield": case "retaliate": case "taunt": return `stat.${a.kind}`;
+    case "move": return a.jump ? "stat.jump" : "stat.move";
+    case "condition": return `condition.${a.id}`;
+    case "infuse": return a.any ? "element.any" : `element.${a.elements[0]}`;
+    case "trap": return "stat.damage";
+    default: return null;
+  }
+}
+
+/** The icon-pack image for an action, or its Font Awesome icon. */
+function actIcon(a: PowerAction, fa: string): string {
+  const key = iconKey(a);
+  const src = key ? CONFIG.GLOOM?.icons?.[key] : undefined;
+  return src
+    ? `<img class="gloom-act-icon${key!.startsWith("stat.") ? " icon-stat" : ""}" src="${escape(src)}" alt="">`
+    : `<i class="fa-solid ${fa}"></i>`;
+}
+
 function oneHTML(actor: Actor.Implementation, a: PowerAction): string {
   const base = label(actor, a);
   const l = {
@@ -165,9 +186,10 @@ function oneHTML(actor: Actor.Implementation, a: PowerAction): string {
     return `<div class="gloom-act-choice"><span class="gloom-act-chip"><i class="fa-solid ${l.icon}"></i> ${escape(l.text)}</span>${
       a.options.map((opt) => `<div class="option">${opt.map((o) => oneHTML(actor, o)).join("")}</div>`).join("")}${note}</div>`;
   }
+  const icon = actIcon(a, l.icon);
   const main = l.button
-    ? `<button type="button" class="gloom-act act-${a.kind}${req ? ` requires${reqCss}` : ""}" data-gloom-act="${escape(JSON.stringify(a))}"${reqData} data-actor="${uuid}"><i class="fa-solid ${l.icon}"></i> ${escape(l.text)}</button>`
-    : `<span class="gloom-act-chip act-${a.kind}${req ? ` requires${reqCss}` : ""}"><i class="fa-solid ${l.icon}"></i> ${escape(l.text)}</span>`;
+    ? `<button type="button" class="gloom-act act-${a.kind}${req ? ` requires${reqCss}` : ""}" data-gloom-act="${escape(JSON.stringify(a))}"${reqData} data-actor="${uuid}">${icon} ${escape(l.text)}</button>`
+    : `<span class="gloom-act-chip act-${a.kind}${req ? ` requires${reqCss}` : ""}">${icon} ${escape(l.text)}</span>`;
   // Bonus variants: the same action with the extras applied; highlighted when the element is active.
   const bonuses = (a.bonuses ?? []).map((b) => {
     const state = bonusActive(b, actor);
@@ -310,7 +332,7 @@ async function onSummon(actor: Actor.Implementation): Promise<void> {
   const p = grid.getTopLeftPoint(cells[0]);
   await runAsGM({
     action: "spawnSummon", scene: canvas.scene.uuid ?? "", actor: form.uuid, x: p.x, y: p.y,
-    controller: actor.uuid ?? "", disposition: dispositionOf(actor),
+    controller: actor.uuid ?? "", disposition: dispositionOf(actor), user: game.user?.id ?? "",
   });
 }
 
@@ -391,7 +413,19 @@ export async function createRegion(sceneUuid: string, name: string, color: strin
   }] as never);
 }
 
-export async function spawnSummon(sceneUuid: string, actorUuid: string, x: number, y: number, controller: string, disposition: number): Promise<void> {
+function summonOwnership(controller: Actor.Implementation | null, user: string): Record<string, number> {
+  const owner = CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER;
+  const out: Record<string, number> = {};
+  for (const [id, lvl] of Object.entries((controller?.ownership ?? {}) as Record<string, number>)) {
+    if (id !== "default" && lvl >= owner && !game.users?.get(id)?.isGM) out[id] = owner;
+  }
+  const player = (controller?.system as unknown as { player?: string } | undefined)?.player;
+  if (player) out[player] = owner;
+  if (user && !game.users?.get(user)?.isGM) out[user] = owner;
+  return out;
+}
+
+export async function spawnSummon(sceneUuid: string, actorUuid: string, x: number, y: number, controller: string, disposition: number, user = ""): Promise<void> {
   const scene = (await fromUuid(sceneUuid)) as Scene.Implementation | null;
   let actor = (await fromUuid(actorUuid)) as Actor.Implementation | null;
   if (!scene || !actor) return;
@@ -402,15 +436,12 @@ export async function spawnSummon(sceneUuid: string, actorUuid: string, x: numbe
       ?? ((await (game.actors as unknown as { importFromCompendium(p: unknown, id: string): Promise<Actor.Implementation> })
         .importFromCompendium(game.packs!.get(actor.pack), actor.id!)));
   }
-  // The controller's owners may run the summon (Command, its own turn).
   const controllerActor = (await fromUuid(controller)) as Actor.Implementation | null;
-  if (controllerActor) {
-    const owners = Object.entries(controllerActor.ownership as Record<string, number>).filter(([, lvl]) => lvl >= 3);
-    if (owners.length) await actor.update({ ownership: Object.fromEntries(owners) } as never);
-  }
   const tokenData = await actor.getTokenDocument({ x, y, disposition, actorLink: false } as never);
   const [token] = (await scene.createEmbeddedDocuments("Token", [tokenData.toObject()] as never)) as unknown as TokenDocument.Implementation[];
-  const update: Record<string, unknown> = { "system.controller": controller };
+  // This summon (not every copy of the base actor) belongs to the summoner: the controller's
+  // owners, its player and whoever placed it may run it (Command, its own turn).
+  const update: Record<string, unknown> = { "system.controller": controller, ownership: summonOwnership(controllerActor, user) };
   // Summons whose HP grows with the controller's level (e.g. the Wildfury companion).
   const byLevel = (actor.flags as Record<string, { hpByLevel?: number[] }>)[SYSTEM_ID]?.hpByLevel;
   const level = (controllerActor?.system as unknown as { level?: number } | undefined)?.level ?? 1;

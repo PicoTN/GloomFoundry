@@ -23,6 +23,8 @@ function defineMercenarySchema() {
     level: new fields.NumberField({ required: true, nullable: false, integer: true, min: 1, max: MAX_LEVEL, initial: 1 }),
     gold: new fields.NumberField({ required: true, nullable: false, integer: true, min: 0, initial: 0 }),
     pronouns: new fields.StringField({ required: true, blank: true, initial: "" }),
+    /** User id of the player of this mercenary (gets ownership; also owns its summons). */
+    player: new fields.StringField({ required: true, blank: true, initial: "" }),
     ancestry: new fields.StringField({ required: true, blank: true, initial: "" }),
     className: new fields.StringField({ required: true, blank: true, initial: "" }),
     personalGoal: new fields.StringField({ required: true, blank: true, initial: "" }),

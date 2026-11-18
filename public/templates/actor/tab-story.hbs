@@ -5,6 +5,10 @@
     {{#each companies}}<a class="company-link" data-action="openCompany" data-uuid="{{uuid}}"><img src="{{img}}" alt=""> {{name}} <span class="tag">{{localize "GLOOM.Company.level"}} {{level}}</span></a>{{/each}}
   </section>
   {{/if}}
+  <section class="player">
+    <h3>{{localize "GLOOM.Mercenary.player"}}</h3>
+    <select name="system.player" {{#unless isGM}}disabled{{/unless}}>{{selectOptions playerOptions selected=system.player}}</select>
+  </section>
   <section class="biography">
     <h3>{{localize "GLOOM.Mercenary.personalGoal"}}</h3>
     <input type="text" name="system.personalGoal" value="{{system.personalGoal}}">

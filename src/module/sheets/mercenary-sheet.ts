@@ -201,6 +201,7 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       ...context,
       isBlank: isBlankMercenary(actor) && actor.isOwner,
       classMechanics: classPanel(actor),
+      playerOptions: { "": "—", ...Object.fromEntries((game.users?.filter((u) => !u.isGM) ?? []).map((u) => [u.id, u.name])) },
       companies: companiesOf(actor).map((c) => ({ uuid: c.uuid, name: c.name, img: c.img, level: (c.system as unknown as { level: number }).level })),
       plan: planning ? {
         primary: findPower(draft.primary), secondary: findPower(draft.secondary), from: draft.from,

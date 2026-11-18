@@ -1,6 +1,6 @@
 # Gloomhaven RPG for FoundryVTT: Project Plan
 
-Status: phases 0–10 implemented (latest release v0.13.0). Only v0.1 has been play-tested on Forge; everything after it is typechecked and unit-tested but not yet tried in a live game. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
+Status: phases 0–10 implemented (latest release v0.13.1). v0.13 had a first play-test on Forge (creation, power buttons, areas, elements, summons, Soothsinger Notes worked); v0.13.1 fixes what it found. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
 
 > PDF page numbers are the printed page number **+3** (printed p.343 is PDF page 346).
 
@@ -246,6 +246,7 @@ This only matters on scenes with Token Vision enabled. Targeting is not blocked 
 | v0.12.0 | Shield/Retaliate/Taunt as round statuses (auto Shield in attacks, Retaliate button); class mechanics (Berserk, Notes and Songs, Augments, Doom, Plague, Supply, Medical Packs, Prescriptions, Invocations, Command, summons) with a Class panel; Summons compendium; refresh items from compendiums |
 | v0.12.1 | Marked spaces (Tinkerer), spending class counters (Concentrated Rage), talent-gated mechanics |
 | v0.13.0 | Mercenary company: company actor and sheet, levels and benefits, benefit automation, company content and reference journal |
+| v0.13.1 | Play-test fixes: scrolling sheet tabs, icon-pack icons in action buttons, light outline on dark icons, icon and name on traps/obstacles/marked spaces, Player field on mercenaries, summons owned by their summoner, faction goals (content) |
 
 ## 10. What remains
 
