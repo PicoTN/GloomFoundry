@@ -57,7 +57,7 @@ export class GloomItemSheet extends HandlebarsApplicationMixin(foundry.applicati
       testBonus: (system as { testBonus?: number }).testBonus,
       options: {
         source: choices(["class", "ancestry"], "GLOOM.Skill.source"),
-        state: choices(["ready", "expended", "lost"], "GLOOM.Power.state"),
+        state: choices(["ready", "active", "expended", "lost"], "GLOOM.Power.state"),
         talentKind: choices(["active", "passive"], "GLOOM.Talent.kind"),
         slot: choices(EQUIPMENT_SLOTS, "GLOOM.Equipment.slot"),
         rarity: choices(["common", "uncommon", "rare", "masterwork", "legendary"], "GLOOM.Equipment.rarity"),

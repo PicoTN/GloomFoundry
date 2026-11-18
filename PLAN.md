@@ -1,6 +1,6 @@
 # Gloomhaven RPG for FoundryVTT: Project Plan
 
-Status: phases 0–12 implemented (latest release v0.15.0). v0.13 had a first play-test on Forge (creation, power buttons, areas, elements, summons, Soothsinger Notes worked); v0.13.1 fixes what it found. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
+Status: phases 0–13 implemented (latest release v0.16.0). v0.13 had a first play-test on Forge (creation, power buttons, areas, elements, summons, Soothsinger Notes worked); v0.13.1 fixes what it found. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
 
 > PDF page numbers are the printed page number **+3** (printed p.343 is PDF page 346).
 
@@ -179,6 +179,7 @@ The face cards cover the temporary cards:
 | **10. Mercenary company** ✅ | Company actor shared by the group (concept, service, home district, leader, closest faction, how missions come in, members by drag-and-drop, relationships and notes), level 0–5 with progress pips: "Gain a temporary benefit" (mission, milestone or retirement); the fifth raises the level and offers the permanent benefits it qualifies for. Benefit items with automation: Bless card for every member, gold for every member, Ward at the next combat, a City Watch ally placed at the current CL under a member's control. Mercenary sheets link to their company. Content: benefits and a company guide journal (Reference compendium). |
 | **11. Shops & mission rewards** ✅ | `shop` actor (Prosperity 1–5, district, in Gloomhaven, price change %, open to players, resell) whose equipment items are its stock. GM rolls the stock from the Equipment compendiums by Prosperity (highest rarity and display count from p. 269, optional categories and common Basic items) or drops items in. Players browse with Observer rights and buy/sell for one of their mercenaries; the GM applies it. Prices: cost × shop change × (1 − company discounts), +10 g per missing Prosperity step for rarer items, rounded up; selling pays half, rounded down. Level gate (Rare L4, Masterwork L7; never Legendary) as a world setting, the GM can override. Company benefits automated: home-district and Gloomhaven-wide discounts, one-time discount (ticked per purchase), extra mission gold, recruits' gold. "Mission completed" (scene controls and company sheet): reward per mercenary (10–20 g), company extras, treasure, Faction Request outcome and gold per mercenary, extra gold, opens level-ups, grants the company's temporary benefit, counts missions, chat summary. |
 | **12. Equipment rules** ✅ | Slots enforced on equip (1 Head, 1 Body, 2 Hand with "(2)" items using both, 1 Feet, Small = half level rounded up + items like the Cloak of Pockets); a full slot opens a swap prompt. In combat: swapping is announced as a primary action, only Hand/Small, never while Stunned (GM can override). 5-space inventory for unequipped items (fractions and quantities) shown on the sheet with warnings. The company sheet has a shared inventory: members leave items there and take them back; shops can deliver there. |
+| **13. Combat automation** ✅ | Terrain Regions: traps (damage + conditions on entry; ability traps are used up), hazardous terrain (damage on entry, CL table), difficult terrain (shown), obstacles (players can't end a move there), marked spaces (recalled at the start of the turn of a token in or next to them); GM "Place terrain" tool. Movement path between the old and new hex triggers terrain; Flying and Jumping statuses (Jumping only triggers the final hex, then clears). Push/Pull buttons on attacks: valid hexes (each step farther/closer, not through tokens or obstacles) highlighted, the target moves along the path through the GM. Invisible: enemies can't target it (targeting and area attacks). Surprise button in round 1: surprised combatants skip their turn. Lasting effects: "Lasting effect" button on round/persistent texts (uses and rounds pre-filled), Skill becomes Active and is expended or lost when the effect ends (uses, end of round, rounds, end of combat or by hand); listed on the Character tab. |
 | **7. Content** (local only) | Done in the git-ignored `content/` folder: perks (16 classes, checked against the class chapters), 46 Backgrounds, 16 classes and 8 ancestries with their Talents and Skills, 160 equipment items with each class's starting gear, 20 factions, 49 bestiary actors with portraits, 23 class summons, class mechanics, structured actions for everything (re-checked against the book), and an icon pack (13 conditions, 7 elements, 18 stats). The system loads an icon pack from a JSON manifest, and imports the whole folder into world compendiums from its `index.json` (Settings > Import content, v0.7.0). No compendia are published (see IP note). |
 | **8. Character creation** ✅ | Wizard following "Making a Mercenary" (p. 105): identity, ancestry, class, major faction (member at Tier 2), 6 Attribute points (max 3), 4 Backgrounds, class starting gear or 50 g of common gear, personal quest. Opens from a "New mercenary" button in the Actors sidebar, a button on blank sheets, and automatically for players opening their blank mercenary. |
 | **8b. Factions & equipment** ✅ | `faction` items: tier 0–5, membership, request successes/failures with automatic rise/fall (p. 234), one faction's benefits active per mission. Equipment can be used per round, scene or rest. |
@@ -253,24 +254,21 @@ This only matters on scenes with Token Vision enabled. Targeting is not blocked 
 | v0.13.1 | Play-test fixes: scrolling sheet tabs, icon-pack icons in action buttons, light outline on dark icons, icon and name on traps/obstacles/marked spaces, Player field on mercenaries, summons owned by their summoner, faction goals (content) |
 | v0.14.0 | Shops (stock by Prosperity, buying/selling through the GM, company discounts, level gate) and the Mission completed rewards dialog |
 | v0.15.0 | Equipment rules: slot limits and swaps, combat swap limits, 5-space inventory, company shared inventory |
+| v0.16.0 | Combat automation: terrain (traps, hazards, obstacles, marked spaces), Push/Pull, Invisible targeting, surprise rounds, lasting effects |
 
 ## 10. What remains
 
 **Keep play-testing on Forge.** v0.1–v0.9 have been tried live (decks, sheets, creation, level up, a first combat round). Everything from v0.10 (power buttons, area placement, planning from the sheet, structured actions, round abilities, class mechanics, summons) still needs a live run.
 
 Combat:
-- Move/Jump are shown but not automated (no movement measurement); choices ("perform 2 of 3") are picked by the player.
-- Traps, obstacles and marked spaces are Regions with no automation (damage on entry, blocking movement, end-of-turn effects).
-- Persistent effects beyond Shield/Retaliate/Taunt ("the next 2 times...", "+1 attack this round").
-- Surprise rounds.
-- Invisible: block targeting by opposed tokens, not just vision.
-- Push/Pull are shown on attacks but not applied to token positions.
+- Move/Jump are shown but not measured; the movement path is the straight line between the old and new hex (moving around something with one drag can miss or hit a trap). Difficult terrain doesn't cost extra movement.
+- Lasting effects are tracked but their bonuses aren't applied automatically (the attack dialog doesn't add "+1 attack this round").
 - Nemesis Break actions at half HP and Stunts per round.
+- "Activate" (trigger a trap at range with a GR test) and destroying objects with HP.
 
 Content model gaps found while transcribing actions (currently notes or text actions):
 - Class mechanics still text: damage per Plague on all enemies, talents that change a mechanic's limits (Oppressive Strikes: two Augments), Bestial Rage's companion bonuses (the token is tracked), "grant your summons a primary action", triggers on an enemy's death, Doomstalker's two Dooms with Inescapable Fate.
 - Push/Pull/damage without an attack and conditions on several targets are notes; granted/controlled actions are labelled but run as the acting mercenary.
-- Persistent and round effects ("the next 2 times...", "this round") are text.
 
 Character, factions and items:
 - Faction boons are text only: Keepers' prayers, Guild Bazaar, Freebooters' sovereigns and Night Market, Sect rituals and charges, Shields' titles (Vanguard removes modifier cards), University Thesis and citations, Robin deathfeathers. Keepers' Hostile (Bless becomes Curse) could be automated.

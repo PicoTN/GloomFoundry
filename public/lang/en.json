@@ -318,7 +318,8 @@
       "dead": {
         "name": "Dead",
         "hint": ""
-      }
+      },
+      "invisibleTarget": "{name} is Invisible: enemies can't target it."
     },
     "Tab": {
       "character": "Character",
@@ -345,7 +346,8 @@
       "state": {
         "ready": "Ready",
         "expended": "Expended",
-        "lost": "Lost"
+        "lost": "Lost",
+        "active": "Active"
       }
     },
     "Skill": {
@@ -589,7 +591,11 @@
       "roundTitle": "Round {round}",
       "planningHint": "Planning phase: mercenaries choose their actions and initiative, the GM chooses enemy speeds, then the GM starts the action phase.",
       "expired": "{name}: {conditions} ended.",
-      "stunned": "{name} is stunned and cannot act."
+      "stunned": "{name} is stunned and cannot act.",
+      "surprise": "Surprise",
+      "surpriseHint": "Tick the surprised characters: they can't act in the first round (p. 72).",
+      "surprisedTag": "Surprised: can't act this round",
+      "surprisedSkip": "{name} is surprised and can't act this round."
     },
     "Damage": {
       "suffered": "{name} suffers {amount} damage.",
@@ -817,7 +823,9 @@
       },
       "space": "Mark {n} space(s): {label}",
       "spend": "spend {list}",
-      "notEnough": "Not enough tokens: {list}."
+      "notEnough": "Not enough tokens: {list}.",
+      "cannotForce": "{name} can't be moved there.",
+      "forceHint": "{dir} {n}: click where {name} ends up (highlighted hexes)."
     },
     "Place": {
       "needHex": "Placing areas needs a scene with a hex grid.",
@@ -1050,6 +1058,46 @@
       "takeButton": "Take",
       "stashEmpty": "The shared inventory is empty. Members leave items here from their Inventory tab.",
       "stashRules": "Items here stay at the company base. A member can take one when needed; it then uses their inventory space until the end of the mission (p. 87)."
+    },
+    "Lasting": {
+      "heading": "Lasting effects",
+      "track": "Lasting effect",
+      "title": "Lasting effect: {name}",
+      "effect": "Lasting effect",
+      "kind": "Type",
+      "round": "Until the end of the round",
+      "persistent": "Persistent",
+      "uses": "Uses (the next X times)",
+      "rounds": "Rounds after this one",
+      "lose": "Lose the Skill when it ends (instead of expending it)",
+      "started": "{name}: {effect} is in play.",
+      "ended": "{name}: {effect} ends.",
+      "usesLeft": "{n} uses left",
+      "roundsLeft": "{n} more rounds",
+      "use": "Use one",
+      "end": "End the effect"
+    },
+    "Terrain": {
+      "title": "Place terrain",
+      "kind": "Terrain",
+      "trap": "Trap",
+      "hazard": "Hazardous terrain",
+      "difficult": "Difficult terrain",
+      "obstacle": "Obstacle",
+      "count": "Hexes",
+      "name": "Name",
+      "namePlaceholder": "optional",
+      "trapDamage": "Trap damage (CL table: {n})",
+      "hazardDamage": "Hazardous terrain damage (CL table: {n})",
+      "trapEffects": "Trap effects",
+      "lasting": "The trap stays after it is triggered",
+      "hazardName": "Hazardous terrain (damage {n})",
+      "trapTriggered": "{name} triggers {trap}!",
+      "spacesNear": "{name} is in or next to:",
+      "obstacleBlocks": "You can't end a move in an obstacle.",
+      "obstacleGM": "Token placed in an obstacle (GM).",
+      "flying": "Flying",
+      "jumping": "Jumping (next move)"
     }
   }
 }

@@ -9,6 +9,8 @@ const ICONS: Record<string, string> = {
   trap: "icons/svg/trap.svg",
   obstacle: "icons/svg/ruins.svg",
   space: "icons/svg/aura.svg",
+  hazard: "icons/svg/fire.svg",
+  difficult: "icons/svg/mountain.svg",
 };
 
 const MARKER = "gloomMarker";
@@ -44,7 +46,7 @@ async function drawMarkers(region: PlaceableObject): Promise<void> {
   const texture = await loadTexture(src);
   if (!texture || region.destroyed) return;
   const size = (canvas?.grid?.size ?? 100) * 0.42;
-  const label = kind === "obstacle" ? "" : shortName(doc.name ?? "");
+  const label = kind === "obstacle" || kind === "difficult" ? "" : shortName(doc.name ?? "");
   const style = (CONFIG.canvasTextStyle as PIXI.TextStyle).clone();
   style.fontSize = Math.max(11, Math.round(size * 0.32));
   style.wordWrap = true;

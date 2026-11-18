@@ -699,3 +699,11 @@ img.gloom-inline-icon:not(.icon-stat), img.gloom-act-icon:not(.icon-stat),
     button.buy { flex: 0 0 auto; width: auto; font-size: 0.8rem; padding: 0 0.5rem; }
   }
 }
+
+// Lasting effects, terrain, surprise
+.gloomfoundry .lasting .lasting-effect { display: flex; align-items: center; gap: 0.5rem;
+  > img { width: 28px; height: 28px; border: none; } .item-name { flex: 1; } .desc { font-size: 0.8rem; opacity: 0.85; } }
+.gloom-acts .gloom-act.act-lasting { border-color: var(--gloom-gold); }
+.gloom-terrain-form, .gloom-lasting-form { display: flex; flex-direction: column; gap: 0.3rem;
+  > label { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; input[type="number"] { width: 5rem; flex: 0 0 auto; } } }
+.gloom-surprised { margin-left: 0.3rem; color: var(--gloom-gold); }

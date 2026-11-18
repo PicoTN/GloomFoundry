@@ -17,6 +17,7 @@ import { classPanel, classPanelAction } from "../class-mechanics.ts";
 import { refreshFromCompendiums } from "../refresh.ts";
 import { companiesOf } from "../company.ts";
 import { gearList, gearOf, inventoryOf, stashItem, toggleEquipped } from "../equipment.ts";
+import { endLasting, lastingRows, useLasting } from "../lasting.ts";
 import { capacity as slotCapacityWithGear, used as usedSlots } from "../rules/equipment.ts";
 import { availablePowers, getPlan, submitPlan } from "../combat/planning.ts";
 import { getPhase } from "../combat/combat.ts";
@@ -89,6 +90,8 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       togglePrepared: MercenarySheet.#onTogglePrepared,
       toggleEquipped: MercenarySheet.#onToggleEquipped,
       stashItem: MercenarySheet.#onStashItem,
+      lastingUse: MercenarySheet.#onLastingUse,
+      lastingEnd: MercenarySheet.#onLastingEnd,
       toggleExpended: MercenarySheet.#onToggleExpended,
       toggleCondition: MercenarySheet.#onToggleCondition,
       resistCondition: MercenarySheet.#onResistCondition,
@@ -259,6 +262,7 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       // Inventory
       slots,
       inventory: inventoryOf(actor),
+      lasting: lastingRows(actor),
       // Progression
       classItem: cls ? brief(cls) : null,
       ancestryItem: ancestry ? brief(ancestry) : null,
@@ -543,6 +547,16 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
   static async #onToggleEquipped(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {
     const item = this.#itemFrom(target);
     if (item) await toggleEquipped(this.document, item);
+  }
+
+  static async #onLastingUse(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {
+    const effect = this.document.effects.get(target.closest<HTMLElement>("[data-effect-id]")?.dataset["effectId"] ?? "");
+    if (effect) await useLasting(this.document, effect as ActiveEffect.Implementation);
+  }
+
+  static async #onLastingEnd(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {
+    const effect = this.document.effects.get(target.closest<HTMLElement>("[data-effect-id]")?.dataset["effectId"] ?? "");
+    if (effect) await endLasting(this.document, effect as ActiveEffect.Implementation);
   }
 
   static async #onStashItem(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {

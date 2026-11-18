@@ -102,6 +102,8 @@ export type PowerAction =
   | (Common & { kind: "gain"; id: string; counter: string; count: number })
   | (Common & { kind: "play"; id: string; name: string; text?: string })
   | (Common & { kind: "give"; id: string; item?: string; random?: boolean; count?: number })
+  /** Push/Pull X on the targets (p. 76), shown with attacks that carry it. */
+  | (Common & { kind: "forced"; dir: "push" | "pull"; value: number })
   | (Common & { kind: "text"; text: string });
 
 /** Actions stored on an item, by text field. */

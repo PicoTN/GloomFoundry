@@ -20,7 +20,8 @@ const optionalInt = (min = 0, max?: number) =>
   new fields.NumberField({ required: false, nullable: true, integer: true, min, ...(max ? { max } : {}), initial: null });
 
 /** Usage state shared by Skills and equipment. */
-export const POWER_STATES = ["ready", "expended", "lost"] as const;
+/** "active": a Skill whose lasting effect is in play (p. 78). */
+export const POWER_STATES = ["ready", "active", "expended", "lost"] as const;
 export type PowerState = (typeof POWER_STATES)[number];
 const state = () => new fields.StringField({ required: true, initial: "ready", choices: [...POWER_STATES] });
 

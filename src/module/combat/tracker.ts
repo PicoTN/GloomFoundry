@@ -4,7 +4,7 @@
  */
 import { displayInitiative } from "../rules/combat.ts";
 import { activateElementBar, elementBarHTML } from "./elements.ts";
-import { getPhase, type GloomCombat } from "./combat.ts";
+import { chooseSurprised, getPhase, isSurprised, type GloomCombat } from "./combat.ts";
 import { getPlan, openPlanningSheet, planEnemies } from "./planning.ts";
 
 const t = (key: string) => game.i18n!.localize(key);
@@ -20,6 +20,9 @@ function phaseBanner(combat: Combat.Implementation): string {
   if (phase === "planning") {
     if (myUnplanned.length && !isGM) {
       buttons.push(`<button type="button" data-gloom-combat="plan"><i class="fa-solid fa-chess"></i> ${t("GLOOM.Combat.planTurn")}</button>`);
+    }
+    if (isGM && combat.round <= 1) {
+      buttons.push(`<button type="button" data-gloom-combat="surprise"><i class="fa-solid fa-eye-slash"></i> ${t("GLOOM.Combat.surprise")}</button>`);
     }
     if (isGM) {
       buttons.push(`<button type="button" data-gloom-combat="enemies"><i class="fa-solid fa-gauge-high"></i> ${t("GLOOM.Plan.enemiesTitle")}</button>`);
@@ -53,6 +56,9 @@ export function registerTrackerUI(): void {
         }
       }
     });
+    panel.querySelector('[data-gloom-combat="surprise"]')?.addEventListener("click", () => {
+      if (combat) void chooseSurprised(combat);
+    });
     panel.querySelector('[data-gloom-combat="enemies"]')?.addEventListener("click", () => {
       if (combat) void planEnemies(combat);
     });
@@ -68,6 +74,9 @@ export function registerTrackerUI(): void {
       const init = row.querySelector<HTMLElement>(".token-initiative .initiative, .initiative");
       if (init && combatant.initiative !== null && combatant.initiative !== undefined) {
         init.textContent = displayInitiative(combatant.initiative);
+      }
+      if (isSurprised(combat, combatant)) {
+        row.querySelector(".token-name, .name")?.insertAdjacentHTML("beforeend", ` <i class="fa-solid fa-eye-slash gloom-surprised" data-tooltip="${t("GLOOM.Combat.surprisedTag")}"></i>`);
       }
       const plan = getPlan(combatant);
       if (plan && combatant.isOwner) {

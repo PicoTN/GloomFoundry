@@ -9,6 +9,7 @@ import { attributeMax, levelGains, MAX_LEVEL, maxHp, type HpTrack } from "../rul
 import { collectItems, itemData, type Option } from "./creation.ts";
 import { perkHTML } from "../perks/display.ts";
 import { clearAreas } from "../combat/power-actions.ts";
+import { placeTerrainDialog } from "../canvas/terrain.ts";
 import type { PerkStep } from "../rules/perks.ts";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -224,6 +225,10 @@ export function registerLevelUpControls(): void {
         clearAreas: {
           name: "clearAreas", order: 3, title: "GLOOM.Place.clearAreas", icon: "fa-solid fa-eraser", button: true,
           onChange: () => void clearAreas(canvas?.scene),
+        },
+        terrain: {
+          name: "terrain", order: 5, title: "GLOOM.Terrain.title", icon: "fa-solid fa-mountain", button: true,
+          onChange: () => void placeTerrainDialog(),
         },
         mission: {
           name: "mission", order: 4, title: "GLOOM.Mission.title", icon: "fa-solid fa-flag-checkered", button: true,

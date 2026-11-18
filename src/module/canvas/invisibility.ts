@@ -44,7 +44,28 @@ function touchesInvisible(effect: unknown): boolean {
   return (effect as ActiveEffect.Implementation).statuses?.has("invisible") ?? false;
 }
 
+/** The token the current user acts with: a controlled token, else their character's token. */
+function actingTokenOfUser(): TokenLike | null {
+  const controlled = canvas?.tokens?.controlled?.[0] as TokenLike | undefined;
+  if (controlled) return controlled;
+  const character = game.user?.character;
+  return (character?.getActiveTokens()?.[0] as TokenLike | undefined) ?? null;
+}
+
+/** Can the current user's acting token target this one? (Invisible: not by enemies.) */
+export function canTarget(target: TokenLike | null | undefined): boolean {
+  const me = actingTokenOfUser();
+  return !me || !hiddenByInvisible(me, target);
+}
+
 export function registerInvisibilityHooks(): void {
+  // Enemies cannot target an Invisible character (p. 84).
+  Hooks.on("targetToken", (user, token, targeted) => {
+    if (!targeted || (user as User.Implementation).id !== game.user?.id) return;
+    if (canTarget(token as TokenLike)) return;
+    (token as Token.Implementation).setTarget(false, { releaseOthers: false, groupSelection: true } as never);
+    ui.notifications?.warn(game.i18n!.format("GLOOM.Condition.invisibleTarget", { name: (token as Token.Implementation).name ?? "" }));
+  });
   Hooks.once("setup", patchDetectionModes);
   Hooks.on("createActiveEffect", (effect) => {
     if (touchesInvisible(effect)) refreshVision();

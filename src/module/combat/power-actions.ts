@@ -4,6 +4,10 @@
  * (rules/power-actions.ts). Areas, traps and obstacles become scene Regions; areas are cleared
  * at the end of the acting character's turn, traps and obstacles stay until removed.
  */
+import { parseLasting } from "../rules/lasting.ts";
+import { startLasting } from "../lasting.ts";
+import { cubeKey, forcedMoves, type Cube as HexCube } from "../rules/hex.ts";
+import { flagsOf, terrainMap } from "../canvas/terrain.ts";
 import { SYSTEM_ID } from "../config.ts";
 import { pickHexes, hexPolygon, type Offset } from "../canvas/hex-place.ts";
 import { addTemporary, drawAttack } from "../deck/actions.ts";
@@ -131,6 +135,7 @@ function label(actor: Actor.Implementation, a: PowerAction): { icon: string; tex
     case "summon": return { icon: "fa-ghost", button: true, text: a.name ? `${t("GLOOM.Act.summon")}: ${a.name}` : t("GLOOM.Act.summon") };
     case "choice": return { icon: "fa-list-check", button: false, text: f("GLOOM.Act.choose", { n: String(a.pick) }) };
     case "text": return { icon: "fa-circle-info", button: false, text: a.text };
+    case "forced": return { icon: a.dir === "push" ? "fa-arrow-right-from-bracket" : "fa-arrow-right-to-bracket", button: true, text: `${a.dir === "push" ? "Push" : "Pull"} ${a.value}` };
     case "mark": return { icon: "fa-crosshairs", button: true, text: `${t(`GLOOM.Mark.${a.id}`)}${a.option ? `: ${a.option}` : a.group ? ` (${a.group})` : ""}${(a.count ?? 1) > 1 ? ` ×${a.count}` : ""}${(a.targets ?? 1) > 1 ? ` · ${f("GLOOM.Act.targets", { n: String(a.targets) })}` : ""}` };
     case "gain": return { icon: "fa-music", button: true, text: f("GLOOM.Act.gain", { n: String(a.count), what: a.counter === "any" ? t("GLOOM.Act.anyCounter") : a.counter }) };
     case "play": return { icon: "fa-play", button: true, text: f("GLOOM.Act.play", { name: a.name }) };
@@ -155,6 +160,7 @@ function iconKey(a: PowerAction): string | null {
     case "condition": return `condition.${a.id}`;
     case "infuse": return a.any ? "element.any" : `element.${a.elements[0]}`;
     case "trap": return "stat.damage";
+    case "forced": return `stat.${a.dir}`;
     default: return null;
   }
 }
@@ -205,6 +211,11 @@ function oneHTML(actor: Actor.Implementation, a: PowerAction): string {
   const carried = a.kind === "attack" || a.kind === "heal"
     ? a.conditions.map((c) => oneHTML(actor, { kind: "condition", id: c.toLowerCase(), self: a.kind === "heal" && a.self }))
     : [];
+  // Push/Pull after the attack: pick where each target goes.
+  if (a.kind === "attack") {
+    if (a.push) carried.push(oneHTML(actor, { kind: "forced", dir: "push", value: a.push }));
+    if (a.pull) carried.push(oneHTML(actor, { kind: "forced", dir: "pull", value: a.pull }));
+  }
   return [main, ...bonuses, ...carried].join("") + note;
 }
 
@@ -240,18 +251,57 @@ function targetTokensIn(cells: Offset[], actor: Actor.Implementation): void {
   const me = dispositionOf(actor);
   const inside = (canvas!.tokens!.placeables as Token.Implementation[]).filter((tk) => {
     const o = grid.getOffset(tk.center);
-    return cells.some((c) => c.i === o.i && c.j === o.j) && areOpposed(me, tk.document.disposition);
+    return cells.some((c) => c.i === o.i && c.j === o.j) && areOpposed(me, tk.document.disposition)
+      && !tk.document.hasStatusEffect("invisible"); // Invisible enemies can't be targeted (p. 84)
   });
   for (const tk of [...(game.user?.targets ?? [])]) tk.setTarget(false, { releaseOthers: false, groupSelection: true } as never);
   for (const tk of inside) tk.setTarget(true, { releaseOthers: false, groupSelection: true } as never);
 }
 
-async function placeRegion(kind: keyof typeof COLORS, cells: Offset[], name: string, actor: Actor.Implementation): Promise<void> {
+/** Push/Pull X each targeted token (p. 76): pick a reachable hex, then move along that path. */
+async function onForced(actor: Actor.Implementation, a: Extract<PowerAction, { kind: "forced" }>): Promise<void> {
+  const forcer = actingToken(actor);
+  const targets = [...(game.user?.targets ?? [])] as Token.Implementation[];
+  if (!forcer || !targets.length || !canvas?.scene) return void ui.notifications?.warn("GLOOM.Damage.noTarget", { localize: true });
+  const grid = canvas.grid as unknown as {
+    getOffset(p: { x: number; y: number }): Offset; offsetToCube(o: Offset): HexCube; cubeToOffset(c: HexCube): Offset;
+    getTopLeftPoint(o: Offset): { x: number; y: number };
+  };
+  const cubeOf = (tk: Token.Implementation) => grid.offsetToCube(grid.getOffset(tk.center));
+  const terrain = terrainMap(canvas.scene as Scene.Implementation);
+  for (const target of targets) {
+    const start = cubeOf(target);
+    const blocked = new Set<string>();
+    for (const tk of canvas.tokens!.placeables as Token.Implementation[]) if (tk !== target) blocked.add(cubeKey(cubeOf(tk)));
+    for (const [key, regions] of terrain) if (regions.some((r) => flagsOf(r).kind === "obstacle")) blocked.add(key);
+    const moves = forcedMoves(start, cubeOf(forcer), a.value, a.dir, blocked);
+    if (moves.size <= 1) {
+      ui.notifications?.warn(f("GLOOM.Act.cannotForce", { name: target.name ?? "" }));
+      continue;
+    }
+    const allowed = [...moves.values()].map((m) => grid.cubeToOffset(m.cell));
+    const picked = await pickHexes({ count: 1, allowed, color: 0x2980b9, hint: f("GLOOM.Act.forceHint", { name: target.name ?? "", dir: a.dir === "push" ? "Push" : "Pull", n: String(a.value) }) });
+    const cell = picked?.[0];
+    if (!cell) return;
+    const move = moves.get(cubeKey(grid.offsetToCube(cell)));
+    if (!move || !move.path.length) continue;
+    const p = grid.getTopLeftPoint(cell);
+    await runAsGM({ action: "moveToken", token: target.document.uuid ?? "", x: p.x, y: p.y, path: move.path });
+  }
+}
+
+/** GM side: move a token along a forced path (traps on the way trigger). */
+export async function forcedMoveToken(tokenUuid: string, x: number, y: number, path: HexCube[]): Promise<void> {
+  const token = (await fromUuid(tokenUuid)) as TokenDocument.Implementation | null;
+  await token?.update({ x, y } as never, { gloomForced: true, gloomPath: path, gloomFrom: { x: token.x, y: token.y } } as never);
+}
+
+async function placeRegion(kind: keyof typeof COLORS, cells: Offset[], name: string, actor: Actor.Implementation, extra: Record<string, unknown> = {}): Promise<void> {
   if (!canvas?.scene) return;
   await runAsGM({
     action: "createRegion", scene: canvas.scene.uuid ?? "", name, color: COLORS[kind],
     polygons: cells.map((c) => hexPolygon(c)),
-    flags: { kind, actor: actor.uuid ?? "", combatant: game.combat?.combatant?.id ?? "" },
+    flags: { kind, actor: actor.uuid ?? "", combatant: game.combat?.combatant?.id ?? "", ...extra },
   });
 }
 
@@ -346,6 +396,7 @@ export async function runPowerAction(actor: Actor.Implementation, a: PowerAction
       for (const target of targets) await applyCondition(target, a.id);
       return;
     }
+    case "forced": return onForced(actor, a);
     case "infuse": return onInfuse(a.any ? { ...a, elements: [...ELEMENTS], either: true } : a);
     case "area": {
       const cells = await pickHexes({ area: a.area, origin: actingToken(actor), hint: t("GLOOM.Place.hint") });
@@ -358,7 +409,8 @@ export async function runPowerAction(actor: Actor.Implementation, a: PowerAction
       const cells = await pickHexes({ count: a.count, color: 0xc0392b, hint: t("GLOOM.Place.hintSingle") });
       if (!cells) return;
       const name = f("GLOOM.Place.trapName", { damage: String(a.damage), effects: a.effects.length ? `, ${a.effects.join(", ")}` : "" });
-      for (const cell of cells) await placeRegion("trap", [cell], name, actor);
+      // Traps placed by abilities are used up when triggered (canvas/terrain.ts).
+      for (const cell of cells) await placeRegion("trap", [cell], name, actor, { damage: a.damage, effects: a.effects, oneShot: true });
       return;
     }
     case "obstacle": {
@@ -522,6 +574,19 @@ export function registerPowerActionButtons(): void {
     if (game.user?.isGM && game.users?.activeGM?.isSelf) void clearAreas((combat as Combat.Implementation).scene);
   });
   document.addEventListener("click", async (event) => {
+    const lasting = (event.target as HTMLElement | null)?.closest<HTMLElement>("[data-gloom-lasting]");
+    if (lasting) {
+      event.preventDefault();
+      event.stopPropagation();
+      void (async () => {
+        const item = (await fromUuid(lasting.dataset["item"] ?? "")) as Item.Implementation | null;
+        const actor = item?.parent as Actor.Implementation | null;
+        if (!item || !actor?.isOwner) return;
+        const text = String((item.system as unknown as Record<string, unknown>)[lasting.dataset["key"] ?? ""] ?? "");
+        await startLasting(actor, item, text);
+      })();
+      return;
+    }
     const button = (event.target as HTMLElement | null)?.closest<HTMLElement>("[data-gloom-act]");
     if (!button) return;
     event.preventDefault();
@@ -605,7 +670,16 @@ export async function powerDetails(item: Item.Implementation): Promise<Record<st
     const v = s[key];
     if (typeof v !== "string" || !v) continue;
     out[key] = await TextEditor.enrichHTML(v, { relativeTo: item } as never);
-    if (key !== "passive") out[`${key}Acts`] = actionButtonsHTML(actor, actionsFor(item, key, v));
+    if (key === "passive") continue;
+    out[`${key}Acts`] = actionButtonsHTML(actor, actionsFor(item, key, v));
+    // Round/persistent effects can be tracked (rules/lasting.ts).
+    if (actor && parseLasting(v)) {
+      const button = `<button type="button" class="gloom-act act-lasting" data-gloom-lasting data-item="${escape(item.uuid ?? "")}" data-key="${key}">`
+        + `<i class="fa-solid fa-hourglass-half"></i> ${escape(t("GLOOM.Lasting.track"))}</button>`;
+      out[`${key}Acts`] = out[`${key}Acts`]
+        ? out[`${key}Acts`]!.replace(/<\/div>$/, `${button}</div>`)
+        : `<div class="gloom-acts">${button}</div>`;
+    }
   }
   return out;
 }

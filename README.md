@@ -41,6 +41,7 @@ https://github.com/PicoTN/GloomFoundry/releases/latest/download/system.json
 - **Character creation:** a step-by-step wizard (ancestry, class, faction, Attribute points, Backgrounds, starting gear, personal quest) using the items in your world and compendiums.
 - **Level up:** the GM enables leveling from the Gloomhaven scene controls; mercenaries then get a Level up button that walks through the new level's choices.
 - **Class mechanics:** Berserk, Notes and Songs, Augments, Doom, Plague, the Quartermaster Supply, Medical Packs, Prescriptions, Invocations, Command and class summons, tracked in a Class panel and used by power buttons (from your own content).
+- **Combat automation:** traps, hazardous terrain and obstacles that react to movement, marked-space reminders, Push/Pull with valid-hex picking, Invisible blocking enemy targeting, surprise rounds, and tracked lasting effects.
 - **Equipment rules:** slot limits with a swap prompt, combat swap limits, the 5-space inventory and the company's shared inventory.
 - **Shops and mission rewards:** shop actors stocked from the Equipment compendium by Prosperity, buying and selling through the GM with company discounts and the level gate for rarities, and a "Mission completed" dialog that pays gold, records Faction Requests, opens level-ups and grants the company benefit.
 - **Mercenary company:** a shared company sheet with members, level 0–5, temporary and permanent benefits (some automated: Bless, gold, Ward, City Watch ally).

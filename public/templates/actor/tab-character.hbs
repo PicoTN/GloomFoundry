@@ -51,6 +51,23 @@
   </section>
   {{/if}}
 
+  {{#if lasting.length}}
+  <section class="lasting">
+    <h3>{{localize "GLOOM.Lasting.heading"}}</h3>
+    <ul class="item-list">
+      {{#each lasting as |l|}}
+      <li class="item lasting-effect" data-effect-id="{{l.id}}">
+        <img src="{{l.img}}" alt="">
+        <div class="item-name"><strong>{{l.name}}</strong> <span class="tag">{{l.info}}</span><div class="desc">{{l.text}}</div></div>
+        {{#if @root.editable}}
+        {{#if l.counted}}<a class="item-control" data-action="lastingUse" data-tooltip="GLOOM.Lasting.use"><i class="fa-solid fa-minus"></i></a>{{/if}}
+        <a class="item-control" data-action="lastingEnd" data-tooltip="GLOOM.Lasting.end"><i class="fa-solid fa-hourglass-end"></i></a>
+        {{/if}}
+      </li>
+      {{/each}}
+    </ul>
+  </section>
+  {{/if}}
   <section class="conditions">
     <h3>
       {{localize "GLOOM.Condition.plural"}}

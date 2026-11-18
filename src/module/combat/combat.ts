@@ -6,6 +6,8 @@
  *    your next turn" conditions expire, planned Skills/items are expended or lost;
  *  - round end (cleanup): elements decay, Critical/Null decks reshuffle (deck/combat-hooks.ts).
  */
+import { expireLasting } from "../lasting.ts";
+import { remindSpaces } from "../canvas/terrain.ts";
 import { SYSTEM_ID } from "../config.ts";
 import { hasCondition } from "../conditions.ts";
 import { isActiveGM } from "../deck/registry.ts";
@@ -58,7 +60,8 @@ export class GloomCombat extends Combat {
 
   /** GM: end planning and start the action phase with the lowest initiative. */
   async startActionPhase(): Promise<void> {
-    const unplanned = this.combatants.filter((c) => c.initiative === null || c.initiative === undefined);
+    const unplanned = this.combatants.filter((c) => (c.initiative === null || c.initiative === undefined)
+      && !isSurprised(this as unknown as Combat.Implementation, c as Combatant.Implementation));
     if (unplanned.length) {
       const ok = await foundry.applications.api.DialogV2.confirm({
         window: { title: t("GLOOM.Combat.startAction") },
@@ -73,6 +76,27 @@ export class GloomCombat extends Combat {
 }
 
 // ---------------------------------------------------------------------------
+// Surprise (p. 72): surprised characters can't act in the first round.
+
+export function isSurprised(combat: Combat.Implementation, combatant: Combatant.Implementation): boolean {
+  return combat.round <= 1 && !!combatant.getFlag(SYSTEM_ID as never, "surprised" as never);
+}
+
+/** GM: pick who is surprised (the ambushed side) for the first round. */
+export async function chooseSurprised(combat: Combat.Implementation): Promise<void> {
+  const rows = combat.combatants.map((c) => `<label class="checkbox"><input type="checkbox" name="${c.id}"${c.getFlag(SYSTEM_ID as never, "surprised" as never) ? " checked" : ""}> ${c.name}</label>`);
+  const form = (await foundry.applications.api.DialogV2.input({
+    window: { title: t("GLOOM.Combat.surprise") },
+    content: `<p>${t("GLOOM.Combat.surpriseHint")}</p>${rows.join("")}`,
+    rejectClose: false,
+  } as never)) as Record<string, unknown> | null;
+  if (!form) return;
+  await combat.updateEmbeddedDocuments("Combatant", combat.combatants.map((c) => ({
+    _id: c.id, [`flags.${SYSTEM_ID}.surprised`]: !!form[c.id ?? ""],
+  })) as never);
+}
+
+// ---------------------------------------------------------------------------
 // Turn & round processing (active GM only)
 // ---------------------------------------------------------------------------
 
@@ -84,9 +108,16 @@ async function startTurn(combat: Combat.Implementation, combatant: Combatant.Imp
   } as never);
   const actor = combatant.actor as Actor.Implementation | null;
   if (!actor) return;
+  if (isSurprised(combat, combatant)) {
+    await ChatMessage.create({ content: `<p class="gloom-stun"><i class="fa-solid fa-eye-slash"></i> ${f("GLOOM.Combat.surprisedSkip", { name: combatant.name ?? "" })}</p>` } as never);
+    await combat.nextTurn();
+    return;
+  }
   // Regenerate happens first and removes Wound before it deals damage (p. 84).
   if (hasCondition(actor, "regenerate")) await heal(actor, 1, t("GLOOM.Condition.regenerate.name"));
   if (hasCondition(actor, "wound")) await sufferDamage(actor, 1, { source: t("GLOOM.Condition.wound.name") });
+  // Marked spaces in or next to the character (Tinkerer fields, pads...).
+  await remindSpaces(actor);
   if (hasCondition(actor, "stun")) {
     await ChatMessage.create({ content: `<p class="gloom-stun"><i class="fa-solid fa-dizzy"></i> ${f("GLOOM.Combat.stunned", { name: actor.name ?? "" })}</p>` } as never);
   }
@@ -141,6 +172,8 @@ async function endRound(combat: Combat.Implementation, priorRound: number): Prom
     await recoverRoundUses(c.actor as Actor.Implementation);
     // Shield, Retaliate and Taunt last until the end of the round (p. 81).
     await expireRoundAbilities(c.actor as Actor.Implementation);
+    // Round effects and finished multi-round effects end (p. 78).
+    await expireLasting(c.actor as Actor.Implementation, priorRound);
   }
   const updates = combat.combatants.map((c) => ({ _id: c.id, initiative: null, [`flags.${SYSTEM_ID}.-=${PLAN_FLAG}`]: null }));
   await combat.updateEmbeddedDocuments("Combatant", updates as never);

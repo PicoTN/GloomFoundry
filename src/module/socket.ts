@@ -8,7 +8,7 @@ import { ensureActorDecks, isActiveGM, resolveDeck } from "./deck/registry.ts";
 import type { ElementId, ElementState } from "./rules/combat.ts";
 import { sufferDamage, type DamageOptions } from "./combat/damage.ts";
 import { handleElementRequest } from "./combat/elements.ts";
-import { createRegion, spawnSummon } from "./combat/power-actions.ts";
+import { createRegion, forcedMoveToken, spawnSummon } from "./combat/power-actions.ts";
 import { heal } from "./powers.ts";
 import { handleShopBuy, handleShopSell } from "./shop.ts";
 import { gainAbility } from "./abilities.ts";
@@ -30,6 +30,7 @@ export type SocketRequest =
   | { action: "createRegion"; scene: string; name: string; color: string; polygons: number[][]; flags: Record<string, unknown> }
   | { action: "shopBuy"; shop: string; item: string; buyer: string; quantity: number; once: { company: string; item: string }[]; user: string; stash?: string }
   | { action: "shopSell"; shop: string; item: string; buyer: string; quantity: number; user: string }
+  | { action: "moveToken"; token: string; x: number; y: number; path: { q: number; r: number; s: number }[] }
   | { action: "spawnSummon"; scene: string; actor: string; x: number; y: number; controller: string; disposition: number; user?: string };
 
 async function handle(req: SocketRequest): Promise<void> {
@@ -94,6 +95,8 @@ async function handle(req: SocketRequest): Promise<void> {
       return handleShopBuy(req);
     case "shopSell":
       return handleShopSell(req);
+    case "moveToken":
+      return forcedMoveToken(req.token, req.x, req.y, req.path);
     case "spawnSummon":
       return spawnSummon(req.scene, req.actor, req.x, req.y, req.controller, req.disposition, req.user ?? "");
     case "applyDamage": {

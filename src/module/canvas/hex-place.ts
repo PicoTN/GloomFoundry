@@ -115,6 +115,8 @@ export interface PlaceOptions {
   origin?: { center: { x: number; y: number } } | null;
   color?: number;
   hint?: string;
+  /** Single picks only: the hexes that may be chosen (shown faintly). */
+  allowed?: Offset[];
 }
 
 /** Let the user place hexes; resolves with the chosen offsets (null if cancelled). */
@@ -155,6 +157,9 @@ export function pickHexes(options: PlaceOptions): Promise<Offset[] | null> {
         g.lineStyle(3, color, 0.9).beginFill(color, alpha).drawPolygon(hexPolygon(o)).endFill();
       }
     };
+    if (options.allowed) {
+      for (const o of options.allowed) g.lineStyle(1, color, 0.6).beginFill(color, 0.12).drawPolygon(hexPolygon(o)).endFill();
+    }
     fill(picked, 0.45);
     fill(currentCells(), 0.3);
   };
@@ -180,6 +185,7 @@ export function pickHexes(options: PlaceOptions): Promise<Offset[] | null> {
       if (e.button !== 0) return;
       if (shape) return finish(currentCells());
       const cell = currentCells()[0]!;
+      if (options.allowed && !options.allowed.some((o) => o.i === cell.i && o.j === cell.j)) return;
       if (!picked.some((p) => p.i === cell.i && p.j === cell.j)) picked.push(cell);
       if (picked.length >= count) return finish(picked);
       draw();
