@@ -1,4 +1,17 @@
 <section class="tab powers-tab {{tabs.powers.cssClass}}" data-tab="powers" data-group="primary">
+  {{#if plan}}
+  <section class="plan-bar{{#if plan.locked}} locked{{/if}}">
+    <div class="plan-title"><i class="fa-solid fa-chess"></i> {{localize "GLOOM.Plan.barTitle"}}
+      {{#if plan.locked}}<span class="hint">{{localize "GLOOM.Plan.lockedAt"}} {{plan.current}}</span>{{/if}}</div>
+    <div class="plan-slots">
+      <a class="slot{{#if (eq plan.from "primary")}} init{{/if}}" data-action="planInitiative" data-from="primary" data-tooltip="GLOOM.Plan.useInitiative">
+        <span class="tag">{{localize "GLOOM.Power.primary"}}</span> {{#if plan.primary}}{{plan.primary.name}}{{#if plan.primary.initiative}} <span class="tag init">{{plan.primary.initiative}}</span>{{/if}}{{else}}<em>{{localize "GLOOM.Plan.pickHint"}}</em>{{/if}}</a>
+      <a class="slot{{#if (eq plan.from "secondary")}} init{{/if}}" data-action="planInitiative" data-from="secondary" data-tooltip="GLOOM.Plan.useInitiative">
+        <span class="tag">{{localize "GLOOM.Power.secondary"}}</span> {{#if plan.secondary}}{{plan.secondary.name}}{{#if plan.secondary.initiative}} <span class="tag init">{{plan.secondary.initiative}}</span>{{/if}}{{else}}<em>{{localize "GLOOM.Plan.pickHint"}}</em>{{/if}}</a>
+    </div>
+    <button type="button" data-action="confirmPlan"{{#unless plan.initiative}} disabled{{/unless}}><i class="fa-solid fa-lock"></i> {{localize "GLOOM.Plan.lockIn"}}{{#if plan.initiative}} ({{plan.initiative}}){{/if}}</button>
+  </section>
+  {{/if}}
   <section class="talents">
     <h3>
       {{localize "GLOOM.Talent.plural"}}
@@ -11,7 +24,9 @@
       {{#each talents as |tl|}}
       <li class="item talent{{#if tl.locked}} locked{{/if}}" data-item-id="{{tl.id}}">
         <img src="{{tl.img}}" alt="">
-        <a class="item-name" data-action="postItem" data-tooltip="GLOOM.Item.post">{{tl.name}}</a>
+        <a class="item-name" data-action="toggleDetails" data-tooltip="GLOOM.Act.details"><i class="fa-solid fa-caret-{{#if tl.expanded}}down{{else}}right{{/if}} caret"></i> {{tl.name}}</a>
+        {{#if tl.plannable}}<span class="plan-picks"><a class="plan-pick{{#if tl.isPrimary}} on{{/if}}" data-action="planPick" data-slot="primary" data-tooltip="GLOOM.Power.primary">P</a>{{#if tl.canSecondary}}<a class="plan-pick{{#if tl.isSecondary}} on{{/if}}" data-action="planPick" data-slot="secondary" data-tooltip="GLOOM.Power.secondary">S</a>{{/if}}</span>{{/if}}
+        <a class="item-control post" data-action="postItem" data-tooltip="GLOOM.Item.post"><i class="fa-solid fa-comment"></i></a>
         <span class="tag">{{localize "GLOOM.Item.levelShort"}}{{tl.level}}</span>
         <span class="tag">{{#if tl.passive}}{{localize "GLOOM.Talent.kind.passive"}}{{else}}{{localize "GLOOM.Talent.kind.active"}}{{/if}}</span>
         {{#if tl.initiative}}<span class="tag init" data-tooltip="GLOOM.Item.initiative">{{tl.initiative}}</span>{{/if}}
@@ -20,6 +35,7 @@
         <a class="item-control" data-action="editItem" data-tooltip="GLOOM.Item.edit"><i class="fa-solid fa-pen"></i></a>
         <a class="item-control" data-action="deleteItem" data-tooltip="GLOOM.Item.delete"><i class="fa-solid fa-trash"></i></a>
         {{/if}}
+        {{#if tl.expanded}}{{> "gloom.power-details" tl.details}}{{/if}}
       </li>
       {{else}}<li class="empty">{{localize "GLOOM.Talent.none"}}</li>{{/each}}
     </ul>
@@ -35,7 +51,9 @@
       <li class="item skill state-{{s.state}}{{#unless s.prepared}} unprepared{{/unless}}" data-item-id="{{s.id}}">
         <a class="prep" {{#if @root.editable}}data-action="togglePrepared"{{/if}} data-tooltip="GLOOM.Skill.prepared"><i class="fa-{{#if s.prepared}}solid{{else}}regular{{/if}} fa-bookmark"></i></a>
         <img src="{{s.img}}" alt="">
-        <a class="item-name" data-action="postItem" data-tooltip="GLOOM.Item.post">{{s.name}}</a>
+        <a class="item-name" data-action="toggleDetails" data-tooltip="GLOOM.Act.details"><i class="fa-solid fa-caret-{{#if s.expanded}}down{{else}}right{{/if}} caret"></i> {{s.name}}</a>
+        {{#if s.plannable}}<span class="plan-picks"><a class="plan-pick{{#if s.isPrimary}} on{{/if}}" data-action="planPick" data-slot="primary" data-tooltip="GLOOM.Power.primary">P</a>{{#if s.canSecondary}}<a class="plan-pick{{#if s.isSecondary}} on{{/if}}" data-action="planPick" data-slot="secondary" data-tooltip="GLOOM.Power.secondary">S</a>{{/if}}</span>{{/if}}
+        <a class="item-control post" data-action="postItem" data-tooltip="GLOOM.Item.post"><i class="fa-solid fa-comment"></i></a>
         <span class="tag">{{localize "GLOOM.Item.levelShort"}}{{s.level}}</span>
         {{#if s.initiative}}<span class="tag init" data-tooltip="GLOOM.Item.initiative">{{s.initiative}}</span>{{/if}}
         <span class="tag bonus" data-tooltip="GLOOM.Skill.bonus">+{{s.bonus}}</span>
@@ -52,6 +70,7 @@
         <a class="item-control" data-action="editItem" data-tooltip="GLOOM.Item.edit"><i class="fa-solid fa-pen"></i></a>
         <a class="item-control" data-action="deleteItem" data-tooltip="GLOOM.Item.delete"><i class="fa-solid fa-trash"></i></a>
         {{/if}}
+        {{#if s.expanded}}{{> "gloom.power-details" s.details}}{{/if}}
       </li>
       {{else}}<li class="empty">{{localize "GLOOM.Skill.none"}}</li>{{/each}}
     </ul>
@@ -67,7 +86,9 @@
       <li class="item skill state-{{s.state}}{{#unless s.prepared}} unprepared{{/unless}}" data-item-id="{{s.id}}">
         <a class="prep" {{#if @root.editable}}data-action="togglePrepared"{{/if}} data-tooltip="GLOOM.Skill.prepared"><i class="fa-{{#if s.prepared}}solid{{else}}regular{{/if}} fa-bookmark"></i></a>
         <img src="{{s.img}}" alt="">
-        <a class="item-name" data-action="postItem" data-tooltip="GLOOM.Item.post">{{s.name}}</a>
+        <a class="item-name" data-action="toggleDetails" data-tooltip="GLOOM.Act.details"><i class="fa-solid fa-caret-{{#if s.expanded}}down{{else}}right{{/if}} caret"></i> {{s.name}}</a>
+        {{#if s.plannable}}<span class="plan-picks"><a class="plan-pick{{#if s.isPrimary}} on{{/if}}" data-action="planPick" data-slot="primary" data-tooltip="GLOOM.Power.primary">P</a>{{#if s.canSecondary}}<a class="plan-pick{{#if s.isSecondary}} on{{/if}}" data-action="planPick" data-slot="secondary" data-tooltip="GLOOM.Power.secondary">S</a>{{/if}}</span>{{/if}}
+        <a class="item-control post" data-action="postItem" data-tooltip="GLOOM.Item.post"><i class="fa-solid fa-comment"></i></a>
         <span class="tag">{{localize "GLOOM.Item.levelShort"}}{{s.level}}</span>
         {{#if s.initiative}}<span class="tag init" data-tooltip="GLOOM.Item.initiative">{{s.initiative}}</span>{{/if}}
         <span class="tag bonus" data-tooltip="GLOOM.Skill.bonus">+{{s.bonus}}</span>
@@ -84,6 +105,7 @@
         <a class="item-control" data-action="editItem" data-tooltip="GLOOM.Item.edit"><i class="fa-solid fa-pen"></i></a>
         <a class="item-control" data-action="deleteItem" data-tooltip="GLOOM.Item.delete"><i class="fa-solid fa-trash"></i></a>
         {{/if}}
+        {{#if s.expanded}}{{> "gloom.power-details" s.details}}{{/if}}
       </li>
       {{else}}<li class="empty">{{localize "GLOOM.Skill.none"}}</li>{{/each}}
     </ul>

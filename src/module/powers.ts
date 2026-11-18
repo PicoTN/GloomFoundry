@@ -2,6 +2,7 @@
  * Powers (Talents, Skills, items) and Backgrounds: using, expending, losing, recovering;
  * healing; class/ancestry grants. Core Rulebook p. 65, 68, 72, 85, 87.
  */
+import { powerDetails } from "./combat/power-actions.ts";
 import { SYSTEM_ID, templatePath } from "./config.ts";
 import { hasCondition } from "./conditions.ts";
 import type { PowerState } from "./data/powers.ts";
@@ -134,18 +135,11 @@ export function readySkills(actor: Actor.Implementation): Item.Implementation[] 
 export async function postItemCard(item: Item.Implementation): Promise<void> {
   const actor = item.parent as Actor.Implementation | null;
   const s = item.system as unknown as Record<string, unknown>;
-  const TextEditor = foundry.applications.ux.TextEditor.implementation;
-  const enrich = async (v: unknown) =>
-    typeof v === "string" && v ? TextEditor.enrichHTML(v, { relativeTo: item } as never) : "";
   const content = await foundry.applications.handlebars.renderTemplate(templatePath("chat/item.hbs"), {
     item,
     typeLabel: t(`TYPES.Item.${item.type}`),
     system: s,
-    primary: await enrich(s["primary"]),
-    secondary: await enrich(s["secondary"]),
-    passive: await enrich(s["passive"]),
-    effect: await enrich(s["effect"]),
-    description: await enrich(s["description"]),
+    ...(await powerDetails(item)),
   } as never);
   await ChatMessage.create({
     speaker: actor ? ChatMessage.getSpeaker({ actor: actor as Actor.Stored }) : {},

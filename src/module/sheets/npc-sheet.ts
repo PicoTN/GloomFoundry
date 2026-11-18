@@ -1,4 +1,5 @@
 import { ATTRIBUTE_LABELS, ATTRIBUTES, templatePath, type AttributeKey } from "../config.ts";
+import { actionButtonsHTML } from "../combat/power-actions.ts";
 import { conditionLabel, hasCondition, TOGGLE_CONDITIONS } from "../conditions.ts";
 import { drawAttack, testAttribute } from "../deck/actions.ts";
 import { deckForActor } from "../deck/registry.ts";
@@ -127,6 +128,7 @@ export class NpcSheet extends HandlebarsApplicationMixin(foundry.applications.sh
             kindLabel: s.kind === "action" ? "" : t(`GLOOM.NpcAction.kind.${s.kind}`),
             elite: s.eliteOnly, nemesis: s.nemesisOnly, available: s.availableTo(system.category),
             text: await TextEditor.enrichHTML((s as unknown as { description: string }).description ?? "", { relativeTo: i } as never),
+            acts: actionButtonsHTML(actor, (s as unknown as { description: string }).description ?? ""),
           };
         })),
       enrichedDescription: await enrich(system.description),

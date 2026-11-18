@@ -5,7 +5,7 @@
 import { displayInitiative } from "../rules/combat.ts";
 import { activateElementBar, elementBarHTML } from "./elements.ts";
 import { getPhase, type GloomCombat } from "./combat.ts";
-import { getPlan, planEnemies, planMercenary } from "./planning.ts";
+import { getPlan, openPlanningSheet, planEnemies } from "./planning.ts";
 
 const t = (key: string) => game.i18n!.localize(key);
 
@@ -49,7 +49,7 @@ export function registerTrackerUI(): void {
     panel.querySelector('[data-gloom-combat="plan"]')?.addEventListener("click", async () => {
       for (const c of combat?.combatants ?? []) {
         if (c.isOwner && c.actor?.type === "mercenary" && (c.initiative === null || c.initiative === undefined)) {
-          await planMercenary(c);
+          await openPlanningSheet(c);
         }
       }
     });

@@ -558,7 +558,12 @@
       "enemiesTitle": "Enemy speeds",
       "enemiesHint": "Choose the initiative speed of each enemy type. A type cannot use the same speed as last round. Elites act before normals of their type.",
       "lastSpeed": "last round:",
-      "noEnemies": "No GM-controlled characters in this combat."
+      "noEnemies": "No GM-controlled characters in this combat.",
+      "barTitle": "Plan this round: pick P (primary) and S (secondary) on your powers",
+      "lockedAt": "Locked in at",
+      "pickHint": "pick a power",
+      "useInitiative": "Use this power's initiative",
+      "lockIn": "Lock in"
     },
     "Combat": {
       "phase": {
@@ -745,6 +750,40 @@
         "3": "three",
         "4": "four"
       }
+    },
+    "Act": {
+      "attack": "Attack {n}",
+      "targets": "{n} targets",
+      "heal": "Heal {n}",
+      "healSelf": "Heal {n}, yourself",
+      "self": "yourself",
+      "infuse": "Infuse {list}",
+      "place": "Place {what}",
+      "trap": "Place {n} trap(s): damage {damage} {effects}",
+      "obstacle": "Place {n} obstacle(s)",
+      "summon": "Place a summon",
+      "summonHint": "Choose the summon to place, then click an empty hex. It uses your Modifier Deck.",
+      "noSummons": "No NPC found in the world or compendiums to summon.",
+      "chooseElement": "Infuse which element?",
+      "notYours": "Only this character's owner can use this action.",
+      "actions": "Actions",
+      "details": "Details"
+    },
+    "Place": {
+      "needHex": "Placing areas needs a scene with a hex grid.",
+      "hint": "Move the cursor to place the area; mouse wheel or R rotates; click to place; right-click or Esc cancels.",
+      "hintSingle": "Click the hexes to use; right-click or Esc cancels.",
+      "trapName": "Trap (damage {damage}{effects})",
+      "obstacleName": "Obstacle",
+      "shape": {
+        "cluster": "{n}-space cluster",
+        "line": "{n}-space line",
+        "adjacent": "{n} adjacent spaces",
+        "circle": "{n}-space circle",
+        "cone": "cone",
+        "arc": "{n}-space arc"
+      },
+      "clearAreas": "Remove placed areas"
     }
   }
 }

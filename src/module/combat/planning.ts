@@ -33,7 +33,7 @@ export function getPlan(combatant: Combatant.Implementation): Plan | null {
 }
 
 /** Powers a mercenary can choose this round. */
-function availablePowers(actor: Actor.Implementation): PlannedPower[] {
+export function availablePowers(actor: Actor.Implementation): PlannedPower[] {
   const level = (actor.system as unknown as { level: number }).level;
   const powers: PlannedPower[] = [];
   for (const item of actor.items) {
@@ -47,7 +47,16 @@ function availablePowers(actor: Actor.Implementation): PlannedPower[] {
   return powers.sort((a, b) => a.type.localeCompare(b.type) || a.name.localeCompare(b.name));
 }
 
-/** Open the planning dialog for a mercenary combatant. */
+/** Planning happens on the sheet: open the mercenary's Powers tab (P/S buttons, plan bar). */
+export async function openPlanningSheet(combatant: Combatant.Implementation): Promise<void> {
+  const actor = combatant.actor as Actor.Implementation | null;
+  if (!actor || !combatant.isOwner) return;
+  const sheet = actor.sheet as unknown as { render(o: object): Promise<unknown>; changeTab?(tab: string, group: string): void } | null;
+  await sheet?.render({ force: true });
+  sheet?.changeTab?.("powers", "primary");
+}
+
+/** Open the planning dialog for a mercenary combatant (kept for macros). */
 export async function planMercenary(combatant: Combatant.Implementation): Promise<void> {
   const actor = combatant.actor as Actor.Implementation | null;
   if (!actor || !combatant.isOwner) return;
@@ -72,19 +81,33 @@ export async function planMercenary(combatant: Combatant.Implementation): Promis
   if (!form) return;
 
   const find = (id: unknown) => powers.find((p) => p.id === id) ?? null;
-  const primary = find(form["primary"]);
-  const secondary = find(form["secondary"]);
+  await submitPlan(combatant, find(form["primary"]), find(form["secondary"]),
+    String(form["initiativeFrom"] ?? "primary"), Number(form["customInitiative"]));
+}
+
+/** Record a mercenary's plan: initiative from the primary, the secondary or a custom value. */
+export async function submitPlan(
+  combatant: Combatant.Implementation,
+  primary: PlannedPower | null,
+  secondary: PlannedPower | null,
+  from: string,
+  custom = NaN,
+): Promise<boolean> {
+  const actor = combatant.actor as Actor.Implementation | null;
+  if (!actor) return false;
   if (primary && secondary && primary.id === secondary.id) {
-    return void ui.notifications?.warn("GLOOM.Plan.samePower", { localize: true });
+    ui.notifications?.warn("GLOOM.Plan.samePower", { localize: true });
+    return false;
   }
-  const from = String(form["initiativeFrom"] ?? "primary");
-  const custom = Number(form["customInitiative"]);
   let initiative: number | null =
     from === "secondary" ? secondary?.initiative ?? null
       : from === "custom" ? (Number.isFinite(custom) && custom > 0 ? custom : null)
         : primary?.initiative ?? null;
   initiative ??= primary?.initiative ?? secondary?.initiative ?? (Number.isFinite(custom) && custom > 0 ? custom : null);
-  if (initiative === null) return void ui.notifications?.warn("GLOOM.Plan.noInitiative", { localize: true });
+  if (initiative === null) {
+    ui.notifications?.warn("GLOOM.Plan.noInitiative", { localize: true });
+    return false;
+  }
 
   await combatant.update({
     initiative,
@@ -97,6 +120,7 @@ export async function planMercenary(combatant: Combatant.Implementation): Promis
     })}</p><p class="hint">${[primary && `${t("GLOOM.Power.primary")}: ${primary.name}`,
       secondary && `${t("GLOOM.Power.secondary")}: ${secondary.name}`].filter(Boolean).join(" · ")}</p>`,
   } as never);
+  return true;
 }
 
 // ---------------------------------------------------------------------------

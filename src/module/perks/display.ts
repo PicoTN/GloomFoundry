@@ -16,8 +16,8 @@ export function effectHTML(text: string): string {
   return tokenizeEffect(text).map(tokenHTML).join("");
 }
 
-const img = (src: string, label: string) =>
-  `<img class="gloom-inline-icon" src="${escape(src)}" alt="${escape(label)}" data-tooltip="${escape(label)}">`;
+const img = (src: string, label: string, key = "") =>
+  `<img class="gloom-inline-icon${key.startsWith("stat.") ? " icon-stat" : ""}" src="${escape(src)}" alt="${escape(label)}" data-tooltip="${escape(label)}">`;
 
 function tokenHTML(tok: EffectToken): string {
   if ("text" in tok) return escape(tok.text);
@@ -28,7 +28,7 @@ function tokenHTML(tok: EffectToken): string {
     return `<span class="gloom-infuse" data-tooltip="${escape(tok.label)}">${srcs.map((s, i) => img(s!, tok.infuse[i]!)).join("/")}</span>`;
   }
   const src = CONFIG.GLOOM?.icons[tok.icon];
-  return src ? img(src, tok.label) : escape(tok.label);
+  return src ? img(src, tok.label, tok.icon) : escape(tok.label);
 }
 
 /** Item types whose rules text gets icons when enriched. */

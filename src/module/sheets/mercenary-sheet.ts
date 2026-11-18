@@ -12,6 +12,9 @@ import {
 import { EQUIPMENT_SLOTS, SKILL_LOADOUT, slotCapacity, type EquipmentSlot } from "../rules/progression.ts";
 import { runAsGM } from "../socket.ts";
 import { recordRequest, type FactionStanding } from "../rules/factions.ts";
+import { powerDetails } from "../combat/power-actions.ts";
+import { availablePowers, getPlan, submitPlan } from "../combat/planning.ts";
+import { getPhase } from "../combat/combat.ts";
 import type { PerkStep } from "../rules/perks.ts";
 import { perkHTML } from "../perks/display.ts";
 import { isBlankMercenary, maybeOfferCreation, openCreationWizard } from "../apps/creation.ts";
@@ -48,6 +51,10 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       testAttribute: MercenarySheet.#onTestAttribute,
       openCreation: MercenarySheet.#onOpenCreation,
       levelUp: MercenarySheet.#onLevelUp,
+      toggleDetails: MercenarySheet.#onToggleDetails,
+      planPick: MercenarySheet.#onPlanPick,
+      planInitiative: MercenarySheet.#onPlanInitiative,
+      confirmPlan: MercenarySheet.#onConfirmPlan,
       drawAttack: MercenarySheet.#onDrawAttack,
       addBless: MercenarySheet.#onAddBless,
       addCurse: MercenarySheet.#onAddCurse,
@@ -123,7 +130,29 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
     const TextEditor = foundry.applications.ux.TextEditor.implementation;
     const items = actor.items.contents;
     const ofType = (type: string) => items.filter((i) => i.type === type).sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
-    const brief = (i: Item.Implementation) => ({ id: i.id, name: i.name, img: i.img });
+    // Expanded power rows show their texts and action buttons.
+    const details: Record<string, Record<string, string>> = {};
+    for (const id of this.#expanded) {
+      const item = actor.items.get(id);
+      if (item) details[id] = await powerDetails(item);
+    }
+    // Planning phase: pick the round's primary/secondary straight from the powers list.
+    const combatant = this.#combatant();
+    const planning = !!combatant && getPhase(combatant.parent as Combat.Implementation) === "planning" && combatant.isOwner;
+    const planOptions = planning ? availablePowers(actor) : [];
+    const saved = combatant ? getPlan(combatant) : null;
+    if (planning && !this.#draft) {
+      this.#draft = { primary: saved?.primary?.id ?? "", secondary: saved?.secondary?.id ?? "", from: "primary" };
+    }
+    const draft = this.#draft ?? { primary: "", secondary: "", from: "primary" };
+    const findPower = (id: string) => planOptions.find((p) => p.id === id) ?? null;
+    const brief = (i: Item.Implementation) => ({
+      id: i.id, name: i.name, img: i.img,
+      expanded: !!details[i.id!], details: details[i.id!],
+      plannable: planOptions.some((p) => p.id === i.id),
+      canSecondary: planOptions.some((p) => p.id === i.id && p.type !== "equipment"),
+      isPrimary: draft.primary === i.id, isSecondary: draft.secondary === i.id,
+    });
 
     const skillView = (i: Item.Implementation) => {
       const s = sysOf(i);
@@ -165,6 +194,12 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
     return {
       ...context,
       isBlank: isBlankMercenary(actor) && actor.isOwner,
+      plan: planning ? {
+        primary: findPower(draft.primary), secondary: findPower(draft.secondary), from: draft.from,
+        initiative: (draft.from === "secondary" ? findPower(draft.secondary) : findPower(draft.primary))?.initiative ?? null,
+        locked: combatant?.initiative !== null && combatant?.initiative !== undefined,
+        current: combatant?.initiative ?? null,
+      } : null,
       canLevelUp: levelUpEnabled() && actor.isOwner && system.level < 9,
       tabs: this._prepareTabs("primary"),
       actor,
@@ -258,6 +293,52 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
   ): Promise<void> {
     await super._onFirstRender(context, options);
     maybeOfferCreation(this.document);
+  }
+
+  #expanded = new Set<string>();
+  #draft: { primary: string; secondary: string; from: string } | null = null;
+
+  /** This mercenary's combatant in the current combat, if any. */
+  #combatant(): Combatant.Implementation | null {
+    const combat = game.combat as Combat.Implementation | null;
+    if (!combat?.started) return null;
+    return (combat.combatants.find((c) => c.actor?.id === this.document.id) as Combatant.Implementation | undefined) ?? null;
+  }
+
+  /** Forget the unsaved plan when a new planning phase starts. */
+  resetPlanDraft(): void {
+    this.#draft = null;
+  }
+
+  static #onToggleDetails(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {
+    const id = target.closest<HTMLElement>("[data-item-id]")?.dataset["itemId"];
+    if (!id) return;
+    if (this.#expanded.has(id)) this.#expanded.delete(id);
+    else this.#expanded.add(id);
+    void this.render();
+  }
+
+  static #onPlanPick(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {
+    const id = target.closest<HTMLElement>("[data-item-id]")?.dataset["itemId"] ?? "";
+    const slot = target.dataset["slot"] as "primary" | "secondary";
+    const draft = (this.#draft ??= { primary: "", secondary: "", from: "primary" });
+    const other = slot === "primary" ? "secondary" : "primary";
+    draft[slot] = draft[slot] === id ? "" : id;
+    if (draft[other] === id) draft[other] = "";
+    void this.render();
+  }
+
+  static #onPlanInitiative(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {
+    (this.#draft ??= { primary: "", secondary: "", from: "primary" }).from = target.dataset["from"] ?? "primary";
+    void this.render();
+  }
+
+  static async #onConfirmPlan(this: MercenarySheet) {
+    const combatant = this.#combatant();
+    if (!combatant || !this.#draft) return;
+    const options = availablePowers(this.document);
+    const find = (id: string) => options.find((p) => p.id === id) ?? null;
+    await submitPlan(combatant, find(this.#draft.primary), find(this.#draft.secondary), this.#draft.from);
   }
 
   static #onLevelUp(this: MercenarySheet) {
@@ -507,4 +588,19 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
     const id = target.closest<HTMLElement>("[data-item-id]")?.dataset["itemId"];
     return id ? this.document.items.get(id) : undefined;
   }
+}
+
+/** Re-render open mercenary sheets when the combat or its plans change (planning bar). */
+export function registerPlanningSheetHooks(): void {
+  const refresh = (newRound = false) => {
+    for (const app of foundry.applications.instances.values()) {
+      if (!(app instanceof MercenarySheet)) continue;
+      if (newRound) app.resetPlanDraft();
+      void app.render();
+    }
+  };
+  Hooks.on("updateCombat", (_c, changes) => refresh("round" in (changes as object)));
+  Hooks.on("updateCombatant", () => refresh());
+  Hooks.on("createCombatant", () => refresh());
+  Hooks.on("deleteCombat", () => refresh(true));
 }

@@ -552,3 +552,47 @@ body.gloom-face-playing .gloomfoundry .perk .perk-desc { display: inline; }
 .gloom-infuse { white-space: nowrap; }
 .gloom-draw .card-effect { margin: 0.2rem 0; font-size: 0.9rem; i.fa-star { color: var(--gloom-gold); } }
 .gloom-inline-icon { height: 1.35em; width: auto; vertical-align: middle; border: none; margin: 0 0.05em; }
+
+// Inline icons must stay in the text flow everywhere (chat and sheets style plain <img> as blocks).
+img.gloom-inline-icon {
+  display: inline-block !important; height: 1.35em !important; width: auto !important; max-width: none !important;
+  vertical-align: middle; border: none !important; margin: 0 0.1em !important; padding: 0; background: none;
+  // Stat icons are black: give them a light backdrop so they read on dark themes.
+  &.icon-stat { background: #efe3c6 !important; border-radius: 3px; padding: 1px !important; box-sizing: content-box; }
+}
+.gloom-iconized, .gloom-infuse { display: inline; }
+
+// Power action buttons (sheet details, chat cards, NPC actions)
+.gloom-acts {
+  display: flex; flex-wrap: wrap; gap: 0.25rem; margin: 0.3rem 0 0.1rem;
+  .gloom-act { flex: 0 0 auto; width: auto; height: auto; line-height: 1.4; padding: 0.1rem 0.45rem; font-size: 0.8rem;
+    border-radius: 4px; white-space: nowrap;
+    &.act-attack { border-color: var(--gloom-red); }
+    &.act-heal { border-color: var(--gloom-green); }
+    &.act-trap, &.act-obstacle, &.act-area, &.act-summon { border-color: var(--gloom-purple); } }
+}
+
+// Expandable power rows and planning
+.gloomfoundry .item-list .item {
+  flex-wrap: wrap;
+  .caret { width: 0.7rem; opacity: 0.6; }
+  .post { opacity: 0.6; }
+  .power-details { flex: 1 0 100%; padding: 0.2rem 0 0.3rem 1.6rem; font-size: 0.85rem;
+    .action { margin: 0.15rem 0; p { margin: 0.1rem 0; display: inline; } }
+    .tag { margin-right: 0.3rem; } }
+  .plan-picks { display: inline-flex; gap: 2px;
+    .plan-pick { display: inline-grid; place-items: center; width: 1.3rem; height: 1.3rem; border-radius: 3px; font-size: 0.75rem;
+      font-weight: bold; border: 1px solid rgb(127 127 127 / 50%); opacity: 0.7; }
+    .plan-pick.on { background: var(--gloom-gold); color: var(--gloom-ink); opacity: 1; border-color: var(--gloom-gold); } }
+}
+.gloomfoundry .plan-bar {
+  border: 1px solid var(--gloom-gold); border-radius: 6px; padding: 0.4rem 0.6rem; margin-bottom: 0.4rem;
+  background: rgb(217 164 65 / 10%); display: flex; flex-direction: column; gap: 0.3rem;
+  &.locked { border-color: var(--gloom-green); background: rgb(46 139 87 / 10%); }
+  .plan-title { font-weight: bold; .hint { font-weight: normal; margin-left: 0.4rem; } }
+  .plan-slots { display: grid; grid-template-columns: 1fr 1fr; gap: 0.3rem;
+    .slot { padding: 0.2rem 0.4rem; border: 1px dashed rgb(127 127 127 / 50%); border-radius: 4px; cursor: pointer; }
+    .slot.init { border: 2px solid var(--gloom-gold); } }
+  button { align-self: flex-end; width: auto; }
+}
+.gloom-item-card .action p { margin: 0.15rem 0; }

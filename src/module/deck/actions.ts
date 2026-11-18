@@ -188,13 +188,17 @@ export interface AttackOptions {
   actor?: Actor.Implementation | null;
   /** Default base attack value (an NPC's attack stat). */
   base?: number;
+  /** Explicit target (one draw per target); defaults to the single targeted token. */
+  target?: Actor.Implementation | null;
+  /** Pierce: ignores that much of the target's Shield. */
+  pierce?: number;
 }
 
 export async function drawAttack(deck: ModifierDeck, options: AttackOptions = {}): Promise<void> {
   const attacker = options.actor ?? deck.actor;
   const { mode: defaultMode, sources } = conditionMode(attacker);
-  const target = currentTargetActor();
-  const form = await input(t("GLOOM.Attack.title"), "apps/attack-dialog.hbs", {
+  const target = options.target !== undefined ? options.target : currentTargetActor();
+  const form = await input(target ? `${t("GLOOM.Attack.title")} → ${target.name ?? ""}` : t("GLOOM.Attack.title"), "apps/attack-dialog.hbs", {
     base: options.base ?? 2,
     modes: modeOptions(defaultMode),
     targetName: target?.name ?? "",
@@ -206,7 +210,7 @@ export async function drawAttack(deck: ModifierDeck, options: AttackOptions = {}
   const poisoned = Boolean(form["poisoned"]);
   // Poison: +1 attack, applied with the other attack bonuses (p. 85).
   const bonus = readNumber(form["bonus"], 0) + (poisoned ? 1 : 0);
-  const shield = readNumber(form["shield"], 0);
+  const shield = Math.max(0, readNumber(form["shield"], 0) - (options.pierce ?? 0));
   const ward = Boolean(form["ward"]);
   const mode = (form["mode"] as DrawMode | undefined) ?? "normal";
 

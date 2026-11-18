@@ -10,12 +10,13 @@ import { SYSTEM_ID } from "../config.ts";
 import { hasCondition } from "../conditions.ts";
 import { isActiveGM } from "../deck/registry.ts";
 import { heal, recoverRoundUses, spendPower } from "../powers.ts";
+import { clearAreas } from "./power-actions.ts";
 import {
   decay, endTurn as elementsEndTurn, expiresAtTurnEnd, timelinePosition, UNTIL_END_OF_NEXT_TURN,
 } from "../rules/combat.ts";
 import { sufferDamage } from "./damage.ts";
 import { getBoard, saveBoard } from "./elements.ts";
-import { getPlan, PLAN_FLAG, planEnemies, planMercenary, syncSummons } from "./planning.ts";
+import { getPlan, openPlanningSheet, PLAN_FLAG, planEnemies, syncSummons } from "./planning.ts";
 
 const t = (key: string) => game.i18n!.localize(key);
 const f = (key: string, data: Record<string, string>) => game.i18n!.format(key, data);
@@ -39,7 +40,7 @@ export class GloomCombat extends Combat {
   override async rollInitiative(ids: string | string[]): Promise<this> {
     const list = (Array.isArray(ids) ? ids : [ids]).map((id) => this.combatants.get(id)).filter(Boolean) as Combatant.Implementation[];
     if (list.some((c) => c.actor?.type === "npc")) await planEnemies(this as unknown as Combat.Implementation);
-    for (const c of list) if (c.actor?.type === "mercenary") await planMercenary(c);
+    for (const c of list) if (c.actor?.type === "mercenary") await openPlanningSheet(c);
     return this;
   }
 
@@ -50,7 +51,7 @@ export class GloomCombat extends Combat {
 
   override async rollAll(): Promise<this> {
     await planEnemies(this as unknown as Combat.Implementation);
-    for (const c of this.combatants) if (c.isOwner && c.actor?.type === "mercenary" && !game.user?.isGM) await planMercenary(c);
+    for (const c of this.combatants) if (c.isOwner && c.actor?.type === "mercenary" && !game.user?.isGM) await openPlanningSheet(c);
     return this;
   }
 
@@ -89,6 +90,8 @@ async function startTurn(combat: Combat.Implementation, combatant: Combatant.Imp
 async function endTurn(combat: Combat.Implementation, combatant: Combatant.Implementation): Promise<void> {
   // Infusions made during the turn become strong.
   await saveBoard(elementsEndTurn(getBoard()));
+  // Areas shown for this turn's attacks disappear (traps and obstacles stay).
+  await clearAreas(combat.scene ?? canvas?.scene, combatant.id ?? undefined);
   const actor = combatant.actor as Actor.Implementation | null;
   if (!actor) return;
 

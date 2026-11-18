@@ -1,6 +1,6 @@
 # Gloomhaven RPG for FoundryVTT: Project Plan
 
-Status: phases 0–8 implemented (latest release v0.9.2). Only v0.1 has been play-tested on Forge; everything after it is typechecked and unit-tested but not yet tried in a live game. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
+Status: phases 0–8 implemented (latest release v0.10.0). Only v0.1 has been play-tested on Forge; everything after it is typechecked and unit-tested but not yet tried in a live game. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
 
 > PDF page numbers are the printed page number **+3** (printed p.343 is PDF page 346).
 
@@ -237,12 +237,15 @@ This only matters on scenes with Token Vision enabled. Targeting is not blocked 
 | v0.9.0 | Level up dialog behind a GM toggle (Gloomhaven scene controls), perks worded like the class chapters |
 | v0.9.1 | Perks drawn from their card data: attack circle, Attribute hexagon, effect icons from the icon pack |
 | v0.9.2 | Level up button fix; icons in power, item and NPC action texts and in drawn card effects; "Infuse X or Y" |
+| v0.10.0 | Power action buttons (attack, heal, conditions, infuse, areas, traps, obstacles, summons) in sheets and chat; hex area placement as Regions; expandable power rows; planning from the sheet |
 
 ## 10. What remains
 
 **First: play-test v0.6.1 on Forge.** Run a mercenary with a class, perks and powers against a few imported bestiary enemies through a full combat round, and fix what breaks. The sheets' tabs, planning dialogs and tracker panel have never run in a live Foundry.
 
 Combat:
+- Power actions only cover what the text parser recognizes (attack, heal, conditions, infuse, areas, traps, obstacles, summons); Move/Jump, Shield/Retaliate/Taunt round effects and "Attack X" formulas have no button yet.
+- Traps and obstacles are Regions with no automation (damage on entry, blocking movement).
 - Persistent and round effects (bonuses that last a round, or until a condition is met).
 - Surprise rounds.
 - Invisible: block targeting by opposed tokens, not just vision.

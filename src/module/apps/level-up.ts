@@ -8,6 +8,7 @@ import { ATTRIBUTES, SYSTEM_ID, templatePath, type AttributeKey } from "../confi
 import { attributeMax, levelGains, MAX_LEVEL, maxHp, type HpTrack } from "../rules/progression.ts";
 import { collectItems, itemData, type Option } from "./creation.ts";
 import { perkHTML } from "../perks/display.ts";
+import { clearAreas } from "../combat/power-actions.ts";
 import type { PerkStep } from "../rules/perks.ts";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
@@ -219,6 +220,10 @@ export function registerLevelUpControls(): void {
           name: "levelUp", order: 1, title: "GLOOM.Controls.levelUp", icon: "fa-solid fa-angles-up",
           toggle: true, active: levelUpEnabled(),
           onChange: (_event: Event, active: boolean) => void game.settings!.set(SYSTEM_ID, "levelUpEnabled", active),
+        },
+        clearAreas: {
+          name: "clearAreas", order: 3, title: "GLOOM.Place.clearAreas", icon: "fa-solid fa-eraser", button: true,
+          onChange: () => void clearAreas(canvas?.scene),
         },
         gmDeck: {
           name: "gmDeck", order: 2, title: "GLOOM.Deck.gmDeck", icon: "fa-solid fa-cards", button: true,

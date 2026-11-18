@@ -35,6 +35,7 @@ https://github.com/PicoTN/GloomFoundry/releases/latest/download/system.json
 - **Perks:** a generic editor (you enter the cards from your own book); ticking a box rebuilds the deck.
 - **Powers & progression:** Talents, Skills (loadout, expend/lose, heal 3, negate damage, test bonus), equipment by slot, Class and Ancestry items that grant their items and set HP by level, Backgrounds by category (Master +2), Quick Breath / Full Rest recovery. The sheet is split into tabs.
 - **NPCs:** enemies, allies and summons with bestiary stat blocks by campaign level (normal, elite, adversary, nemesis), actions by initiative speed, a switch-side button, and a Threat tally in the GM window.
+- **Power actions:** expanding a power on the sheet (or posting it to chat) shows buttons read from its text: Attack (one draw per target), Heal, apply conditions, Infuse, and placing areas, traps, obstacles and summons on a hex grid (mouse wheel rotates areas). During planning, pick P/S on your powers and lock in your initiative from the sheet.
 - **Combat:** planning phase (powers + initiative, enemy speeds), lowest initiative first, element tracker, automatic turn/round upkeep (conditions, Regenerate/Wound, element decay, expending planned Skills), apply-damage buttons.
 - **Icon packs:** replace condition, element and modifier-card icons with your own via a JSON manifest (Settings).
 - **Character creation:** a step-by-step wizard (ancestry, class, faction, Attribute points, Backgrounds, starting gear, personal quest) using the items in your world and compendiums.

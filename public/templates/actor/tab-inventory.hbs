@@ -17,7 +17,9 @@
       <li class="item equipment state-{{e.state}}{{#if e.equipped}} equipped{{/if}}" data-item-id="{{e.id}}">
         {{#unless (eq sl.slot "none")}}<a class="prep" {{#if @root.editable}}data-action="toggleEquipped"{{/if}} data-tooltip="GLOOM.Equipment.equipped"><i class="fa-{{#if e.equipped}}solid{{else}}regular{{/if}} fa-circle-check"></i></a>{{/unless}}
         <img src="{{e.img}}" alt="">
-        <a class="item-name" data-action="postItem" data-tooltip="GLOOM.Item.post">{{e.name}}</a>
+        <a class="item-name" data-action="toggleDetails" data-tooltip="GLOOM.Act.details"><i class="fa-solid fa-caret-{{#if e.expanded}}down{{else}}right{{/if}} caret"></i> {{e.name}}</a>
+        {{#if e.plannable}}<span class="plan-picks"><a class="plan-pick{{#if e.isPrimary}} on{{/if}}" data-action="planPick" data-slot="primary" data-tooltip="GLOOM.Power.primary">P</a>{{#if e.canSecondary}}<a class="plan-pick{{#if e.isSecondary}} on{{/if}}" data-action="planPick" data-slot="secondary" data-tooltip="GLOOM.Power.secondary">S</a>{{/if}}</span>{{/if}}
+        <a class="item-control post" data-action="postItem" data-tooltip="GLOOM.Item.post"><i class="fa-solid fa-comment"></i></a>
         {{#if e.consumable}}<span class="tag">×{{e.quantity}}</span>{{/if}}
         {{#if e.uses}}<span class="tag" data-tooltip="GLOOM.Equipment.usesLeft">{{e.uses}}</span>{{/if}}
         {{#if e.initiative}}<span class="tag init" data-tooltip="GLOOM.Item.initiative">{{e.initiative}}</span>{{/if}}
@@ -28,6 +30,7 @@
         <a class="item-control" data-action="editItem" data-tooltip="GLOOM.Item.edit"><i class="fa-solid fa-pen"></i></a>
         <a class="item-control" data-action="deleteItem" data-tooltip="GLOOM.Item.delete"><i class="fa-solid fa-trash"></i></a>
         {{/if}}
+        {{#if e.expanded}}{{> "gloom.power-details" e.details}}{{/if}}
       </li>
       {{else}}<li class="empty">—</li>{{/each}}
     </ul>

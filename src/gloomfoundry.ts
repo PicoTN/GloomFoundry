@@ -30,6 +30,8 @@ import { registerPowerHooks } from "./module/powers.ts";
 import { openCreationWizard, registerCreationHooks } from "./module/apps/creation.ts";
 import { registerLevelUpControls } from "./module/apps/level-up.ts";
 import { registerIconEnricher } from "./module/perks/display.ts";
+import { registerPowerActionButtons } from "./module/combat/power-actions.ts";
+import { registerPlanningSheetHooks } from "./module/sheets/mercenary-sheet.ts";
 import { MercenarySheet } from "./module/sheets/mercenary-sheet.ts";
 import { PerkSheet } from "./module/sheets/perk-sheet.ts";
 import { NpcSheet } from "./module/sheets/npc-sheet.ts";
@@ -104,6 +106,8 @@ Hooks.once("init", async () => {
   registerCreationHooks();
   registerLevelUpControls();
   registerIconEnricher();
+  registerPowerActionButtons();
+  registerPlanningSheetHooks();
   registerNpcHooks();
   registerCombatFlow();
   registerDamageButtons();
@@ -112,6 +116,7 @@ Hooks.once("init", async () => {
   await foundry.applications.handlebars.loadTemplates({
     "gloom.modifier-card": templatePath("parts/modifier-card.hbs"),
     "gloom.deck-counts": templatePath("parts/deck-counts.hbs"),
+    "gloom.power-details": templatePath("parts/power-details.hbs"),
     "gloom.npc.stat-table": templatePath("actor/parts/stat-table.hbs"),
     ...Object.fromEntries(
       [...ITEM_SHEET_TYPES, "grants"].map((p) => [`gloom.item.${p}`, templatePath(`item/parts/${p}.hbs`)]),
