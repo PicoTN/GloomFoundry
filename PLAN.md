@@ -1,6 +1,6 @@
 # Gloomhaven RPG for FoundryVTT: Project Plan
 
-Status: phases 0–8 implemented (latest release v0.12.0). Only v0.1 has been play-tested on Forge; everything after it is typechecked and unit-tested but not yet tried in a live game. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
+Status: phases 0–9 implemented (latest release v0.12.1); phase 10 (mercenary company) in progress. Only v0.1 has been play-tested on Forge; everything after it is typechecked and unit-tested but not yet tried in a live game. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
 
 > PDF page numbers are the printed page number **+3** (printed p.343 is PDF page 346).
 
@@ -174,10 +174,13 @@ The face cards cover the temporary cards:
 | **4. Perks** ✅ | Generic perk editor (no class data bundled: players enter perks from their own book); ticking boxes rebuilds the deck, keeping Bless/Curse. |
 | **4b. Conditions** ✅ | Gloomhaven conditions replace Foundry's token statuses (plus Unconscious/Dead). Sheet toggles with resist tests; Strengthen/Muddle and the target's Poison/Ward pre-fill the draw dialogs; Bless/Curse from the token HUD add deck cards; rests and end of combat clear conditions; Unconscious follows HP. Durations wait for combat (phase 5). |
 | **5. Combat** ✅ (first pass) | Planning phase each round: mercenaries pick primary/secondary powers and initiative, the GM picks enemy speeds (no repeat), elites before normals, summons before their controller; ascending order. Then the action phase. Turn start: Regenerate, then Wound. Turn end: infusions become Strong, "until end of next turn" conditions expire, planned Skills/items are expended or lost. Round end: elements decay, Critical/Null decks reshuffle. Element tracker in the combat sidebar. "Apply damage" on attack cards (Ward, Regenerate). End of combat: unconscious mercenaries heal 1. Not yet: persistent/round effects, surprise, targeting rules for Invisible. |
-| **6. NPCs** ✅ | One `npc` actor for enemies, allies, summons and townsfolk. Bestiary stat block by CL (normal/elite, Attribute columns, DFNS/OFNS markers), or manual stats. Adversary and nemesis derived stats. NPC actions (F/N/S, elite-only, break/stunt). Uses the GM deck, or the controller's deck for summons. Switch side (sheet + token HUD), new NPCs Hostile at the current CL. GM window shows M, CL, the Combat Challenge values and scene Threat vs the difficulty max. Printed nemeses (final stats, HP and Threat ×M) are supported. Bestiary transcribed into `content/` (49 actors with portraits). Next: summon actors for class summons. |
-| **7. Content** (local only) | Done in the git-ignored `content/` folder: perks (16 classes, checked against the class chapters), 46 Backgrounds, 16 classes and 8 ancestries with their Talents and Skills, 160 equipment items with each class's starting gear, 20 factions, 49 bestiary actors with portraits, and an icon pack (13 conditions, 7 elements, 17 stats). The system loads an icon pack from a JSON manifest, and imports the whole folder into world compendiums from its `index.json` (Settings > Import content, v0.7.0). No compendia are published (see IP note). |
+| **5b. Power actions** ✅ | Structured actions stored on every Skill, Talent, item, NPC action and perk card (`content/ACTIONS.md`), with the text parser as a fallback. Buttons in expandable power rows, chat cards and NPC sheets: attacks (one draw per target, Pierce, areas), heals, conditions, Infuse, Shield/Retaliate/Taunt (round statuses; Shield pre-filled in attacks, Retaliate button), traps, obstacles, marked spaces, summons. Hex area placement (clusters, lines, arcs, cones, all-within-range; rotate and mirror) as Regions that target opposing tokens. Element bonuses and requirements (each element once per turn, consumed only when stated), X values. Planning from the sheet (P/S picks, lock in). |
+| **6. NPCs** ✅ | One `npc` actor for enemies, allies, summons and townsfolk. Bestiary stat block by CL (normal/elite, Attribute columns, DFNS/OFNS markers), or manual stats. Adversary and nemesis derived stats. NPC actions (F/N/S, elite-only, break/stunt). Uses the GM deck, or the controller's deck for summons. Switch side (sheet + token HUD), new NPCs Hostile at the current CL. GM window shows M, CL, the Combat Challenge values and scene Threat vs the difficulty max. Printed nemeses (final stats, HP and Threat ×M) are supported. Bestiary transcribed into `content/` (49 actors with portraits). Class summons are NPC actors (Summons compendium, 23), placed for their controller (its side, deck and owners; HP by the controller's level when needed). |
+| **10. Mercenary company** (in progress) | Company actor (concept, service, district, leader, closest faction, missions, members, relationships), levels 0–5 from temporary benefits (5 per level), permanent benefits by level, benefit automation where possible (Bless, gold, Ward, ally). |
+| **7. Content** (local only) | Done in the git-ignored `content/` folder: perks (16 classes, checked against the class chapters), 46 Backgrounds, 16 classes and 8 ancestries with their Talents and Skills, 160 equipment items with each class's starting gear, 20 factions, 49 bestiary actors with portraits, 23 class summons, class mechanics, structured actions for everything (re-checked against the book), and an icon pack (13 conditions, 7 elements, 18 stats). The system loads an icon pack from a JSON manifest, and imports the whole folder into world compendiums from its `index.json` (Settings > Import content, v0.7.0). No compendia are published (see IP note). |
 | **8. Character creation** ✅ | Wizard following "Making a Mercenary" (p. 105): identity, ancestry, class, major faction (member at Tier 2), 6 Attribute points (max 3), 4 Backgrounds, class starting gear or 50 g of common gear, personal quest. Opens from a "New mercenary" button in the Actors sidebar, a button on blank sheets, and automatically for players opening their blank mercenary. |
 | **8b. Factions & equipment** ✅ | `faction` items: tier 0–5, membership, request successes/failures with automatic rise/fall (p. 234), one faction's benefits active per mission. Equipment can be used per round, scene or rest. |
+| **8d. Class mechanics** ✅ | Classes declare mechanics (`content/MECHANICS.md`): states (Berserk), counters (Soothsinger Notes, Wildfury rage tokens, auto-gained on companion attacks), slots in play (Augments, Songs, Invocations), token marks (Doom with its options, stacking Plague, Prescriptions), pools handed to allies as temporary items (Supply, Medical Packs), summons; talent-gated where needed. Class panel on the sheet; actions and bonuses use them (state/mark/counter triggers, spending counters, Command through the companion). Refresh button updates a character's items from the compendiums, keeping their state. |
 | **8c. Level up** ✅ | GM toggle in a Gloomhaven scene-controls group shows a Level up button on mercenary sheets. The dialog applies p. 120: level +1 (HP follows the track, the gain is healed), 1 Attribute point (cap 2 + half level), 1 Perk box, a class Skill (L2, 4, 5, 6, 8, 9), a passive Talent and an ancestry Skill (L3, 7), the level-5 Talent upgrades. Options come from the class's/ancestry's powers in the world and compendiums. |
 
 ---
@@ -244,30 +247,31 @@ This only matters on scenes with Token Vision enabled. Targeting is not blocked 
 
 ## 10. What remains
 
-**First: play-test v0.6.1 on Forge.** Run a mercenary with a class, perks and powers against a few imported bestiary enemies through a full combat round, and fix what breaks. The sheets' tabs, planning dialogs and tracker panel have never run in a live Foundry.
+**Keep play-testing on Forge.** v0.1–v0.9 have been tried live (decks, sheets, creation, level up, a first combat round). Everything from v0.10 (power buttons, area placement, planning from the sheet, structured actions, round abilities, class mechanics, summons) still needs a live run.
 
 Combat:
-- Move, Shield and Retaliate actions are shown but not automated (round/persistent effects); "Attack X" formulas and choices still need the player to pick.
-- Traps and obstacles are Regions with no automation (damage on entry, blocking movement).
-- Persistent and round effects (bonuses that last a round, or until a condition is met).
+- Move/Jump are shown but not automated (no movement measurement); choices ("perform 2 of 3") are picked by the player.
+- Traps, obstacles and marked spaces are Regions with no automation (damage on entry, blocking movement, end-of-turn effects).
+- Persistent effects beyond Shield/Retaliate/Taunt ("the next 2 times...", "+1 attack this round").
 - Surprise rounds.
 - Invisible: block targeting by opposed tokens, not just vision.
-- Retaliate, Pierce, Push/Pull and other attack effects are text only; decide how much to automate.
+- Push/Pull are shown on attacks but not applied to token positions.
 - Nemesis Break actions at half HP and Stunts per round.
 
 Content model gaps found while transcribing actions (currently notes or text actions):
-- Class mechanics still text: damage per Plague on all enemies, marked board spaces (Tinkerer), Wildfury rage tokens, talents that change a mechanic's limits (Oppressive Strikes), "grant your summons a primary action", triggers on an enemy's death.
-- Push/Pull/damage without an attack, conditions on several targets, "granted to an ally/summon" and "controlled enemy" actions are notes.
+- Class mechanics still text: damage per Plague on all enemies, talents that change a mechanic's limits (Oppressive Strikes: two Augments), Bestial Rage's companion bonuses (the token is tracked), "grant your summons a primary action", triggers on an enemy's death, Doomstalker's two Dooms with Inescapable Fate.
+- Push/Pull/damage without an attack and conditions on several targets are notes; granted/controlled actions are labelled but run as the acting mercenary.
 - Persistent and round effects ("the next 2 times...", "this round") are text.
 
 Character, factions and items:
 - Faction boons are text only: Keepers' prayers, Guild Bazaar, Freebooters' sovereigns and Night Market, Sect rituals and charges, Shields' titles (Vanguard removes modifier cards), University Thesis and citations, Robin deathfeathers. Keepers' Hostile (Bless becomes Curse) could be automated.
 - Equipment rules: equipped limits (1 head, 1 body, 2 hands with two-handed items, 1 feet, small slots by level), the 5-space inventory, swapping in combat, buying limits by level and shop rarity, selling at half price.
 - Starting above level 1 (p. 120–121): extra levels, faction tier by level.
-- Retirement benefits for new characters (p. 121) in the creation wizard.
+- Retirement benefits for new characters (p. 121) in the creation wizard (and the company's retirement temporary benefit).
 
 NPCs and content:
 - Fill the Rogue Mercenary's missing "bandit commander" base actions if the book ever prints them.
+- Shops (rarity by level and prosperity, company discounts), mission rewards (company +10 g, recruits' 50 g).
 - Icons on the modifier card faces themselves (the effect currently shows as a star, with the text and icons below the cards in chat).
 
 Polish:
