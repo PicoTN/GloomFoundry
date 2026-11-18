@@ -14,6 +14,7 @@ import { runAsGM } from "../socket.ts";
 import { recordRequest, type FactionStanding } from "../rules/factions.ts";
 import { powerDetails } from "../combat/power-actions.ts";
 import { classPanel, classPanelAction } from "../class-mechanics.ts";
+import { refreshFromCompendiums } from "../refresh.ts";
 import { availablePowers, getPlan, submitPlan } from "../combat/planning.ts";
 import { getPhase } from "../combat/combat.ts";
 import type { PerkStep } from "../rules/perks.ts";
@@ -53,6 +54,7 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       openCreation: MercenarySheet.#onOpenCreation,
       levelUp: MercenarySheet.#onLevelUp,
       classMech: MercenarySheet.#onClassMech,
+      refreshItems: MercenarySheet.#onRefreshItems,
       toggleDetails: MercenarySheet.#onToggleDetails,
       planPick: MercenarySheet.#onPlanPick,
       planInitiative: MercenarySheet.#onPlanInitiative,
@@ -342,6 +344,10 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
     const options = availablePowers(this.document);
     const find = (id: string) => options.find((p) => p.id === id) ?? null;
     await submitPlan(combatant, find(this.#draft.primary), find(this.#draft.secondary), this.#draft.from);
+  }
+
+  static async #onRefreshItems(this: MercenarySheet) {
+    await refreshFromCompendiums(this.document);
   }
 
   static async #onClassMech(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {

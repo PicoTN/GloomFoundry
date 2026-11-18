@@ -1,6 +1,7 @@
 <section class="tab progression-tab {{tabs.progression.cssClass}}" data-tab="progression" data-group="primary">
   <section class="class-ancestry">
-    <h3>{{localize "GLOOM.Progression.title"}}</h3>
+    <h3>{{localize "GLOOM.Progression.title"}}
+      {{#if editable}}<a class="item-control" data-action="refreshItems" data-tooltip="GLOOM.Refresh.hint"><i class="fa-solid fa-arrows-rotate"></i></a>{{/if}}</h3>
     <div class="option-cards">
       <div class="option-card">
         <span class="label">{{localize "TYPES.Item.class"}}</span>

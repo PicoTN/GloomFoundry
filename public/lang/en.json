@@ -859,6 +859,12 @@
     },
     "State": {
       "berserk": "Berserk"
+    },
+    "Refresh": {
+      "title": "Refresh from compendiums",
+      "hint": "Refresh from compendiums: update class, powers, perks and items with the latest imported content (keeps their state)",
+      "confirm": "Update every item of this character that comes from a compendium (class, ancestry, powers, perks, items, factions) with the compendium's current data? Their state at the table (ready/expended, prepared, perk boxes taken, quantities, faction standing) is kept.",
+      "done": "{count} items refreshed."
     }
   }
 }
