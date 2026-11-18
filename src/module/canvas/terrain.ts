@@ -6,7 +6,8 @@
  * - obstacle: no token may end its movement there.
  * - space: a marked space (Tinkerer...): its effect is recalled at the start of the turn of a
  *   token standing in or next to it.
- * Flying tokens ignore traps and hazards; a Jumping token only triggers its final space.
+ * Flying tokens ignore traps and hazards; a Jumping or Teleporting token only triggers its final
+ * space (p. 74).
  */
 import { SYSTEM_ID } from "../config.ts";
 import { CONDITION_IDS } from "../conditions.ts";
@@ -231,10 +232,11 @@ export function registerTerrainHooks(): void {
     const to = tokenCell(token);
     if (!to) return;
     const path = opts.gloomPath ?? (from ? pathThrough([from, to]) : [to]);
-    const jumped = !opts.gloomForced && actor.statuses.has("jumping");
+    const one = ["jumping", "teleporting"].filter((id) => actor.statuses.has(id));
+    const jumped = !opts.gloomForced && one.length > 0;
     void (async () => {
       await enterCells(token.parent as Scene.Implementation, actor, path, jumped);
-      if (jumped) await actor.toggleStatusEffect("jumping", { active: false });
+      if (!opts.gloomForced) for (const id of one) await actor.toggleStatusEffect(id, { active: false });
     })();
   });
 }
@@ -244,5 +246,6 @@ export function movementStatuses(): { id: string; name: string; img: string }[] 
   return [
     { id: "flying", name: "GLOOM.Terrain.flying", img: "icons/svg/wing.svg" },
     { id: "jumping", name: "GLOOM.Terrain.jumping", img: "icons/svg/upgrade.svg" },
+    { id: "teleporting", name: "GLOOM.Terrain.teleporting", img: "icons/svg/portal.svg" },
   ];
 }

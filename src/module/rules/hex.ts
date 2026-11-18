@@ -67,8 +67,15 @@ export function pathThrough(waypoints: readonly Cube[]): Cube[] {
  */
 export function forcedMoves(
   start: Cube, forcer: Cube, steps: number, kind: "push" | "pull", blocked: ReadonlySet<string>,
+  options: {
+    /** Spaces that can be crossed but not ended in (a flying target over other characters). */
+    noEnd?: ReadonlySet<string>;
+    /** Can the target step from a to b? (walls) */
+    canStep?: (a: Cube, b: Cube) => boolean;
+  } = {},
 ): Map<string, { cell: Cube; path: Cube[] }> {
   const out = new Map<string, { cell: Cube; path: Cube[] }>([[cubeKey(start), { cell: start, path: [] }]]);
+  const seen = new Set<string>([cubeKey(start)]);
   let frontier = [{ cell: start, path: [] as Cube[] }];
   for (let step = 0; step < Math.max(0, steps); step++) {
     const next: typeof frontier = [];
@@ -79,9 +86,11 @@ export function forcedMoves(
         if (kind === "push" ? nd <= d : nd >= d) continue;
         if (nd === 0) continue; // never into the forcing character's space
         const key = cubeKey(n);
-        if (blocked.has(key) || out.has(key)) continue;
+        if (blocked.has(key) || seen.has(key)) continue;
+        if (options.canStep && !options.canStep(cell, n)) continue;
+        seen.add(key);
         const entry = { cell: n, path: [...path, n] };
-        out.set(key, entry);
+        if (!options.noEnd?.has(key)) out.set(key, entry);
         next.push(entry);
       }
     }

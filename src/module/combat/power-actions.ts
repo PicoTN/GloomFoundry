@@ -265,16 +265,24 @@ async function onForced(actor: Actor.Implementation, a: Extract<PowerAction, { k
   if (!forcer || !targets.length || !canvas?.scene) return void ui.notifications?.warn("GLOOM.Damage.noTarget", { localize: true });
   const grid = canvas.grid as unknown as {
     getOffset(p: { x: number; y: number }): Offset; offsetToCube(o: Offset): HexCube; cubeToOffset(c: HexCube): Offset;
-    getTopLeftPoint(o: Offset): { x: number; y: number };
+    getTopLeftPoint(o: Offset): { x: number; y: number }; getCenterPoint(o: Offset): { x: number; y: number };
   };
   const cubeOf = (tk: Token.Implementation) => grid.offsetToCube(grid.getOffset(tk.center));
   const terrain = terrainMap(canvas.scene as Scene.Implementation);
   for (const target of targets) {
     const start = cubeOf(target);
-    const blocked = new Set<string>();
-    for (const tk of canvas.tokens!.placeables as Token.Implementation[]) if (tk !== target) blocked.add(cubeKey(cubeOf(tk)));
-    for (const [key, regions] of terrain) if (regions.some((r) => flagsOf(r).kind === "obstacle")) blocked.add(key);
-    const moves = forcedMoves(start, cubeOf(forcer), a.value, a.dir, blocked);
+    // Characters and obstacles block; a flying target passes over them but can't end on a character (p. 74, 76).
+    const occupied = new Set<string>();
+    for (const tk of canvas.tokens!.placeables as Token.Implementation[]) if (tk !== target) occupied.add(cubeKey(cubeOf(tk)));
+    const obstacles = new Set<string>();
+    for (const [key, regions] of terrain) if (regions.some((r) => flagsOf(r).kind === "obstacle")) obstacles.add(key);
+    const flying = !!target.actor?.statuses.has("flying");
+    const blocked = flying ? new Set<string>() : new Set([...occupied, ...obstacles]);
+    // Movement walls on the scene stop each step.
+    const center = (c: HexCube) => grid.getCenterPoint(grid.cubeToOffset(c));
+    const backend = (CONFIG.Canvas.polygonBackends as unknown as Record<string, { testCollision(a: unknown, b: unknown, o: unknown): unknown }>)["move"];
+    const canStep = (from: HexCube, to: HexCube) => !backend?.testCollision(center(from), center(to), { type: "move", mode: "any" });
+    const moves = forcedMoves(start, cubeOf(forcer), a.value, a.dir, blocked, { noEnd: flying ? occupied : undefined, canStep });
     if (moves.size <= 1) {
       ui.notifications?.warn(f("GLOOM.Act.cannotForce", { name: target.name ?? "" }));
       continue;

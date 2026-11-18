@@ -32,6 +32,17 @@ describe("forced movement (p. 76)", () => {
     expect(moves.has("0,0")).toBe(false);
     expect(moves.has("1,0")).toBe(true);
   });
+  it("walls stop a step", () => {
+    const wall = (a: Cube, b: Cube) => !(cubeKey(a) === "1,0" && cubeKey(b) === "2,0");
+    const moves = forcedMoves(c(1, 0), c(0, 0), 1, "push", new Set(), { canStep: wall });
+    expect(moves.has("2,0")).toBe(false);
+    expect(moves.size).toBeGreaterThan(1);
+  });
+  it("a flying target crosses characters but doesn't end on them", () => {
+    const moves = forcedMoves(c(1, 0), c(0, 0), 2, "push", new Set(), { noEnd: new Set(["2,0"]) });
+    expect(moves.has("2,0")).toBe(false);
+    expect(moves.has("3,0")).toBe(true);
+  });
   it("blocked spaces stop the movement", () => {
     const moves = forcedMoves(c(1, 0), c(0, 0), 1, "push", new Set(["2,0", "2,-1", "1,1"]));
     expect([...moves.keys()]).toEqual(["1,0"]);

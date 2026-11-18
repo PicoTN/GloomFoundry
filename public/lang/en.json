@@ -1097,7 +1097,8 @@
       "obstacleBlocks": "You can't end a move in an obstacle.",
       "obstacleGM": "Token placed in an obstacle (GM).",
       "flying": "Flying",
-      "jumping": "Jumping (next move)"
+      "jumping": "Jumping (next move)",
+      "teleporting": "Teleporting (next move)"
     }
   }
 }
