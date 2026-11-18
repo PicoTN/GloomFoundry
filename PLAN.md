@@ -1,6 +1,6 @@
 # Gloomhaven RPG for FoundryVTT: Project Plan
 
-Status: phases 0–8 implemented (latest release v0.11.0). Only v0.1 has been play-tested on Forge; everything after it is typechecked and unit-tested but not yet tried in a live game. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
+Status: phases 0–8 implemented (latest release v0.11.1). Only v0.1 has been play-tested on Forge; everything after it is typechecked and unit-tested but not yet tried in a live game. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
 
 > PDF page numbers are the printed page number **+3** (printed p.343 is PDF page 346).
 
@@ -239,6 +239,7 @@ This only matters on scenes with Token Vision enabled. Targeting is not blocked 
 | v0.9.2 | Level up button fix; icons in power, item and NPC action texts and in drawn card effects; "Infuse X or Y" |
 | v0.10.0 | Power action buttons (attack, heal, conditions, infuse, areas, traps, obstacles, summons) in sheets and chat; hex area placement as Regions; expandable power rows; planning from the sheet |
 | v0.11.0 | Structured actions stored on powers, items, NPC actions and perk cards (parser as fallback); element bonuses with once-per-turn tracking; area anchors, "all within range", mirroring; card effect buttons |
+| v0.11.1 | Action requirements ("only if Dark is active", "only if Berserk") and X values that ask for a number |
 
 ## 10. What remains
 
@@ -252,6 +253,11 @@ Combat:
 - Invisible: block targeting by opposed tokens, not just vision.
 - Retaliate, Pierce, Push/Pull and other attack effects are text only; decide how much to automate.
 - Nemesis Break actions at half HP and Stunts per round.
+
+Content model gaps found while transcribing actions (currently notes or text actions):
+- Taunt, Doom, Plague, Augments, Songs/Notes, Prescriptions are class mechanics with no model yet.
+- Push/Pull/damage without an attack, conditions on several targets, "granted to an ally/summon" and "controlled enemy" actions are notes.
+- Persistent and round effects ("the next 2 times...", "this round") are text.
 
 Character, factions and items:
 - Faction boons are text only: Keepers' prayers, Guild Bazaar, Freebooters' sovereigns and Night Market, Sect rituals and charges, Shields' titles (Vanguard removes modifier cards), University Thesis and citations, Robin deathfeathers. Keepers' Hostile (Bless becomes Curse) could be automated.

@@ -38,9 +38,22 @@ export interface Bonus {
   text?: string;
 }
 
+/** What an action needs to happen at all ("only if Dark is active", "only if Berserk"). */
+export interface Requirement {
+  elements?: string[];
+  anyOf?: boolean;
+  anyElement?: boolean;
+  consume?: boolean;
+  when?: string;
+}
+
 interface Common {
   /** Extras unlocked by elements or other triggers. */
   bonuses?: Bonus[];
+  /** The whole action only happens under this requirement. */
+  requires?: Requirement;
+  /** The value is "X" (e.g. your current HP): ask for it when used. */
+  variable?: boolean;
   /** Short free text shown with the action (e.g. "target all enemies adjacent to the ally"). */
   note?: string;
 }

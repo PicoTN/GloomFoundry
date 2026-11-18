@@ -10,7 +10,7 @@ import { addTemporary, drawAttack } from "../deck/actions.ts";
 import { deckForActor } from "../deck/registry.ts";
 import { dispositionOf } from "../npc.ts";
 import { heal } from "../powers.ts";
-import { parsePowerActions, type Area, type Bonus, type PowerAction, type StoredActions } from "../rules/power-actions.ts";
+import { parsePowerActions, type Area, type Bonus, type PowerAction, type Requirement, type StoredActions } from "../rules/power-actions.ts";
 import { areOpposed } from "../rules/sides.ts";
 import { runAsGM } from "../socket.ts";
 import type { ElementId } from "../rules/combat.ts";
@@ -52,8 +52,8 @@ export function withBonus(a: PowerAction, b: Bonus): PowerAction {
   }
 }
 
-/** Is the bonus's element requirement met on the scene's element board? */
-function bonusActive(b: Bonus): boolean | null {
+/** Is the bonus's (or requirement's) element condition met on the scene's element board? */
+function bonusActive(b: Bonus | Requirement): boolean | null {
   const board = getBoard();
   const active = (e: string) => (board.states[e as ElementId] ?? 0) > 0;
   if (b.anyElement) return ELEMENTS.some(active);
@@ -101,8 +101,24 @@ function label(actor: Actor.Implementation, a: PowerAction): { icon: string; tex
   }
 }
 
+function requirementLabel(r: Requirement): string {
+  if (r.when) return r.when;
+  const els = r.anyElement ? t("GLOOM.Act.anyElement") : (r.elements ?? []).map(el).join(r.anyOf ? "/" : "+");
+  return f("GLOOM.Act.ifActive", { list: els });
+}
+
 function oneHTML(actor: Actor.Implementation, a: PowerAction): string {
-  const l = label(actor, a);
+  const base = label(actor, a);
+  const l = {
+    ...base,
+    text: `${a.requires ? `[${requirementLabel(a.requires)}] ` : ""}${base.text}${a.variable ? " (X)" : ""}`,
+  };
+  const req = a.requires && (a.requires.elements?.length || a.requires.anyElement) ? a.requires : null;
+  const reqState = req ? bonusActive(req) : null;
+  const reqCss = reqState === null ? "" : reqState ? " active" : " inactive";
+  const reqData = req
+    ? ` data-bonus="${escape(JSON.stringify({ elements: req.elements ?? [], anyOf: !!req.anyOf, anyElement: !!req.anyElement, consume: !!req.consume }))}"`
+    : "";
   const uuid = escape(actor.uuid ?? "");
   const note = a.note ? `<span class="act-note">${escape(a.note)}</span>` : "";
   if (a.kind === "choice") {
@@ -110,8 +126,8 @@ function oneHTML(actor: Actor.Implementation, a: PowerAction): string {
       a.options.map((opt) => `<div class="option">${opt.map((o) => oneHTML(actor, o)).join("")}</div>`).join("")}${note}</div>`;
   }
   const main = l.button
-    ? `<button type="button" class="gloom-act act-${a.kind}" data-gloom-act="${escape(JSON.stringify(a))}" data-actor="${uuid}"><i class="fa-solid ${l.icon}"></i> ${escape(l.text)}</button>`
-    : `<span class="gloom-act-chip act-${a.kind}"><i class="fa-solid ${l.icon}"></i> ${escape(l.text)}</span>`;
+    ? `<button type="button" class="gloom-act act-${a.kind}${req ? ` requires${reqCss}` : ""}" data-gloom-act="${escape(JSON.stringify(a))}"${reqData} data-actor="${uuid}"><i class="fa-solid ${l.icon}"></i> ${escape(l.text)}</button>`
+    : `<span class="gloom-act-chip act-${a.kind}${req ? ` requires${reqCss}` : ""}"><i class="fa-solid ${l.icon}"></i> ${escape(l.text)}</span>`;
   // Bonus variants: the same action with the extras applied; highlighted when the element is active.
   const bonuses = (a.bonuses ?? []).map((b) => {
     const state = bonusActive(b);
@@ -398,7 +414,18 @@ export function registerPowerActionButtons(): void {
     if (!actor?.isOwner) return void ui.notifications?.warn("GLOOM.Act.notYours", { localize: true });
     try {
       if (button.dataset["bonus"] && !(await useElements(actor, JSON.parse(button.dataset["bonus"]) as ElementUse))) return;
-      await runPowerAction(actor, JSON.parse(button.dataset["gloomAct"] ?? "{}") as PowerAction);
+      let action = JSON.parse(button.dataset["gloomAct"] ?? "{}") as PowerAction;
+      if (action.variable && "value" in action) {
+        // "Attack X, where X is ...": ask for X.
+        const form = (await foundry.applications.api.DialogV2.input({
+          window: { title: t("GLOOM.Act.valueX") },
+          content: `${action.note ? `<p>${escape(action.note)}</p>` : ""}<input type="number" name="x" value="0" min="0" step="1" autofocus>`,
+          rejectClose: false,
+        } as never)) as { x?: number | string } | null;
+        if (!form) return;
+        action = { ...action, value: Number(form.x) || 0, relative: false } as PowerAction;
+      }
+      await runPowerAction(actor, action);
     } catch (err) {
       console.error("GloomFoundry | Power action failed", err);
     }

@@ -782,7 +782,9 @@
       "elementInactive": "Not active: {list}.",
       "elementUsed": "Already used this turn by this character: {list} (each element once per turn).",
       "elementCheck": "Element check",
-      "useAnyway": "Use it anyway?"
+      "useAnyway": "Use it anyway?",
+      "ifActive": "if {list} active",
+      "valueX": "Value of X"
     },
     "Place": {
       "needHex": "Placing areas needs a scene with a hex grid.",
