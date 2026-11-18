@@ -143,13 +143,13 @@ export function allDecks(): ModifierDeck[] {
 
 export function registerDeckLifecycleHooks(): void {
   Hooks.on("createActor", (actor) => {
-    if (isActiveGM()) void ensureActorDecks(actor as Actor.Implementation);
+    if (isActiveGM() && !(actor as Actor.Implementation).pack) void ensureActorDecks(actor as Actor.Implementation);
   });
   Hooks.on("updateActor", (actor, changes) => {
     if (isActiveGM() && "ownership" in (changes as object)) void syncDeckOwnership(actor as Actor.Implementation);
   });
   Hooks.on("deleteActor", (actor) => {
-    if (isActiveGM()) void deleteActorDecks(actor as Actor.Implementation);
+    if (isActiveGM() && !(actor as Actor.Implementation).pack) void deleteActorDecks(actor as Actor.Implementation);
   });
   Hooks.once("ready", async () => {
     if (!isActiveGM()) return;

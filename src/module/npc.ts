@@ -69,10 +69,14 @@ function resetNpcs(): void {
 export function registerNpcHooks(): void {
   Hooks.on("preCreateActor", (actor, data) => {
     const a = actor as Actor.Implementation;
+    if (a.pack) return;
     const given = (data as { prototypeToken?: { disposition?: number } }).prototypeToken?.disposition;
     if (a.type === "npc") {
+      // Enemies taken from a compendium start at the current CL; otherwise keep the given level.
+      const fromCompendium = !!(data as { _stats?: { compendiumSource?: string } })._stats?.compendiumSource;
+      const level = (data as { system?: { level?: number } }).system?.level;
       a.updateSource({
-        "system.level": (data as { system?: { level?: number } }).system?.level ?? currentCampaignLevel(),
+        "system.level": fromCompendium || level === undefined ? currentCampaignLevel() : level,
         "prototypeToken.disposition": given ?? DISPOSITION.HOSTILE,
         "prototypeToken.bar1.attribute": "hp",
       } as never);
@@ -88,7 +92,7 @@ export function registerNpcHooks(): void {
   // New NPCs start at full health.
   Hooks.on("createActor", (actor, _options, userId) => {
     const a = actor as Actor.Implementation;
-    if (a.type !== "npc" || userId !== game.user?.id) return;
+    if (a.type !== "npc" || a.pack || userId !== game.user?.id) return;
     const hp = (a.system as unknown as { hp: { value: number; max: number } }).hp;
     if (hp.value < hp.max) void a.update({ "system.hp.value": hp.max } as never);
   });

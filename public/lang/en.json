@@ -588,6 +588,17 @@
       "clear": "Use the default icons",
       "loaded": "Icon pack loaded: {count} icons.",
       "cleared": "Default icons restored."
+    },
+    "Content": {
+      "title": "Import content",
+      "menuLabel": "Import content into compendiums",
+      "menuHint": "Build world compendiums (classes, ancestries, Backgrounds, bestiary) from your own content folder's index.json, and load its icon pack.",
+      "hint": "Pick the index.json of your content folder (Foundry data or Forge Assets). Existing Gloomhaven compendiums are emptied and filled again. If the index names an icon pack, it is loaded and the page reloads.",
+      "last": "Last import:",
+      "again": "Import again",
+      "pick": "Choose index.json",
+      "importing": "Importing {label}…",
+      "done": "Content imported: {count} documents."
     }
   }
 }

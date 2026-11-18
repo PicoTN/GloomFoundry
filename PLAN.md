@@ -175,7 +175,7 @@ The face cards cover the temporary cards:
 | **4b. Conditions** ✅ | Gloomhaven conditions replace Foundry's token statuses (plus Unconscious/Dead). Sheet toggles with resist tests; Strengthen/Muddle and the target's Poison/Ward pre-fill the draw dialogs; Bless/Curse from the token HUD add deck cards; rests and end of combat clear conditions; Unconscious follows HP. Durations wait for combat (phase 5). |
 | **5. Combat** ✅ (first pass) | Planning phase each round: mercenaries pick primary/secondary powers and initiative, the GM picks enemy speeds (no repeat), elites before normals, summons before their controller; ascending order. Then the action phase. Turn start: Regenerate, then Wound. Turn end: infusions become Strong, "until end of next turn" conditions expire, planned Skills/items are expended or lost. Round end: elements decay, Critical/Null decks reshuffle. Element tracker in the combat sidebar. "Apply damage" on attack cards (Ward, Regenerate). End of combat: unconscious mercenaries heal 1. Not yet: persistent/round effects, surprise, targeting rules for Invisible. |
 | **6. NPCs** ✅ | One `npc` actor for enemies, allies, summons and townsfolk. Bestiary stat block by CL (normal/elite, Attribute columns, DFNS/OFNS markers), or manual stats. Adversary and nemesis derived stats. NPC actions (F/N/S, elite-only, break/stunt). Uses the GM deck, or the controller's deck for summons. Switch side (sheet + token HUD), new NPCs Hostile at the current CL. GM window shows M, CL, the Combat Challenge values and scene Threat vs the difficulty max. Printed nemeses (final stats, HP and Threat ×M) are supported. Bestiary transcribed into `content/` (49 actors with portraits). Next: summon actors for class summons. |
-| **7. Content** (local only) | Done in the git-ignored `content/` folder: perks (16 classes, checked against the class chapters), 46 Backgrounds, 16 classes and 8 ancestries with their Talents and Skills, 49 bestiary actors with portraits, and an icon pack (13 conditions, 7 elements, 17 stats). The system loads an icon pack from a JSON manifest (Settings > Icon pack). No compendia are published (see IP note). |
+| **7. Content** (local only) | Done in the git-ignored `content/` folder: perks (16 classes, checked against the class chapters), 46 Backgrounds, 16 classes and 8 ancestries with their Talents and Skills, 49 bestiary actors with portraits, and an icon pack (13 conditions, 7 elements, 17 stats). The system loads an icon pack from a JSON manifest, and imports the whole folder into world compendiums from its `index.json` (Settings > Import content, v0.7.0). No compendia are published (see IP note). |
 
 ---
 
@@ -226,6 +226,7 @@ This only matters on scenes with Token Vision enabled. Targeting is not blocked 
 | v0.5.0 | NPCs: enemies, allies, summons, stat blocks by CL, Threat |
 | v0.6.0 | Combat flow (planning/action/cleanup), element tracker, damage application, icon packs |
 | v0.6.1 | Printed nemeses |
+| v0.7.0 | Content importer: a private content folder becomes world compendiums; enemies from a compendium start at the current CL |
 
 ## 10. What remains
 
@@ -245,5 +246,5 @@ NPCs and content:
 
 Polish:
 - Scanned card art once the physical decks arrive (replace the generated faces via the icon pack's `card.<key>` entries).
-- Compendium build pipeline (`fvtt-cli`) for anything shippable, if a fan-content policy allows it.
+- Compendium build pipeline (`fvtt-cli`) for anything shippable, if a fan-content policy allows it. (Private content already goes into world compendiums through the importer.)
 - Other languages (all strings are already in `lang/en.json`).

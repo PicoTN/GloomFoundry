@@ -37,6 +37,7 @@ https://github.com/PicoTN/GloomFoundry/releases/latest/download/system.json
 - **NPCs:** enemies, allies and summons with bestiary stat blocks by campaign level (normal, elite, adversary, nemesis), actions by initiative speed, a switch-side button, and a Threat tally in the GM window.
 - **Combat:** planning phase (powers + initiative, enemy speeds), lowest initiative first, element tracker, automatic turn/round upkeep (conditions, Regenerate/Wound, element decay, expending planned Skills), apply-damage buttons.
 - **Icon packs:** replace condition, element and modifier-card icons with your own via a JSON manifest (Settings).
+- **Content import:** turn your own content folder (an `index.json` listing JSON files of Items and Actors) into world compendiums in one click (Settings > Import content). The system ships no content; you bring your own.
 - **Conditions:** the Gloomhaven conditions replace Foundry's token statuses. Toggle them on the sheet or the token; Strengthen/Muddle and the target's Poison/Ward are applied in the draw dialogs, and each negative condition can be resisted from the sheet.
 - **Mercenary sheet:**
   - the six Attributes, with click-to-test

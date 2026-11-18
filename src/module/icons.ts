@@ -29,7 +29,7 @@ export function applyIconPack(): void {
   CONFIG.GLOOM = { icons: { ...(stored?.icons ?? {}) } };
 }
 
-function resolve(base: string, path: string): string {
+export function resolvePath(base: string, path: string): string {
   if (/^(https?:|data:|\/)/.test(path)) return path;
   return `${base}/${path}`.replace(/\/+/g, "/").replace(/^(https?:)\//, "$1//");
 }
@@ -40,7 +40,7 @@ export async function loadIconPack(manifestUrl: string): Promise<number> {
   if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
   const manifest = (await response.json()) as { name?: string; icons?: IconMap };
   const base = manifestUrl.slice(0, manifestUrl.lastIndexOf("/"));
-  const icons = Object.fromEntries(Object.entries(manifest.icons ?? {}).map(([k, v]) => [k, resolve(base, v)]));
+  const icons = Object.fromEntries(Object.entries(manifest.icons ?? {}).map(([k, v]) => [k, resolvePath(base, v)]));
   await game.settings!.set(SYSTEM_ID, "iconPack", { name: manifest.name ?? manifestUrl, manifest: manifestUrl, icons } as never);
   return Object.keys(icons).length;
 }
