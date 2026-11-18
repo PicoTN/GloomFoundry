@@ -13,6 +13,7 @@ import { EQUIPMENT_SLOTS, SKILL_LOADOUT, slotCapacity, type EquipmentSlot } from
 import { runAsGM } from "../socket.ts";
 import { recordRequest, type FactionStanding } from "../rules/factions.ts";
 import { isBlankMercenary, maybeOfferCreation, openCreationWizard } from "../apps/creation.ts";
+import { levelUpEnabled, openLevelUp } from "../apps/level-up.ts";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const t = (key: string) => game.i18n!.localize(key);
@@ -44,6 +45,7 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
     actions: {
       testAttribute: MercenarySheet.#onTestAttribute,
       openCreation: MercenarySheet.#onOpenCreation,
+      levelUp: MercenarySheet.#onLevelUp,
       drawAttack: MercenarySheet.#onDrawAttack,
       addBless: MercenarySheet.#onAddBless,
       addCurse: MercenarySheet.#onAddCurse,
@@ -125,6 +127,7 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       const s = sysOf(i);
       return {
       isBlank: isBlankMercenary(actor) && actor.isOwner,
+      canLevelUp: levelUpEnabled() && actor.isOwner && system.level < 9,
         ...brief(i), level: s.level, initiative: s.initiative, bonus: s.testBonus, state: s.state,
         prepared: s.prepared, lostOnUse: s.lostOnUse, ready: s.state === "ready",
       };
@@ -249,6 +252,10 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
   ): Promise<void> {
     await super._onFirstRender(context, options);
     maybeOfferCreation(this.document);
+  }
+
+  static #onLevelUp(this: MercenarySheet) {
+    openLevelUp(this.document);
   }
 
   static #onOpenCreation(this: MercenarySheet) {

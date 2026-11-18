@@ -10,6 +10,7 @@
     </div>
     <div class="row stats">
       <label>{{localize "GLOOM.Mercenary.level"}}<input type="number" name="system.level" value="{{system.level}}" min="1" max="9" step="1"></label>
+      {{#if canLevelUp}}<button type="button" class="gloom-level-up-button" data-action="levelUp"><i class="fa-solid fa-angles-up"></i> {{localize "GLOOM.LevelUp.button"}}</button>{{/if}}
       <label class="hp">{{localize "GLOOM.Mercenary.hp"}}
         <span class="pair">
           <input type="number" name="system.hp.value" value="{{system.hp.value}}" min="0" step="1">

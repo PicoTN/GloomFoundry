@@ -63,3 +63,26 @@ export const INVENTORY_SPACE = 5;
 export function backgroundBonus(master: boolean): number {
   return master ? 2 : 1;
 }
+
+/** What a mercenary gains on reaching `level` (p. 120, Leveling Guide). */
+export interface LevelGains {
+  perks: number;
+  attributePoints: number;
+  classSkill: boolean;
+  passiveTalent: boolean;
+  ancestrySkill: boolean;
+  /** Level 5: active Talents are replaced by their upgraded versions. */
+  upgradeTalents: boolean;
+}
+
+export function levelGains(level: number): LevelGains {
+  const l = clampLevel(level);
+  return {
+    perks: l > 1 ? 1 : 0,
+    attributePoints: l > 1 ? 1 : 0,
+    classSkill: [2, 4, 5, 6, 8, 9].includes(l),
+    passiveTalent: l === 3 || l === 7,
+    ancestrySkill: l === 3 || l === 7,
+    upgradeTalents: l === 5,
+  };
+}

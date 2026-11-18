@@ -20,12 +20,13 @@ export const SHOPPING_GOLD = 50;
 const STEPS = ["identity", "ancestry", "class", "faction", "attributes", "backgrounds", "inventory", "quest", "review"] as const;
 type Step = (typeof STEPS)[number];
 
-interface Option {
+export interface Option {
   uuid: string;
   name: string;
   img: string;
   type: string;
   system: Record<string, unknown>;
+  flags: Record<string, unknown>;
   source: string;
 }
 
@@ -46,26 +47,29 @@ interface CreationState {
 const TYPES = ["ancestry", "class", "faction", "background", "equipment"] as const;
 
 /** Every Item of the given types from the world and from Item compendiums the user can see. */
-async function collectOptions(): Promise<Record<(typeof TYPES)[number], Option[]>> {
-  const out = Object.fromEntries(TYPES.map((type) => [type, [] as Option[]])) as Record<(typeof TYPES)[number], Option[]>;
+export async function collectItems<T extends string>(types: readonly T[]): Promise<Record<T, Option[]>> {
+  const out = Object.fromEntries(types.map((type) => [type, [] as Option[]])) as Record<T, Option[]>;
   const add = (doc: Item.Implementation, source: string) => {
-    const list = out[doc.type as (typeof TYPES)[number]];
-    if (!list || list.some((o) => o.name === doc.name)) return;
+    const list = out[doc.type as T];
+    const flags = (doc.flags as Record<string, Record<string, unknown>>)[SYSTEM_ID] ?? {};
+    const key = (o: { name: string; flags: Record<string, unknown> }) => `${o.name}|${String(o.flags["class"] ?? "")}|${String(o.flags["ancestry"] ?? "")}`;
+    if (!list || list.some((o) => key(o) === key({ name: doc.name ?? "", flags }))) return;
     list.push({
       uuid: doc.uuid ?? "", name: doc.name ?? "", img: doc.img ?? "", type: doc.type,
       system: doc.system as unknown as Record<string, unknown>, source,
+      flags,
     });
   };
-  for (const item of game.items ?? []) if ((TYPES as readonly string[]).includes(item.type)) add(item as Item.Implementation, t("GLOOM.Creation.world"));
+  for (const item of game.items ?? []) if ((types as readonly string[]).includes(item.type)) add(item as Item.Implementation, t("GLOOM.Creation.world"));
   for (const pack of game.packs ?? []) {
     if (pack.documentName !== "Item" || !pack.visible) continue;
     const index = await pack.getIndex({ fields: ["type"] as never });
-    const ids = index.filter((e) => (TYPES as readonly string[]).includes((e as { type?: string }).type ?? "")).map((e) => e._id);
+    const ids = index.filter((e) => (types as readonly string[]).includes((e as { type?: string }).type ?? "")).map((e) => e._id);
     if (!ids.length) continue;
     const docs = (await pack.getDocuments({ _id__in: ids } as never)) as unknown as Item.Implementation[];
     for (const doc of docs) add(doc, pack.metadata.label);
   }
-  for (const list of Object.values(out)) list.sort((a, b) => a.name.localeCompare(b.name));
+  for (const list of Object.values(out) as Option[][]) list.sort((a, b) => a.name.localeCompare(b.name));
   return out;
 }
 
@@ -156,7 +160,7 @@ export class CreationWizard extends HandlebarsApplicationMixin(ApplicationV2) {
 
   override async _prepareContext(options: Parameters<foundry.applications.api.ApplicationV2["_prepareContext"]>[0]) {
     const context = await super._prepareContext(options);
-    this.options_ ??= await collectOptions();
+    this.options_ ??= await collectItems(TYPES);
     const o = this.options_;
     const s = this.draft;
     const issues = this.issues();
@@ -342,7 +346,7 @@ export class CreationWizard extends HandlebarsApplicationMixin(ApplicationV2) {
 }
 
 /** Raw Item data from a source document, remembering where it came from. */
-async function itemData(uuid: string, extra: Record<string, unknown> = {}): Promise<Record<string, unknown> | null> {
+export async function itemData(uuid: string, extra: Record<string, unknown> = {}): Promise<Record<string, unknown> | null> {
   const doc = (await fromUuid(uuid)) as Item.Implementation | null;
   if (!doc) return null;
   const data = doc.toObject() as Record<string, unknown>;

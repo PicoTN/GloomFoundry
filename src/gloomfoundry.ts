@@ -28,6 +28,7 @@ import { applyCardFaceStyle, registerSettings, type CardFaceStyle } from "./modu
 import { GloomItemSheet, ITEM_SHEET_TYPES } from "./module/sheets/item-sheet.ts";
 import { registerPowerHooks } from "./module/powers.ts";
 import { openCreationWizard, registerCreationHooks } from "./module/apps/creation.ts";
+import { registerLevelUpControls } from "./module/apps/level-up.ts";
 import { MercenarySheet } from "./module/sheets/mercenary-sheet.ts";
 import { PerkSheet } from "./module/sheets/perk-sheet.ts";
 import { NpcSheet } from "./module/sheets/npc-sheet.ts";
@@ -100,6 +101,7 @@ Hooks.once("init", async () => {
   registerPerkHooks();
   registerPowerHooks();
   registerCreationHooks();
+  registerLevelUpControls();
   registerNpcHooks();
   registerCombatFlow();
   registerDamageButtons();

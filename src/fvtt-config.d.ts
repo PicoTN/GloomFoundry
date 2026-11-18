@@ -35,6 +35,7 @@ declare module "fvtt-types/configuration" {
     "gloomfoundry.mercenaryCount": number;
     "gloomfoundry.iconPack": object;
     "gloomfoundry.contentIndex": string;
+    "gloomfoundry.levelUpEnabled": boolean;
     "gloomfoundry.difficulty": "easy" | "normal" | "hard" | "deadly";
   }
 }

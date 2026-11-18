@@ -1,6 +1,6 @@
 # Gloomhaven RPG for FoundryVTT: Project Plan
 
-Status: phases 0–8 implemented (latest release v0.8.0). Only v0.1 has been play-tested on Forge; everything after it is typechecked and unit-tested but not yet tried in a live game. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
+Status: phases 0–8 implemented (latest release v0.9.0). Only v0.1 has been play-tested on Forge; everything after it is typechecked and unit-tested but not yet tried in a live game. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
 
 > PDF page numbers are the printed page number **+3** (printed p.343 is PDF page 346).
 
@@ -178,6 +178,7 @@ The face cards cover the temporary cards:
 | **7. Content** (local only) | Done in the git-ignored `content/` folder: perks (16 classes, checked against the class chapters), 46 Backgrounds, 16 classes and 8 ancestries with their Talents and Skills, 160 equipment items with each class's starting gear, 20 factions, 49 bestiary actors with portraits, and an icon pack (13 conditions, 7 elements, 17 stats). The system loads an icon pack from a JSON manifest, and imports the whole folder into world compendiums from its `index.json` (Settings > Import content, v0.7.0). No compendia are published (see IP note). |
 | **8. Character creation** ✅ | Wizard following "Making a Mercenary" (p. 105): identity, ancestry, class, major faction (member at Tier 2), 6 Attribute points (max 3), 4 Backgrounds, class starting gear or 50 g of common gear, personal quest. Opens from a "New mercenary" button in the Actors sidebar, a button on blank sheets, and automatically for players opening their blank mercenary. |
 | **8b. Factions & equipment** ✅ | `faction` items: tier 0–5, membership, request successes/failures with automatic rise/fall (p. 234), one faction's benefits active per mission. Equipment can be used per round, scene or rest. |
+| **8c. Level up** ✅ | GM toggle in a Gloomhaven scene-controls group shows a Level up button on mercenary sheets. The dialog applies p. 120: level +1 (HP follows the track, the gain is healed), 1 Attribute point (cap 2 + half level), 1 Perk box, a class Skill (L2, 4, 5, 6, 8, 9), a passive Talent and an ancestry Skill (L3, 7), the level-5 Talent upgrades. Options come from the class's/ancestry's powers in the world and compendiums. |
 
 ---
 
@@ -233,6 +234,7 @@ This only matters on scenes with Token Vision enabled. Targeting is not blocked 
 | v0.7.0 | Content importer: a private content folder becomes world compendiums; enemies from a compendium start at the current CL |
 | v0.7.1 | Nested compendium folders (Talents, Skills/Level N, Perks; Backgrounds by category) |
 | v0.8.0 | Character creation wizard, factions, Equipment and Factions compendiums, per-round item uses |
+| v0.9.0 | Level up dialog behind a GM toggle (Gloomhaven scene controls), perks worded like the class chapters |
 
 ## 10. What remains
 
@@ -249,7 +251,7 @@ Character, factions and items:
 - Faction boons are text only: Keepers' prayers, Guild Bazaar, Freebooters' sovereigns and Night Market, Sect rituals and charges, Shields' titles (Vanguard removes modifier cards), University Thesis and citations, Robin deathfeathers. Keepers' Hostile (Bless becomes Curse) could be automated.
 - Equipment rules: equipped limits (1 head, 1 body, 2 hands with two-handed items, 1 feet, small slots by level), the 5-space inventory, swapping in combat, buying limits by level and shop rarity, selling at half price.
 - Starting above level 1 (p. 120–121): extra levels, faction tier by level.
-- Level-up assistant (new Skills/Talents from the advancement table, perks, HP).
+- Retirement benefits for new characters (p. 121) in the creation wizard.
 
 NPCs and content:
 - Class summons as ready-made `npc` actors linked to their controller.

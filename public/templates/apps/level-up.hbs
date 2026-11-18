@@ -1,0 +1,68 @@
+<div class="level-up-app">
+{{#*inline "powerChoices"}}
+<ul class="pick-list powers">
+  {{#each list}}
+  <li class="pick {{#if selected}}selected{{/if}}">
+    <div class="head" data-action="pick" data-key="{{../key}}" data-value="{{uuid}}"><i class="fa-regular {{#if selected}}fa-circle-dot{{else}}fa-circle{{/if}}"></i> <img src="{{img}}" alt=""> <strong>{{name}}</strong>
+      <span class="hint">{{localize "GLOOM.Mercenary.level"}} {{level}}{{#if initiative}} · {{localize "GLOOM.LevelUp.initiative"}} {{initiative}}{{/if}}</span></div>
+    {{#if detail}}<details><summary>{{localize "GLOOM.LevelUp.details"}}</summary>{{{detail}}}</details>{{/if}}
+  </li>
+  {{else}}
+  <li class="hint">{{localize "GLOOM.LevelUp.noOptions"}}</li>
+  {{/each}}
+</ul>
+{{/inline}}
+  <section class="level-body">
+    {{#if atMax}}
+    <p class="notice">{{localize "GLOOM.LevelUp.atMax"}}</p>
+    {{else}}
+    <h2>{{localize "GLOOM.Mercenary.level"}} {{from}} → {{to}}</h2>
+    {{#if hp}}<p>{{localize "GLOOM.Mercenary.hp"}}: {{hp.from}} → <strong>{{hp.to}}</strong></p>{{/if}}
+    {{#if noClass}}<p class="notice">{{localize "GLOOM.LevelUp.noClass"}}</p>{{/if}}
+
+    {{#if gains.attributePoints}}
+    <h3>{{localize "GLOOM.LevelUp.attribute"}} <span class="hint">({{localize "GLOOM.Mercenary.attributeMax"}} {{cap}})</span></h3>
+    <div class="pick-grid">
+      {{#each attributes}}
+      <button type="button" class="pick {{#if selected}}selected{{/if}}" data-action="pick" data-key="attribute" data-value="{{key}}" {{#if atCap}}disabled{{/if}}>
+        {{label}} <strong>{{value}}</strong>{{#if selected}} → {{next}}{{/if}}
+      </button>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{#if gains.perks}}
+    <h3>{{localize "GLOOM.LevelUp.perk"}}</h3>
+    <ul class="pick-list">
+      {{#each perks}}
+      <li class="pick {{#if selected}}selected{{/if}}" data-action="pick" data-key="perk" data-value="{{id}}">
+        <i class="fa-regular {{#if selected}}fa-circle-dot{{else}}fa-circle{{/if}}"></i> {{name}} <span class="hint">{{taken}}/{{boxes}}</span>
+      </li>
+      {{else}}
+      <li class="hint">{{localize "GLOOM.LevelUp.noPerks"}}</li>
+      {{/each}}
+    </ul>
+    {{/if}}
+
+    {{#if gains.classSkill}}
+    <h3>{{localize "GLOOM.LevelUp.classSkill"}}</h3>
+    {{> powerChoices list=classSkills key="classSkill"}}
+    {{/if}}
+    {{#if gains.passiveTalent}}
+    <h3>{{localize "GLOOM.LevelUp.passiveTalent"}}</h3>
+    {{> powerChoices list=passiveTalents key="passiveTalent"}}
+    {{/if}}
+    {{#if gains.ancestrySkill}}
+    <h3>{{localize "GLOOM.LevelUp.ancestrySkill"}}</h3>
+    {{> powerChoices list=ancestrySkills key="ancestrySkill"}}
+    {{/if}}
+    {{#if gains.upgradeTalents}}
+    <h3>{{localize "GLOOM.LevelUp.upgrades"}}</h3>
+    <ul>{{#each upgrades}}<li>{{replaces}} → <strong>{{name}}</strong></li>{{else}}<li class="hint">{{localize "GLOOM.LevelUp.noOptions"}}</li>{{/each}}</ul>
+    {{/if}}
+    {{/if}}
+  </section>
+  <footer class="nav">
+    <button type="button" class="finish" data-action="confirm" {{#if atMax}}disabled{{/if}}><i class="fa-solid fa-angles-up"></i> {{localize "GLOOM.LevelUp.confirm"}}</button>
+  </footer>
+</div>

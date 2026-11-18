@@ -705,6 +705,32 @@
       "fell": "{name} falls to Tier {tier} with {faction}.",
       "nonMember": "Not a member: requests don't change the tier (join through a faction request).",
       "progress": "{s}/{need} successes to rise · {f}/{limit} failures to drop"
+    },
+    "LevelUp": {
+      "title": "Level up",
+      "titleFor": "Level up: {name}",
+      "button": "Level up",
+      "attribute": "1 Attribute point",
+      "perk": "1 Perk",
+      "classSkill": "1 new class Skill",
+      "passiveTalent": "1 new passive Talent",
+      "ancestrySkill": "1 new ancestry Skill",
+      "upgrades": "Upgraded active Talents",
+      "initiative": "Initiative",
+      "details": "Details",
+      "noPerks": "No perk boxes left. Your GM may give you another reward.",
+      "noOptions": "No options found in your world or compendiums (import your content first).",
+      "noClass": "This mercenary has no Class item: HP won't follow a health track.",
+      "atMax": "This mercenary is already at the maximum level (9).",
+      "incomplete": "Some choices are missing. Level up anyway?",
+      "confirm": "Level up",
+      "reached": "{name} reaches level {level}!",
+      "gained": "New powers: {list}."
+    },
+    "Controls": {
+      "title": "Gloomhaven",
+      "select": "Select tokens",
+      "levelUp": "Allow leveling up (shows a Level up button on mercenary sheets)"
     }
   }
 }

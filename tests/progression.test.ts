@@ -35,3 +35,14 @@ describe("progression", () => {
     expect(backgroundBonus(true)).toBe(2);
   });
 });
+
+describe("levelGains", () => {
+  it("follows the Leveling Guide", async () => {
+    const { levelGains } = await import("../src/module/rules/progression.ts");
+    const classSkillLevels = [2, 3, 4, 5, 6, 7, 8, 9].filter((l) => levelGains(l).classSkill);
+    expect(classSkillLevels).toEqual([2, 4, 5, 6, 8, 9]);
+    expect([3, 7].every((l) => levelGains(l).passiveTalent && levelGains(l).ancestrySkill)).toBe(true);
+    expect(levelGains(5).upgradeTalents).toBe(true);
+    expect(levelGains(2)).toMatchObject({ perks: 1, attributePoints: 1, passiveTalent: false });
+  });
+});
