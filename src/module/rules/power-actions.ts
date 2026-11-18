@@ -84,7 +84,8 @@ interface Common {
 export type PowerAction =
   | (Common & { kind: "attack"; value: number; relative: boolean; range: number | null; targets: number; pierce: number;
       push?: number; pull?: number; area: Area | null; conditions: string[] })
-  | (Common & { kind: "move"; value: number; relative?: boolean; jump?: boolean; flying?: boolean })
+  /** Teleport X (p. 74): to any empty space within range X, ignoring everything between. */
+  | (Common & { kind: "move"; value: number; relative?: boolean; jump?: boolean; flying?: boolean; teleport?: boolean })
   | (Common & { kind: "heal"; value: number; self: boolean; range: number | null; targets?: number; conditions: string[] })
   | (Common & { kind: "shield"; value: number; self: boolean; range?: number | null; duration?: "round" | "persistent" | "scene" })
   | (Common & { kind: "retaliate"; value: number; range?: number | null; self?: boolean; duration?: "round" | "persistent" | "scene" })
@@ -173,6 +174,8 @@ export function parsePowerActions(text: string): PowerAction[] {
     const head = sentence.split(";")[0]!;
     const bonuses = bonusesIn(sentence);
     const withBonuses = <T extends PowerAction>(a: T): T => (bonuses.length ? { ...a, bonuses } : a);
+    const teleport = /\bTeleport (\d+)/.exec(head);
+    if (teleport) out.push({ kind: "move", value: Number(teleport[1]), teleport: true });
     const moves = /\b(Move|Jump) ([+-]?\d+)/.exec(head);
     if (moves && !/\bAttack [+-]?\d/.test(head.slice(0, moves.index))) {
       out.push({ kind: "move", value: Number(moves[2]), ...(/^[+-]/.test(moves[2]!) ? { relative: true } : {}),

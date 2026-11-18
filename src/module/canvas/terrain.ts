@@ -199,7 +199,7 @@ export async function placeTerrainDialog(): Promise<void> {
 // ---------------------------------------------------------------------------
 // Hooks
 
-interface MoveOptions { gloomFrom?: { x: number; y: number }; gloomPath?: Cube[]; gloomForced?: boolean }
+interface MoveOptions { gloomFrom?: { x: number; y: number }; gloomPath?: Cube[]; gloomForced?: boolean; gloomTeleport?: boolean }
 
 export function registerTerrainHooks(): void {
   // Remember where the token came from, and refuse to end a move in an obstacle.
@@ -233,10 +233,10 @@ export function registerTerrainHooks(): void {
     if (!to) return;
     const path = opts.gloomPath ?? (from ? pathThrough([from, to]) : [to]);
     const one = ["jumping", "teleporting"].filter((id) => actor.statuses.has(id));
-    const jumped = !opts.gloomForced && one.length > 0;
+    const jumped = opts.gloomTeleport || (!opts.gloomForced && one.length > 0);
     void (async () => {
       await enterCells(token.parent as Scene.Implementation, actor, path, jumped);
-      if (!opts.gloomForced) for (const id of one) await actor.toggleStatusEffect(id, { active: false });
+      if (!opts.gloomForced && !opts.gloomTeleport) for (const id of one) await actor.toggleStatusEffect(id, { active: false });
     })();
   });
 }

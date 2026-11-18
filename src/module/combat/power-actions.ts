@@ -9,7 +9,7 @@ import { startLasting } from "../lasting.ts";
 import { cubeKey, forcedMoves, type Cube as HexCube } from "../rules/hex.ts";
 import { flagsOf, terrainMap } from "../canvas/terrain.ts";
 import { SYSTEM_ID } from "../config.ts";
-import { pickHexes, hexPolygon, type Offset } from "../canvas/hex-place.ts";
+import { cellsWithin, pickHexes, hexPolygon, type Offset } from "../canvas/hex-place.ts";
 import { addTemporary, drawAttack } from "../deck/actions.ts";
 import { deckForActor } from "../deck/registry.ts";
 import { dispositionOf } from "../npc.ts";
@@ -120,6 +120,7 @@ function label(actor: Actor.Implementation, a: PowerAction): { icon: string; tex
     }
     case "heal": return { icon: "fa-heart", button: true, text: f(a.self ? "GLOOM.Act.healSelf" : "GLOOM.Act.heal", { n: String(a.value) }) + (a.range ? ` · ${t("GLOOM.Act.rangeWord")} ${a.range}` : "") };
     case "move": {
+      if (a.teleport) return { icon: "fa-person-through-window", button: true, text: f("GLOOM.Act.teleport", { n: String(a.value) }) };
       const v = a.relative ? (a.value >= 0 ? `+${a.value}` : String(a.value)) : String(a.value);
       return { icon: a.jump ? "fa-person-running" : "fa-shoe-prints", button: false, text: `${t(a.jump ? "GLOOM.Act.jump" : "GLOOM.Act.move")} ${v}${a.flying ? ` (${t("GLOOM.Act.flying")})` : ""}` };
     }
@@ -156,7 +157,7 @@ function requirementLabel(r: Requirement): string {
 function iconKey(a: PowerAction): string | null {
   switch (a.kind) {
     case "attack": case "heal": case "shield": case "retaliate": case "taunt": return `stat.${a.kind}`;
-    case "move": return a.jump ? "stat.jump" : "stat.move";
+    case "move": return a.teleport ? null : a.jump ? "stat.jump" : "stat.move";
     case "condition": return `condition.${a.id}`;
     case "infuse": return a.any ? "element.any" : `element.${a.elements[0]}`;
     case "trap": return "stat.damage";
@@ -298,10 +299,45 @@ async function onForced(actor: Actor.Implementation, a: Extract<PowerAction, { k
   }
 }
 
+/** Teleport X (p. 74): pick an empty space within range (line of sight only with the house rule). */
+async function onTeleport(actor: Actor.Implementation, a: Extract<PowerAction, { kind: "move" }>): Promise<void> {
+  const token = actingToken(actor);
+  if (!token || !canvas?.scene) return void ui.notifications?.warn("GLOOM.Act.noToken", { localize: true });
+  const grid = canvas.grid as unknown as {
+    getOffset(p: { x: number; y: number }): Offset; offsetToCube(o: Offset): HexCube; cubeToOffset(c: HexCube): Offset;
+    getTopLeftPoint(o: Offset): { x: number; y: number }; getCenterPoint(o: Offset): { x: number; y: number };
+  };
+  const cubeOf = (tk: Token.Implementation) => grid.offsetToCube(grid.getOffset(tk.center));
+  const start = cubeOf(token);
+  const blocked = new Set<string>();
+  for (const tk of canvas.tokens!.placeables as Token.Implementation[]) if (tk !== token) blocked.add(cubeKey(cubeOf(tk)));
+  for (const [key, regions] of terrainMap(canvas.scene as Scene.Implementation)) {
+    if (regions.some((r) => flagsOf(r).kind === "obstacle")) blocked.add(key);
+  }
+  const needSight = !!game.settings?.get(SYSTEM_ID, "teleportSight");
+  const sight = (CONFIG.Canvas.polygonBackends as unknown as Record<string, { testCollision(a: unknown, b: unknown, o: unknown): unknown }>)["sight"];
+  const from = token.center;
+  const allowed = cellsWithin(a.value)
+    .map((c) => ({ q: start.q + c.q, r: start.r + c.r, s: start.s + c.s }))
+    .filter((c) => cubeKey(c) !== cubeKey(start) && !blocked.has(cubeKey(c)))
+    .map((c) => grid.cubeToOffset(c))
+    .filter((o) => !needSight || !sight?.testCollision(from, grid.getCenterPoint(o), { type: "sight", mode: "any" }));
+  if (!allowed.length) return void ui.notifications?.warn("GLOOM.Act.noTeleport", { localize: true });
+  const picked = await pickHexes({ count: 1, allowed, color: 0x8e44ad, hint: f("GLOOM.Act.teleportHint", { n: String(a.value) }) });
+  const cell = picked?.[0];
+  if (!cell) return;
+  const p = grid.getTopLeftPoint(cell);
+  await runAsGM({ action: "moveToken", token: token.document.uuid ?? "", x: p.x, y: p.y, path: [grid.offsetToCube(cell)], teleport: true });
+}
+
 /** GM side: move a token along a forced path (traps on the way trigger). */
-export async function forcedMoveToken(tokenUuid: string, x: number, y: number, path: HexCube[]): Promise<void> {
+export async function forcedMoveToken(tokenUuid: string, x: number, y: number, path: HexCube[], teleport = false): Promise<void> {
   const token = (await fromUuid(tokenUuid)) as TokenDocument.Implementation | null;
-  await token?.update({ x, y } as never, { gloomForced: true, gloomPath: path, gloomFrom: { x: token.x, y: token.y } } as never);
+  // Teleport: no animation through the spaces between; only the destination counts for terrain.
+  await token?.update({ x, y } as never, {
+    gloomForced: !teleport, gloomTeleport: teleport, gloomPath: path, gloomFrom: { x: token.x, y: token.y },
+    ...(teleport ? { animate: false, teleport: true } : {}),
+  } as never);
 }
 
 async function placeRegion(kind: keyof typeof COLORS, cells: Offset[], name: string, actor: Actor.Implementation, extra: Record<string, unknown> = {}): Promise<void> {
@@ -405,6 +441,7 @@ export async function runPowerAction(actor: Actor.Implementation, a: PowerAction
       return;
     }
     case "forced": return onForced(actor, a);
+    case "move": return a.teleport ? onTeleport(actor, a) : undefined;
     case "infuse": return onInfuse(a.any ? { ...a, elements: [...ELEMENTS], either: true } : a);
     case "area": {
       const cells = await pickHexes({ area: a.area, origin: actingToken(actor), hint: t("GLOOM.Place.hint") });
@@ -577,6 +614,11 @@ async function useElements(actor: Actor.Implementation, use: ElementUse): Promis
 }
 
 export function registerPowerActionButtons(): void {
+  // Teleport ignores line of sight by the rules (p. 74); some tables prefer to require it.
+  game.settings!.register(SYSTEM_ID, "teleportSight", {
+    name: "GLOOM.Act.settingTeleportSight", hint: "GLOOM.Act.settingTeleportSightHint",
+    scope: "world", config: true, type: Boolean, default: false,
+  } as never);
   // Areas from a finished combat go away (traps and obstacles stay).
   Hooks.on("deleteCombat", (combat) => {
     if (game.user?.isGM && game.users?.activeGM?.isSelf) void clearAreas((combat as Combat.Implementation).scene);

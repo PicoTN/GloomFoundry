@@ -39,3 +39,9 @@ describe("parsePowerActions", () => {
     expect(parsePowerActions("Grant 1 ally within range 3: Strengthen.")).toEqual([{ kind: "condition", id: "strengthen", self: false }]);
   });
 });
+
+describe("teleport (p. 74)", () => {
+  it("parses Teleport X as a teleport move", () => {
+    expect(parsePowerActions("Teleport 4. You and all adjacent allies gain Shield 1.")[0]).toEqual({ kind: "move", value: 4, teleport: true });
+  });
+});
