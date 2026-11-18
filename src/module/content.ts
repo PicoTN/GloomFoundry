@@ -58,6 +58,47 @@ async function preparePack(def: ContentPack): Promise<CompendiumCollection.Any> 
   return pack;
 }
 
+const levelOf = (doc: DocData): number => Number((doc["system"] as { level?: number } | undefined)?.level ?? 0) || 0;
+const label = (key: string) => game.i18n!.localize(`GLOOM.Content.folder.${key}`);
+
+/** Folder path inside the file's folder, by document type: Talents, Skills/Level N, Perks... */
+function subfolder(doc: DocData): string[] {
+  const system = (doc["system"] ?? {}) as { level?: number; category?: string; master?: boolean };
+  switch (doc["type"]) {
+    case "talent": return [label("talents")];
+    case "skill": return [label("skills"), game.i18n!.format("GLOOM.Content.folder.level", { level: String(levelOf(doc)) })];
+    case "perk": return [label("perks")];
+    case "equipment": return [label("equipment")];
+    case "background": return [system.master ? label("master") : label(system.category ?? "other")];
+    default: return [];
+  }
+}
+
+/** Create every folder (and its parents) once; returns "A/B/C" -> folder id. */
+async function createFolders(pack: CompendiumCollection.Any, type: string, paths: string[][]): Promise<Map<string, string>> {
+  const ids = new Map<string, string>();
+  const all = new Set<string>();
+  for (const p of paths) for (let d = 1; d <= p.length; d++) all.add(p.slice(0, d).join("/"));
+  const byDepth = [...all].sort((a, b) => a.split("/").length - b.split("/").length || a.localeCompare(b, undefined, { numeric: true }));
+  const maxDepth = Math.max(0, ...byDepth.map((p) => p.split("/").length));
+  for (let depth = 1; depth <= maxDepth; depth++) {
+    const level = byDepth.filter((p) => p.split("/").length === depth);
+    const created = (await Folder.implementation.createDocuments(
+      level.map((p, i) => {
+        const parts = p.split("/");
+        return {
+          name: parts.at(-1), type, sorting: "m", sort: (i + 1) * 100,
+          folder: depth > 1 ? ids.get(parts.slice(0, -1).join("/")) ?? null : null,
+          flags: { [SYSTEM_ID]: { path: p } },
+        };
+      }) as never,
+      { pack: pack.collection } as never,
+    )) as unknown as { id: string; flags: Record<string, { path?: string }> }[];
+    for (const f of created) ids.set(f.flags[SYSTEM_ID]?.path ?? "", f.id);
+  }
+  return ids;
+}
+
 /** Import everything listed in the index; returns the number of documents created. */
 export async function importContent(indexUrl: string): Promise<number> {
   const index = (await fetchJson(indexUrl)) as ContentIndex;
@@ -66,22 +107,22 @@ export async function importContent(indexUrl: string): Promise<number> {
   for (const def of index.packs ?? []) {
     ui.notifications?.info(game.i18n!.format("GLOOM.Content.importing", { label: def.label }));
     const pack = await preparePack(def);
-    const folderNames = [...new Set(def.files.map((f) => f.folder).filter((f): f is string => !!f))];
-    const folders = folderNames.length
-      ? ((await Folder.implementation.createDocuments(
-          folderNames.map((name) => ({ name, type: def.type, sorting: "a" })) as never,
-          { pack: pack.collection } as never,
-        )) as unknown as { id: string; name: string }[])
-      : [];
-    const folderId = new Map(folders.map((f) => [f.name, f.id]));
-    const docs: DocData[] = [];
+    const entries: { doc: DocData; path: string[] }[] = [];
     for (const file of def.files) {
       const data = await fetchJson(resolvePath(base, file.path));
       for (const doc of (Array.isArray(data) ? data : [data]) as DocData[]) {
         if (!doc || typeof doc !== "object" || typeof doc["type"] !== "string") continue;
-        docs.push({ ...fixImages(doc, base), folder: file.folder ? folderId.get(file.folder) ?? null : null });
+        const path = [...(file.folder ? [file.folder] : []), ...subfolder(doc)];
+        entries.push({ doc: fixImages(doc, base), path });
       }
     }
+    const folderId = await createFolders(pack, def.type, entries.map((e) => e.path));
+    const docs = entries.map(({ doc, path }, i) => ({
+      ...doc,
+      folder: path.length ? folderId.get(path.join("/")) ?? null : null,
+      // Within a folder: by level, then in file order.
+      sort: levelOf(doc) * 1000 + i,
+    }));
     const cls = CONFIG[def.type].documentClass as unknown as {
       createDocuments(data: object[], options: object): Promise<unknown[]>;
     };

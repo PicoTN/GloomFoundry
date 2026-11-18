@@ -598,7 +598,19 @@
       "again": "Import again",
       "pick": "Choose index.json",
       "importing": "Importing {label}…",
-      "done": "Content imported: {count} documents."
+      "done": "Content imported: {count} documents.",
+      "folder": {
+        "talents": "Talents",
+        "skills": "Skills",
+        "perks": "Perks",
+        "equipment": "Equipment",
+        "level": "Level {level}",
+        "occupation": "Occupations",
+        "master": "Master Occupations",
+        "origin": "Origins",
+        "social": "Social",
+        "other": "Other"
+      }
     }
   }
 }
