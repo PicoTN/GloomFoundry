@@ -11,6 +11,7 @@ import { hasCondition } from "../conditions.ts";
 import { isActiveGM } from "../deck/registry.ts";
 import { heal, recoverRoundUses, spendPower } from "../powers.ts";
 import { clearAreas } from "./power-actions.ts";
+import { expireRoundAbilities } from "../abilities.ts";
 import {
   decay, endTurn as elementsEndTurn, expiresAtTurnEnd, timelinePosition, UNTIL_END_OF_NEXT_TURN,
 } from "../rules/combat.ts";
@@ -135,7 +136,12 @@ async function endRound(combat: Combat.Implementation, priorRound: number): Prom
     [`flags.${SYSTEM_ID}.lastSpeeds`]: speeds ?? {},
     [`flags.${SYSTEM_ID}.-=speeds`]: null,
   } as never);
-  for (const c of combat.combatants) if (c.actor) await recoverRoundUses(c.actor as Actor.Implementation);
+  for (const c of combat.combatants) {
+    if (!c.actor) continue;
+    await recoverRoundUses(c.actor as Actor.Implementation);
+    // Shield, Retaliate and Taunt last until the end of the round (p. 81).
+    await expireRoundAbilities(c.actor as Actor.Implementation);
+  }
   const updates = combat.combatants.map((c) => ({ _id: c.id, initiative: null, [`flags.${SYSTEM_ID}.-=${PLAN_FLAG}`]: null }));
   await combat.updateEmbeddedDocuments("Combatant", updates as never);
   await ChatMessage.create({

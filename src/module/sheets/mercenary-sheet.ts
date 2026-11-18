@@ -13,6 +13,7 @@ import { EQUIPMENT_SLOTS, SKILL_LOADOUT, slotCapacity, type EquipmentSlot } from
 import { runAsGM } from "../socket.ts";
 import { recordRequest, type FactionStanding } from "../rules/factions.ts";
 import { powerDetails } from "../combat/power-actions.ts";
+import { classPanel, classPanelAction } from "../class-mechanics.ts";
 import { availablePowers, getPlan, submitPlan } from "../combat/planning.ts";
 import { getPhase } from "../combat/combat.ts";
 import type { PerkStep } from "../rules/perks.ts";
@@ -51,6 +52,7 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       testAttribute: MercenarySheet.#onTestAttribute,
       openCreation: MercenarySheet.#onOpenCreation,
       levelUp: MercenarySheet.#onLevelUp,
+      classMech: MercenarySheet.#onClassMech,
       toggleDetails: MercenarySheet.#onToggleDetails,
       planPick: MercenarySheet.#onPlanPick,
       planInitiative: MercenarySheet.#onPlanInitiative,
@@ -194,6 +196,7 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
     return {
       ...context,
       isBlank: isBlankMercenary(actor) && actor.isOwner,
+      classMechanics: classPanel(actor),
       plan: planning ? {
         primary: findPower(draft.primary), secondary: findPower(draft.secondary), from: draft.from,
         initiative: (draft.from === "secondary" ? findPower(draft.secondary) : findPower(draft.primary))?.initiative ?? null,
@@ -339,6 +342,11 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
     const options = availablePowers(this.document);
     const find = (id: string) => options.find((p) => p.id === id) ?? null;
     await submitPlan(combatant, find(this.#draft.primary), find(this.#draft.secondary), this.#draft.from);
+  }
+
+  static async #onClassMech(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {
+    await classPanelAction(this.document, target);
+    void this.render();
   }
 
   static #onLevelUp(this: MercenarySheet) {

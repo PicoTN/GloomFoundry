@@ -14,6 +14,43 @@
     </div>
   </section>
 
+  {{#if classMechanics.length}}
+  <section class="class-mechanics">
+    <h3>{{localize "GLOOM.Mech.title"}}</h3>
+    {{#each classMechanics as |m|}}
+    <div class="mech mech-{{m.type}}" data-tooltip="{{m.text}}">
+      <span class="mech-label">{{m.label}}</span>
+      {{#if m.isState}}<span class="state-badge{{#if m.active}} on{{/if}}">{{#if m.active}}{{localize "GLOOM.Mech.active"}}{{else}}{{localize "GLOOM.Mech.inactive"}}{{/if}}</span>{{/if}}
+      {{#if m.isCounters}}
+      <span class="counters">{{#each m.counters as |c|}}
+        <span class="counter">{{c.label}}
+          <a data-action="classMech" data-op="counter" data-mech="{{m.id}}" data-counter="{{c.id}}" data-delta="-1"><i class="fa-solid fa-minus"></i></a>
+          <strong>{{c.value}}</strong>
+          <a data-action="classMech" data-op="counter" data-mech="{{m.id}}" data-counter="{{c.id}}" data-delta="1"><i class="fa-solid fa-plus"></i></a>
+        </span>{{/each}}
+        <span class="hint">{{m.total}}/{{m.max}}</span>
+        <a data-action="classMech" data-op="clearCounters" data-mech="{{m.id}}" data-tooltip="GLOOM.Mech.clear"><i class="fa-solid fa-eraser"></i></a>
+      </span>
+      {{/if}}
+      {{#if m.isSlot}}
+      <span class="entries">{{#each m.entries as |e|}}<span class="entry" data-tooltip="{{e.text}}">{{e.name}} <a data-action="classMech" data-op="endSlot" data-mech="{{m.id}}" data-name="{{e.name}}" data-tooltip="GLOOM.Mech.end"><i class="fa-solid fa-xmark"></i></a></span>{{else}}<span class="hint">{{localize "GLOOM.Mech.none"}}</span>{{/each}}
+        <span class="hint">/{{m.max}}</span></span>
+      {{/if}}
+      {{#if m.isMark}}
+      <span class="entries">{{#each m.marks as |k|}}<span class="entry">{{k.name}}{{#if k.option}}: {{k.option}}{{/if}}{{#if (gt k.count 1)}} ×{{k.count}}{{/if}} <a data-action="classMech" data-op="unmark" data-mech="{{m.id}}" data-token="{{k.token}}" data-tooltip="GLOOM.Mech.remove"><i class="fa-solid fa-xmark"></i></a></span>{{else}}<span class="hint">{{localize "GLOOM.Mech.none"}}</span>{{/each}}</span>
+      <a class="mech-btn" data-action="classMech" data-op="mark" data-mech="{{m.id}}" data-tooltip="GLOOM.Mech.markTarget"><i class="fa-solid fa-crosshairs"></i></a>
+      {{/if}}
+      {{#if m.isPool}}
+      <span class="entries">{{#each m.items as |i|}}<span class="entry{{#if i.held}} held{{/if}}" data-tooltip="{{i.text}}">{{i.name}}{{#if i.held}} → {{i.holder}} <a data-action="classMech" data-op="return" data-mech="{{m.id}}" data-item="{{i.name}}" data-tooltip="GLOOM.Mech.return"><i class="fa-solid fa-rotate-left"></i></a>{{else}} <a data-action="classMech" data-op="give" data-mech="{{m.id}}" data-item="{{i.name}}" data-tooltip="GLOOM.Mech.giveTarget"><i class="fa-solid fa-gift"></i></a>{{/if}}</span>{{/each}}</span>
+      {{/if}}
+      {{#if m.isSummons}}
+      <span class="entries">{{#each m.summons as |s|}}<a class="entry" data-action="classMech" data-op="summon" data-name="{{s.name}}" data-tooltip="GLOOM.Mech.place"><i class="fa-solid fa-ghost"></i> {{s.name}}</a>{{/each}}</span>
+      {{/if}}
+    </div>
+    {{/each}}
+  </section>
+  {{/if}}
+
   <section class="conditions">
     <h3>
       {{localize "GLOOM.Condition.plural"}}

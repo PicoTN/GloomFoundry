@@ -150,6 +150,8 @@ function defineClassSchema() {
     /** Starting inventory offered at character creation (raw equipment Item data) and gold. */
     startingItems: grants(),
     startingGold: int(0),
+    /** Class mechanics (Berserk, Notes, Augments, Doom, Supply, summons...): rules/class-mechanics.ts. */
+    mechanics: new fields.ArrayField(new fields.ObjectField()),
     grants: grants(),
   };
 }

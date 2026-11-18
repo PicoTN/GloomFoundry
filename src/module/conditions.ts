@@ -10,6 +10,8 @@
  *  - rests and the end of combat remove conditions; Unconscious follows HP.
  */
 import { SYSTEM_PATH, type AttributeKey } from "./config.ts";
+import { abilityStatuses } from "./abilities.ts";
+import { markStatuses } from "./class-mechanics.ts";
 
 export type ConditionKind = "positive" | "negative";
 
@@ -63,6 +65,8 @@ export function registerStatusEffects(): void {
 
   CONFIG.statusEffects = [
     ...CONDITIONS.map((c) => ({ id: c.id, name: conditionLabel(c.id), img: pack[`condition.${c.id}`] ?? img(c.coreIcon) })),
+    ...abilityStatuses(),
+    ...markStatuses(),
     ...EXTRA_STATUSES.map((s) => ({ id: s.id, name: conditionLabel(s.id), img: img(s.coreIcon) })),
   ] as typeof CONFIG.statusEffects;
 

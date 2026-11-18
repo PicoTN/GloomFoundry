@@ -2,6 +2,7 @@
  * High-level draw actions: prompt the user, draw, resolve with the rules engine,
  * post the chat card, and apply side effects (expending a Background, ...).
  */
+import { abilityValue } from "../abilities.ts";
 import { actionButtonsHTML } from "../combat/power-actions.ts";
 import { ATTRIBUTE_LABELS, ATTRIBUTES, templatePath, type AttributeKey } from "../config.ts";
 import { cardView, postDrawMessage, type DrawMessageContext } from "../chat/draw-message.ts";
@@ -204,6 +205,7 @@ export async function drawAttack(deck: ModifierDeck, options: AttackOptions = {}
     modes: modeOptions(defaultMode),
     targetName: target?.name ?? "",
     poisoned: hasCondition(target, "poison"),
+    shield: abilityValue(target, "shield"),
     warded: hasCondition(target, "ward"),
   });
   if (!form) return;
@@ -249,6 +251,9 @@ export async function drawAttack(deck: ModifierDeck, options: AttackOptions = {}
       ...(kept?.data.effect && attacker
         ? { effectActs: actionButtonsHTML(attacker, kept.data.actions?.length ? kept.data.actions : kept.data.effect) }
         : {}),
+      ...(target && abilityValue(target, "retaliate") && attacker
+        ? { retaliate: { amount: abilityValue(target, "retaliate"), label: f("GLOOM.Ability.retaliateButton", { amount: String(abilityValue(target, "retaliate")), name: attacker.name ?? "" }) } }
+        : {}),
       damageButton: {
         label: target
           ? f("GLOOM.Damage.applyTo", { name: target.name ?? "", amount: String(result.damage) })
@@ -258,7 +263,7 @@ export async function drawAttack(deck: ModifierDeck, options: AttackOptions = {}
     attacker,
     {
       type: "attack", damage: result.damage, critical: result.critical, null: result.null,
-      targetUuid: target?.uuid ?? "", wardApplied: ward && result.warded > 0, attacker: attacker?.name ?? deck.label,
+      attackerUuid: attacker?.uuid ?? "", targetUuid: target?.uuid ?? "", wardApplied: ward && result.warded > 0, attacker: attacker?.name ?? deck.label,
     },
   );
 }

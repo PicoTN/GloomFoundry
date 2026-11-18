@@ -54,10 +54,22 @@ export async function applyDamage(actor: Actor.Implementation, amount: number, o
 export function registerDamageButtons(): void {
   Hooks.on("renderChatMessageHTML", (message, html) => {
     const root = html as HTMLElement;
-    const button = root.querySelector<HTMLButtonElement>("[data-gloom-apply-damage]");
-    if (!button) return;
     const flags = ((message as ChatMessage.Implementation).flags as Record<string, Record<string, unknown> | undefined>)[SYSTEM_ID] ?? {};
     const canApply = game.user?.isGM || (message as ChatMessage.Implementation).isAuthor;
+    // Retaliate: the target damages the attacker back.
+    const retaliate = root.querySelector<HTMLButtonElement>("[data-gloom-retaliate]");
+    if (retaliate) {
+      if (!canApply) retaliate.remove();
+      else retaliate.addEventListener("click", async (event) => {
+        event.preventDefault();
+        const attacker = (await fromUuid(String(flags["attackerUuid"] ?? ""))) as Actor.Implementation | null;
+        if (!attacker) return;
+        await applyDamage(attacker, Number(retaliate.dataset["gloomRetaliate"] ?? 0), { source: game.i18n!.localize("GLOOM.Ability.retaliate") });
+        retaliate.disabled = true;
+      });
+    }
+    const button = root.querySelector<HTMLButtonElement>("[data-gloom-apply-damage]");
+    if (!button) return;
     if (!canApply) {
       button.remove();
       return;

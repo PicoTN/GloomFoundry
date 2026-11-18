@@ -784,7 +784,24 @@
       "elementCheck": "Element check",
       "useAnyway": "Use it anyway?",
       "ifActive": "if {list} active",
-      "valueX": "Value of X"
+      "valueX": "Value of X",
+      "gain": "Gain {n} {what}",
+      "anyCounter": "Note of your choice",
+      "play": "Play {name}",
+      "give": "Give {what}",
+      "targetHas": "target has {mark}",
+      "perMark": "per {mark} on the target",
+      "allyHas": "an ally has {mark}",
+      "requirementTitle": "Requirement",
+      "requirementNotMet": "Not met: {what}. Use it anyway?",
+      "whoActs": "Who performs it?",
+      "performer": {
+        "companion": "Command",
+        "summon": "Summon",
+        "ally": "Ally",
+        "enemy": "Controlled enemy",
+        "self": ""
+      }
     },
     "Place": {
       "needHex": "Placing areas needs a scene with a hex grid.",
@@ -802,6 +819,46 @@
         "all": "all within range {n}"
       },
       "clearAreas": "Remove placed areas"
+    },
+    "Ability": {
+      "shield": "Shield",
+      "retaliate": "Retaliate",
+      "taunt": "Taunt",
+      "persistent": "persistent",
+      "retaliateButton": "Retaliate {amount} → {name}"
+    },
+    "Mech": {
+      "title": "Class",
+      "active": "active",
+      "inactive": "inactive",
+      "none": "none",
+      "clear": "Clear all",
+      "end": "End",
+      "remove": "Remove",
+      "markTarget": "Mark the targeted token(s)",
+      "return": "Return to the pool",
+      "giveTarget": "Give to the targeted ally (or yourself)",
+      "place": "Place this summon",
+      "missing": "This class has no \"{id}\" mechanic.",
+      "counterFull": "{label}: already at the maximum ({max}).",
+      "played": "{name} is in play ({label}).",
+      "ended": "Ended: {list}.",
+      "gave": "{item} given to {name}.",
+      "poolEmpty": "{label}: nothing left to give.",
+      "noSummon": "No NPC named \"{name}\" in the world or compendiums (import the Summons compendium).",
+      "pool": {
+        "supply": "a Supply item",
+        "medicalPack": "a Medical Pack"
+      }
+    },
+    "Mark": {
+      "doom": "Doom",
+      "plague": "Plague",
+      "prescription": "Prescription",
+      "choose": "Choose a {mark}"
+    },
+    "State": {
+      "berserk": "Berserk"
     }
   }
 }

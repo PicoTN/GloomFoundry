@@ -31,6 +31,7 @@ import { openCreationWizard, registerCreationHooks } from "./module/apps/creatio
 import { registerLevelUpControls } from "./module/apps/level-up.ts";
 import { registerIconEnricher } from "./module/perks/display.ts";
 import { registerPowerActionButtons } from "./module/combat/power-actions.ts";
+import { registerClassMechanicHooks } from "./module/class-mechanics.ts";
 import { registerPlanningSheetHooks } from "./module/sheets/mercenary-sheet.ts";
 import { MercenarySheet } from "./module/sheets/mercenary-sheet.ts";
 import { PerkSheet } from "./module/sheets/perk-sheet.ts";
@@ -107,6 +108,7 @@ Hooks.once("init", async () => {
   registerLevelUpControls();
   registerIconEnricher();
   registerPowerActionButtons();
+  registerClassMechanicHooks();
   registerPlanningSheetHooks();
   registerNpcHooks();
   registerCombatFlow();

@@ -1,5 +1,6 @@
 import { ATTRIBUTES } from "../config.ts";
 import { attributeMax, maxHp, MAX_LEVEL, type HpTrack } from "../rules/progression.ts";
+import { activeStates, type Mechanic } from "../rules/class-mechanics.ts";
 
 const fields = foundry.data.fields;
 
@@ -32,6 +33,8 @@ function defineMercenarySchema() {
       /** id of the `Cards` (type pile) used as the discard pile. */
       discardPile: new fields.StringField({ required: true, blank: true, initial: "" }),
     }),
+    /** Class mechanics state: counters, slots in play, pool holders, single marks (rules/class-mechanics.ts). */
+    classState: new fields.ObjectField({ required: true, initial: () => ({}) as never }),
   };
 }
 
@@ -48,6 +51,9 @@ export class MercenaryModel extends foundry.abstract.TypeDataModel<MercenarySche
   hpFromClass = false;
   /** Attribute maximum for the current level (2 + half the level, rounded up). */
   attributeMax = 3;
+  /** Class mechanics from the Class item, and the derived states active now (e.g. Berserk). */
+  mechanics: Mechanic[] = [];
+  states: string[] = [];
 
   override prepareDerivedData(): void {
     super.prepareDerivedData();
@@ -62,5 +68,7 @@ export class MercenaryModel extends foundry.abstract.TypeDataModel<MercenarySche
     if (ancestry) this.ancestry = ancestry.name ?? this.ancestry;
     this.attributeMax = attributeMax(this.level);
     this.hp.value = Math.min(this.hp.value, this.hp.max);
+    this.mechanics = ((cls?.system as unknown as { mechanics?: Mechanic[] } | undefined)?.mechanics ?? []) as Mechanic[];
+    this.states = [...activeStates(this.mechanics, this.hp)];
   }
 }

@@ -28,8 +28,16 @@ export interface Bonus {
   anyElement?: boolean;
   /** Using the element consumes it (sets it to inert); most effects don't (p. 82). */
   consume?: boolean;
-  /** Other trigger, as text ("if Berserk", "if the target is adjacent"). */
+  /** Other trigger, as text ("if the target is adjacent"); shown, not checked. */
   when?: string;
+  /** Class state that must be active (e.g. "berserk"). */
+  state?: string;
+  /** The target must carry this mark (e.g. "doom"). */
+  targetMark?: string;
+  /** Scale the bonus by the number of this mark on the target ("+1 attack for each Plague"). */
+  perTargetMark?: string;
+  /** An ally must carry this mark (e.g. "prescription"). */
+  allyMark?: string;
   attack?: number; range?: number; targets?: number; pierce?: number; push?: number; pull?: number;
   heal?: number; move?: number; shield?: number; retaliate?: number;
   conditions?: string[];
@@ -45,6 +53,14 @@ export interface Requirement {
   anyElement?: boolean;
   consume?: boolean;
   when?: string;
+  /** Class state that must be active (e.g. "berserk"). */
+  state?: string;
+  targetMark?: string;
+  allyMark?: string;
+  /** Class counters needed (e.g. a Song: {"bass": 2, "treble": 1}). */
+  counters?: Record<string, number>;
+  /** Class counters mechanic emptied when used (playing a Song removes all Notes). */
+  clearCounters?: string;
 }
 
 interface Common {
@@ -54,6 +70,9 @@ interface Common {
   requires?: Requirement;
   /** The value is "X" (e.g. your current HP): ask for it when used. */
   variable?: boolean;
+  /** Who performs it: yourself (default), your companion or one of your summons (Command), or
+   *  someone else you grant/control it to (shown only). */
+  performer?: "self" | "companion" | "summon" | "ally" | "enemy";
   /** Short free text shown with the action (e.g. "target all enemies adjacent to the ally"). */
   note?: string;
 }
@@ -65,6 +84,7 @@ export type PowerAction =
   | (Common & { kind: "heal"; value: number; self: boolean; range: number | null; targets?: number; conditions: string[] })
   | (Common & { kind: "shield"; value: number; self: boolean; range?: number | null; duration?: "round" | "persistent" | "scene" })
   | (Common & { kind: "retaliate"; value: number; range?: number | null; self?: boolean; duration?: "round" | "persistent" | "scene" })
+  | (Common & { kind: "taunt"; self?: boolean; range?: number | null; duration?: "round" | "persistent" | "scene" })
   | (Common & { kind: "condition"; id: string; self: boolean; range?: number | null })
   | (Common & { kind: "infuse"; elements: string[]; either: boolean; any?: boolean })
   | (Common & { kind: "area"; area: Area })
@@ -72,6 +92,10 @@ export type PowerAction =
   | (Common & { kind: "obstacle"; count: number; range?: number | null })
   | (Common & { kind: "summon"; name?: string })
   | (Common & { kind: "choice"; pick: number; options: PowerAction[][] })
+  | (Common & { kind: "mark"; id: string; count?: number; option?: string; group?: string; targets?: number; range?: number | null })
+  | (Common & { kind: "gain"; id: string; counter: string; count: number })
+  | (Common & { kind: "play"; id: string; name: string; text?: string })
+  | (Common & { kind: "give"; id: string; item?: string; random?: boolean; count?: number })
   | (Common & { kind: "text"; text: string });
 
 /** Actions stored on an item, by text field. */
@@ -176,6 +200,7 @@ export function parsePowerActions(text: string): PowerAction[] {
     }
     const shield = /\bShield (\d+)/.exec(head);
     if (shield) out.push(withBonuses({ kind: "shield", value: Number(shield[1]), self: !/\bally\b/i.test(head) }));
+    if (/\bTaunt\b/.test(head)) out.push({ kind: "taunt", self: !/\bally\b/i.test(head) });
     const retaliate = /\bRetaliate (\d+)/.exec(head);
     if (retaliate) {
       const range = /Retaliate \d+[^.;]*?\brange (\d+)/i.exec(head);

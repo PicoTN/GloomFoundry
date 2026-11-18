@@ -59,6 +59,8 @@ export interface DrawMessageContext {
   outcome?: { label: string; css: string };
   /** "Apply damage" button (attacks). */
   damageButton?: { label: string };
+  /** Retaliate X from the target back to the attacker. */
+  retaliate?: { amount: number; label: string };
   /** Buttons for the kept card's effect (apply Wound, Infuse Fire...). */
   effectActs?: string;
 }

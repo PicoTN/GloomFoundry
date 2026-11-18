@@ -1,4 +1,5 @@
 import { clearConditions, hasCondition } from "./conditions.ts";
+import { expireRoundAbilities } from "./abilities.ts";
 import { addTemporary } from "./deck/actions.ts";
 import { deckForActor, isActiveGM } from "./deck/registry.ts";
 
@@ -35,7 +36,10 @@ export function registerConditionHooks(): void {
     if (!isActiveGM()) return;
     for (const combatant of (combat as Combat.Implementation).combatants) {
       const actor = combatant.actor as Actor.Implementation | null;
-      if (actor) await clearConditions(actor);
+      if (actor) {
+        await clearConditions(actor);
+        await expireRoundAbilities(actor);
+      }
     }
   });
 }

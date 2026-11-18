@@ -608,3 +608,17 @@ img.gloom-inline-icon {
     border-left: 2px solid rgb(127 127 127 / 40%);
     .option { display: flex; flex-wrap: wrap; gap: 0.25rem; } }
 }
+
+.gloomfoundry .class-mechanics {
+  display: flex; flex-direction: column; gap: 0.25rem;
+  .mech { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; padding: 0.2rem 0.4rem;
+    border: 1px solid rgb(127 127 127 / 30%); border-radius: 4px; }
+  .mech-label { font-weight: bold; min-width: 7rem; }
+  .state-badge { padding: 0 0.4rem; border-radius: 3px; background: rgb(127 127 127 / 25%); font-size: 0.8rem; }
+  .state-badge.on { background: var(--gloom-red); color: white; }
+  .counters, .entries { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
+  .counter { display: inline-flex; align-items: center; gap: 0.2rem; }
+  .entry { padding: 0 0.35rem; border-radius: 3px; background: rgb(127 127 127 / 15%); font-size: 0.85rem; }
+  .entry.held { opacity: 0.6; }
+  .mech-btn { margin-left: auto; }
+}

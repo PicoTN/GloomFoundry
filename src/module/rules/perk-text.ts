@@ -66,7 +66,7 @@ export function describePerk(steps: PerkStep[], known: Map<string, CardFace>): P
 export type EffectToken = { text: string } | { icon: string; label: string } | { infuse: string[]; label: string };
 
 const CONDITIONS = ["Bless", "Curse", "Immobilize", "Invisible", "Muddle", "Pacify", "Poison", "Regenerate", "Safeguard", "Strengthen", "Stun", "Ward", "Wound"];
-const STATS = ["Attack", "Damage", "Heal", "Jump", "Move", "Pierce", "Pull", "Push", "Range", "Retaliate", "Shield", "Target", "Persistent"];
+const STATS = ["Attack", "Damage", "Heal", "Jump", "Move", "Pierce", "Pull", "Push", "Range", "Retaliate", "Shield", "Target", "Persistent", "Taunt"];
 const ELEMENTS = ["Air", "Dark", "Earth", "Fire", "Ice", "Light"];
 const EL = `(?:${ELEMENTS.join("|")})`;
 

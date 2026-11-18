@@ -10,6 +10,13 @@ import { addTemporary, drawAttack } from "../deck/actions.ts";
 import { deckForActor } from "../deck/registry.ts";
 import { dispositionOf } from "../npc.ts";
 import { heal } from "../powers.ts";
+import { gainAbility } from "../abilities.ts";
+import {
+  applyMark, classSummonNames, clearCounters, gainCounter, giveFromPool, markCount, mechanicsOwner, placeSummonByName,
+  playIntoSlot, statesOf,
+} from "../class-mechanics.ts";
+import { countersCover } from "../rules/class-mechanics.ts";
+import { currentTargetActor } from "../conditions.ts";
 import { parsePowerActions, type Area, type Bonus, type PowerAction, type Requirement, type StoredActions } from "../rules/power-actions.ts";
 import { areOpposed } from "../rules/sides.ts";
 import { runAsGM } from "../socket.ts";
@@ -53,16 +60,43 @@ export function withBonus(a: PowerAction, b: Bonus): PowerAction {
 }
 
 /** Is the bonus's (or requirement's) element condition met on the scene's element board? */
-function bonusActive(b: Bonus | Requirement): boolean | null {
+function bonusActive(b: Bonus | Requirement, actor?: Actor.Implementation | null): boolean | null {
+  const checks: boolean[] = [];
   const board = getBoard();
   const active = (e: string) => (board.states[e as ElementId] ?? 0) > 0;
-  if (b.anyElement) return ELEMENTS.some(active);
-  if (!b.elements?.length) return null;
-  return b.anyOf ? b.elements.some(active) : b.elements.every(active);
+  if (b.anyElement) checks.push(ELEMENTS.some(active));
+  else if (b.elements?.length) checks.push(b.anyOf ? b.elements.some(active) : b.elements.every(active));
+  if (b.state && actor) checks.push(statesOf(actor).includes(b.state));
+  const target = currentTargetActor();
+  if (b.targetMark) checks.push(markCount(target, b.targetMark) > 0);
+  if ("perTargetMark" in b && b.perTargetMark) checks.push(markCount(target, b.perTargetMark) > 0);
+  if (b.allyMark) {
+    checks.push(((canvas?.tokens?.placeables ?? []) as Token.Implementation[]).some((tk) => markCount(tk.actor as Actor.Implementation, b.allyMark!) > 0));
+  }
+  if ("counters" in b && b.counters && actor) {
+    const owner = mechanicsOwner(actor);
+    const mechCounters = (owner.system as unknown as { classState?: { counters?: Record<string, Record<string, number>> } }).classState?.counters ?? {};
+    const all: Record<string, number> = Object.assign({}, ...Object.values(mechCounters));
+    checks.push(countersCover(all, b.counters));
+  }
+  return checks.length ? checks.every(Boolean) : null;
+}
+
+function triggerLabel(b: Bonus | Requirement): string {
+  const parts: string[] = [];
+  if (b.anyElement) parts.push(t("GLOOM.Act.anyElement"));
+  else if (b.elements?.length) parts.push(b.elements.map(el).join(b.anyOf ? "/" : "+"));
+  if (b.state) parts.push(game.i18n!.has(`GLOOM.State.${b.state}`) ? t(`GLOOM.State.${b.state}`) : b.state);
+  if (b.targetMark) parts.push(f("GLOOM.Act.targetHas", { mark: t(`GLOOM.Mark.${b.targetMark}`) }));
+  if ("perTargetMark" in b && b.perTargetMark) parts.push(f("GLOOM.Act.perMark", { mark: t(`GLOOM.Mark.${b.perTargetMark}`) }));
+  if (b.allyMark) parts.push(f("GLOOM.Act.allyHas", { mark: t(`GLOOM.Mark.${b.allyMark}`) }));
+  if ("counters" in b && b.counters) parts.push(Object.entries(b.counters).map(([k, v]) => `${v} ${k}`).join(" + "));
+  if (b.when) parts.push(b.when);
+  return parts.join(", ");
 }
 
 function bonusLabel(b: Bonus): string {
-  const trigger = b.anyElement ? t("GLOOM.Act.anyElement") : b.elements?.length ? b.elements.map(el).join(b.anyOf ? "/" : "+") : b.when ?? "";
+  const trigger = triggerLabel(b);
   const parts = [
     b.attack && `+${b.attack} ${t("GLOOM.Act.attackWord")}`, b.range && `+${b.range} ${t("GLOOM.Act.rangeWord")}`,
     b.targets && `+${b.targets} ${t("GLOOM.Act.targetWord")}`, b.heal && `+${b.heal} ${t("GLOOM.Act.healWord")}`,
@@ -88,8 +122,9 @@ function label(actor: Actor.Implementation, a: PowerAction): { icon: string; tex
       const v = a.relative ? (a.value >= 0 ? `+${a.value}` : String(a.value)) : String(a.value);
       return { icon: a.jump ? "fa-person-running" : "fa-shoe-prints", button: false, text: `${t(a.jump ? "GLOOM.Act.jump" : "GLOOM.Act.move")} ${v}${a.flying ? ` (${t("GLOOM.Act.flying")})` : ""}` };
     }
-    case "shield": return { icon: "fa-shield", button: false, text: `Shield ${a.value}${a.self ? "" : ` (${t("GLOOM.Act.ally")})`}` };
-    case "retaliate": return { icon: "fa-hand-fist", button: false, text: `Retaliate ${a.value}${a.range ? ` · ${t("GLOOM.Act.rangeWord")} ${a.range}` : ""}` };
+    case "shield": return { icon: "fa-shield", button: true, text: `${t("GLOOM.Ability.shield")} ${a.value}${a.self ? "" : ` (${t("GLOOM.Act.ally")})`}${a.duration === "persistent" ? ` · ${t("GLOOM.Ability.persistent")}` : ""}` };
+    case "retaliate": return { icon: "fa-hand-fist", button: true, text: `${t("GLOOM.Ability.retaliate")} ${a.value}${a.range ? ` · ${t("GLOOM.Act.rangeWord")} ${a.range}` : ""}${a.self === false ? ` (${t("GLOOM.Act.ally")})` : ""}${a.duration === "persistent" ? ` · ${t("GLOOM.Ability.persistent")}` : ""}` };
+    case "taunt": return { icon: "fa-bullhorn", button: true, text: `${t("GLOOM.Ability.taunt")}${a.self === false ? ` (${t("GLOOM.Act.ally")})` : ""}` };
     case "condition": return { icon: "fa-bolt", button: true, text: cond(a.id) + (a.self ? ` (${t("GLOOM.Act.self")})` : "") };
     case "infuse": return { icon: "fa-fire", button: true, text: a.any ? f("GLOOM.Act.infuse", { list: t("GLOOM.Act.anyElement") }) : f("GLOOM.Act.infuse", { list: a.elements.map(el).join(a.either ? " / " : " + ") }) };
     case "area": return { icon: "fa-draw-polygon", button: true, text: f("GLOOM.Act.place", { what: areaLabel(a.area) }) };
@@ -98,25 +133,32 @@ function label(actor: Actor.Implementation, a: PowerAction): { icon: string; tex
     case "summon": return { icon: "fa-ghost", button: true, text: a.name ? `${t("GLOOM.Act.summon")}: ${a.name}` : t("GLOOM.Act.summon") };
     case "choice": return { icon: "fa-list-check", button: false, text: f("GLOOM.Act.choose", { n: String(a.pick) }) };
     case "text": return { icon: "fa-circle-info", button: false, text: a.text };
+    case "mark": return { icon: "fa-crosshairs", button: true, text: `${t(`GLOOM.Mark.${a.id}`)}${a.option ? `: ${a.option}` : a.group ? ` (${a.group})` : ""}${(a.count ?? 1) > 1 ? ` ×${a.count}` : ""}${(a.targets ?? 1) > 1 ? ` · ${f("GLOOM.Act.targets", { n: String(a.targets) })}` : ""}` };
+    case "gain": return { icon: "fa-music", button: true, text: f("GLOOM.Act.gain", { n: String(a.count), what: a.counter === "any" ? t("GLOOM.Act.anyCounter") : a.counter }) };
+    case "play": return { icon: "fa-play", button: true, text: f("GLOOM.Act.play", { name: a.name }) };
+    case "give": return { icon: "fa-gift", button: true, text: f("GLOOM.Act.give", { what: a.item ?? t(`GLOOM.Mech.pool.${a.id}`) }) + ((a.count ?? 1) > 1 ? ` ×${a.count}` : "") };
   }
 }
 
 function requirementLabel(r: Requirement): string {
-  if (r.when) return r.when;
-  const els = r.anyElement ? t("GLOOM.Act.anyElement") : (r.elements ?? []).map(el).join(r.anyOf ? "/" : "+");
-  return f("GLOOM.Act.ifActive", { list: els });
+  if (r.elements?.length || r.anyElement) {
+    const els = r.anyElement ? t("GLOOM.Act.anyElement") : (r.elements ?? []).map(el).join(r.anyOf ? "/" : "+");
+    const rest = triggerLabel({ ...r, elements: [], anyElement: false });
+    return [f("GLOOM.Act.ifActive", { list: els }), rest].filter(Boolean).join(", ");
+  }
+  return triggerLabel(r);
 }
 
 function oneHTML(actor: Actor.Implementation, a: PowerAction): string {
   const base = label(actor, a);
   const l = {
     ...base,
-    text: `${a.requires ? `[${requirementLabel(a.requires)}] ` : ""}${base.text}${a.variable ? " (X)" : ""}`,
+    text: `${a.performer && a.performer !== "self" ? `${t(`GLOOM.Act.performer.${a.performer}`)}: ` : ""}${a.requires ? `[${requirementLabel(a.requires)}] ` : ""}${base.text}${a.variable ? " (X)" : ""}`,
   };
-  const req = a.requires && (a.requires.elements?.length || a.requires.anyElement) ? a.requires : null;
-  const reqState = req ? bonusActive(req) : null;
+  const req = a.requires ?? null;
+  const reqState = req ? bonusActive(req, actor) : null;
   const reqCss = reqState === null ? "" : reqState ? " active" : " inactive";
-  const reqData = req
+  const reqData = req && (req.elements?.length || req.anyElement)
     ? ` data-bonus="${escape(JSON.stringify({ elements: req.elements ?? [], anyOf: !!req.anyOf, anyElement: !!req.anyElement, consume: !!req.consume }))}"`
     : "";
   const uuid = escape(actor.uuid ?? "");
@@ -130,12 +172,13 @@ function oneHTML(actor: Actor.Implementation, a: PowerAction): string {
     : `<span class="gloom-act-chip act-${a.kind}${req ? ` requires${reqCss}` : ""}"><i class="fa-solid ${l.icon}"></i> ${escape(l.text)}</span>`;
   // Bonus variants: the same action with the extras applied; highlighted when the element is active.
   const bonuses = (a.bonuses ?? []).map((b) => {
-    const state = bonusActive(b);
+    const state = bonusActive(b, actor);
     const css = state === null ? "" : state ? " active" : " inactive";
     const merged = withBonus(a, b);
-    const trigger = escape(JSON.stringify({ elements: b.elements ?? [], anyOf: !!b.anyOf, anyElement: !!b.anyElement, consume: !!b.consume }));
+    const usesElements = !!(b.elements?.length || b.anyElement);
+    const trigger = usesElements ? escape(JSON.stringify({ elements: b.elements ?? [], anyOf: !!b.anyOf, anyElement: !!b.anyElement, consume: !!b.consume })) : "";
     return l.button
-      ? `<button type="button" class="gloom-act bonus${css}" data-gloom-act="${escape(JSON.stringify(merged))}" data-bonus="${trigger}" data-actor="${uuid}"><i class="fa-solid fa-plus"></i> ${escape(bonusLabel(b))}</button>`
+      ? `<button type="button" class="gloom-act bonus${css}" data-gloom-act="${escape(JSON.stringify(merged))}" ${trigger ? ` data-bonus="${trigger}"` : ""}${b.perTargetMark ? ` data-per-mark="${escape(b.perTargetMark)}" data-per-bonus="${escape(JSON.stringify(b))}"` : ""} data-actor="${uuid}"><i class="fa-solid fa-plus"></i> ${escape(bonusLabel(b))}</button>`
       : `<span class="gloom-act-chip bonus${css}"><i class="fa-solid fa-plus"></i> ${escape(bonusLabel(b))}</span>`;
   });
   // Conditions carried by an attack or heal also get their own button (applied after the hit).
@@ -253,7 +296,10 @@ async function onSummon(actor: Actor.Implementation): Promise<void> {
     }
   }
   if (!options.length) return void ui.notifications?.warn("GLOOM.Act.noSummons", { localize: true });
-  options.sort((x, y) => x.name.localeCompare(y.name));
+  // The class's own summons first.
+  const mine = new Set(classSummonNames(actor));
+  const isMine = (o: { name: string }) => [...mine].some((n) => o.name === n || o.name.startsWith(`${n} (`));
+  options.sort((x, y) => Number(isMine(y)) - Number(isMine(x)) || x.name.localeCompare(y.name));
   const form = (await foundry.applications.api.DialogV2.input({
     window: { title: t("GLOOM.Act.summon") },
     content: `<p>${t("GLOOM.Act.summonHint")}</p><select name="uuid">${options.map((o) => `<option value="${escape(o.uuid)}">${escape(o.name)}</option>`).join("")}</select>`,
@@ -301,7 +347,28 @@ export async function runPowerAction(actor: Actor.Implementation, a: PowerAction
       for (const cell of cells) await placeRegion("obstacle", [cell], t("GLOOM.Place.obstacleName"), actor);
       return;
     }
-    case "summon": return onSummon(actor);
+    case "summon": {
+      if (a.name && (await placeSummonByName(actor, a.name))) return;
+      return onSummon(actor);
+    }
+    case "mark": return applyMark(actor, a, [...(game.user?.targets ?? [])] as Token.Implementation[]);
+    case "gain": return gainCounter(actor, a);
+    case "play": return playIntoSlot(actor, a);
+    case "give": return giveFromPool(actor, a, targetedActors());
+    case "shield":
+    case "retaliate":
+    case "taunt": {
+      // Yourself, or the targeted ally when the power gives it to an ally.
+      const targets = a.self === false ? targetedActors() : [actor];
+      if (!targets.length) return void ui.notifications?.warn("GLOOM.Damage.noTarget", { localize: true });
+      const value = a.kind === "taunt" ? 1 : a.value;
+      const persistent = a.duration === "persistent";
+      for (const target of targets) {
+        if (target.isOwner) await gainAbility(target, a.kind, value, { persistent, range: "range" in a ? a.range ?? null : null });
+        else await runAsGM({ action: "ability", actor: target.uuid ?? "", id: a.kind, value, persistent });
+      }
+      return;
+    }
     default: return;
   }
 }
@@ -331,9 +398,23 @@ export async function spawnSummon(sceneUuid: string, actorUuid: string, x: numbe
       ?? ((await (game.actors as unknown as { importFromCompendium(p: unknown, id: string): Promise<Actor.Implementation> })
         .importFromCompendium(game.packs!.get(actor.pack), actor.id!)));
   }
+  // The controller's owners may run the summon (Command, its own turn).
+  const controllerActor = (await fromUuid(controller)) as Actor.Implementation | null;
+  if (controllerActor) {
+    const owners = Object.entries(controllerActor.ownership as Record<string, number>).filter(([, lvl]) => lvl >= 3);
+    if (owners.length) await actor.update({ ownership: Object.fromEntries(owners) } as never);
+  }
   const tokenData = await actor.getTokenDocument({ x, y, disposition, actorLink: false } as never);
   const [token] = (await scene.createEmbeddedDocuments("Token", [tokenData.toObject()] as never)) as unknown as TokenDocument.Implementation[];
-  await (token?.actor as Actor.Implementation | undefined)?.update({ "system.controller": controller } as never);
+  const update: Record<string, unknown> = { "system.controller": controller };
+  // Summons whose HP grows with the controller's level (e.g. the Wildfury companion).
+  const byLevel = (actor.flags as Record<string, { hpByLevel?: number[] }>)[SYSTEM_ID]?.hpByLevel;
+  const level = (controllerActor?.system as unknown as { level?: number } | undefined)?.level ?? 1;
+  if (byLevel?.length) {
+    const hp = byLevel[Math.min(byLevel.length, level) - 1] ?? byLevel[0]!;
+    Object.assign(update, { "system.hp.max": hp, "system.hp.value": hp });
+  }
+  await (token?.actor as Actor.Implementation | undefined)?.update(update as never);
 }
 
 /** Remove the areas placed during a combatant's turn (traps and obstacles stay). */
@@ -425,7 +506,41 @@ export function registerPowerActionButtons(): void {
         if (!form) return;
         action = { ...action, value: Number(form.x) || 0, relative: false } as PowerAction;
       }
-      await runPowerAction(actor, action);
+      // Other requirements (Berserk, Song Notes, marks): warn when not met.
+      if (action.requires) {
+        const { elements: _e, anyElement: _a, ...rest } = action.requires;
+        const ok = bonusActive(rest, actor);
+        if (ok === false) {
+          const go = await foundry.applications.api.DialogV2.confirm({
+            window: { title: t("GLOOM.Act.requirementTitle") },
+            content: `<p>${f("GLOOM.Act.requirementNotMet", { what: requirementLabel(rest) })}</p>`,
+          } as never);
+          if (!go) return;
+        }
+      }
+      // "+1 attack for each Plague the target has": apply the bonus once per mark.
+      if (button.dataset["perMark"]) {
+        const per = JSON.parse(button.dataset["perBonus"] ?? "{}") as Bonus;
+        const n = markCount(currentTargetActor(), button.dataset["perMark"]);
+        for (let i = 1; i < n; i++) action = withBonus(action, per);
+      }
+      // Command: your companion or one of your summons performs it.
+      let performer = actor;
+      if (action.performer === "companion" || action.performer === "summon") {
+        const mine = ((canvas?.tokens?.placeables ?? []) as Token.Implementation[])
+          .filter((tk) => (tk.actor?.system as unknown as { controller?: string } | undefined)?.controller === mechanicsOwner(actor).uuid);
+        if (mine.length === 1) performer = mine[0]!.actor as Actor.Implementation;
+        else if (mine.length > 1) {
+          const pick = await foundry.applications.api.DialogV2.wait({
+            window: { title: t("GLOOM.Act.whoActs") }, content: "",
+            buttons: mine.map((tk, i) => ({ action: String(i), label: tk.name ?? "?" })), rejectClose: false,
+          } as never);
+          if (pick === null || pick === undefined) return;
+          performer = mine[Number(pick)]!.actor as Actor.Implementation;
+        }
+      }
+      await runPowerAction(performer, action);
+      if (action.requires?.clearCounters) await clearCounters(actor, action.requires.clearCounters);
     } catch (err) {
       console.error("GloomFoundry | Power action failed", err);
     }

@@ -10,6 +10,8 @@ import { sufferDamage, type DamageOptions } from "./combat/damage.ts";
 import { handleElementRequest } from "./combat/elements.ts";
 import { createRegion, spawnSummon } from "./combat/power-actions.ts";
 import { heal } from "./powers.ts";
+import { gainAbility } from "./abilities.ts";
+import { removeMarkEffect, setMarkEffect } from "./class-mechanics.ts";
 
 export type SocketRequest =
   | { action: "addTemporary"; deck: string; kind: TemporaryKind; count: number }
@@ -17,6 +19,12 @@ export type SocketRequest =
   | { action: "element"; element: ElementId; change: "infuse" | ElementState }
   | { action: "applyDamage"; actor: string; amount: number; options: DamageOptions }
   | { action: "condition"; actor: string; id: string }
+  | { action: "ability"; actor: string; id: "shield" | "retaliate" | "taunt"; value: number; persistent: boolean }
+  | { action: "classState"; actor: string; state: Record<string, unknown> }
+  | { action: "mark"; actor: string; id: string; label: string; opts: { count?: number; option?: string; stacking?: boolean; source?: string } }
+  | { action: "unmark"; actor: string; id: string }
+  | { action: "createItem"; actor: string; data: Record<string, unknown> }
+  | { action: "deleteItem"; actor: string; item: string }
   | { action: "heal"; actor: string; amount: number; source: string }
   | { action: "createRegion"; scene: string; name: string; color: string; polygons: number[][]; flags: Record<string, unknown> }
   | { action: "spawnSummon"; scene: string; actor: string; x: number; y: number; controller: string; disposition: number };
@@ -40,6 +48,36 @@ async function handle(req: SocketRequest): Promise<void> {
     case "condition": {
       const actor = (await fromUuid(req.actor)) as Actor.Implementation | null;
       await actor?.toggleStatusEffect(req.id, { active: true });
+      return;
+    }
+    case "classState": {
+      const actor = (await fromUuid(req.actor)) as Actor.Implementation | null;
+      await actor?.update({ "system.classState": req.state } as never);
+      return;
+    }
+    case "mark": {
+      const actor = (await fromUuid(req.actor)) as Actor.Implementation | null;
+      if (actor) await setMarkEffect(actor, req.id, req.label, req.opts);
+      return;
+    }
+    case "unmark": {
+      const actor = (await fromUuid(req.actor)) as Actor.Implementation | null;
+      if (actor) await removeMarkEffect(actor, req.id);
+      return;
+    }
+    case "createItem": {
+      const actor = (await fromUuid(req.actor)) as Actor.Implementation | null;
+      await actor?.createEmbeddedDocuments("Item", [req.data] as never);
+      return;
+    }
+    case "deleteItem": {
+      const actor = (await fromUuid(req.actor)) as Actor.Implementation | null;
+      await actor?.items.get(req.item)?.delete();
+      return;
+    }
+    case "ability": {
+      const actor = (await fromUuid(req.actor)) as Actor.Implementation | null;
+      if (actor) await gainAbility(actor, req.id, req.value, { persistent: req.persistent });
       return;
     }
     case "heal": {
