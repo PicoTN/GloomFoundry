@@ -7,7 +7,7 @@
 import { parseLasting } from "../rules/lasting.ts";
 import { startLasting } from "../lasting.ts";
 import { cubeKey, forcedMoves, type Cube as HexCube } from "../rules/hex.ts";
-import { flagsOf, terrainMap } from "../canvas/terrain.ts";
+import { behaviorsFor, flagsOf, terrainMap, type TerrainFlags } from "../canvas/terrain.ts";
 import { SYSTEM_ID } from "../config.ts";
 import { cellsWithin, pickHexes, hexPolygon, type Offset } from "../canvas/hex-place.ts";
 import { addTemporary, drawAttack } from "../deck/actions.ts";
@@ -277,7 +277,7 @@ async function onForced(actor: Actor.Implementation, a: Extract<PowerAction, { k
     for (const tk of canvas.tokens!.placeables as Token.Implementation[]) if (tk !== target) occupied.add(cubeKey(cubeOf(tk)));
     const obstacles = new Set<string>();
     for (const [key, regions] of terrain) if (regions.some((r) => flagsOf(r).kind === "obstacle")) obstacles.add(key);
-    const flying = !!target.actor?.statuses.has("flying");
+    const flying = (target.document as unknown as { movementAction?: string }).movementAction === "fly";
     const blocked = flying ? new Set<string>() : new Set([...occupied, ...obstacles]);
     // Movement walls on the scene stop each step.
     const center = (c: HexCube) => grid.getCenterPoint(grid.cubeToOffset(c));
@@ -330,14 +330,26 @@ async function onTeleport(actor: Actor.Implementation, a: Extract<PowerAction, {
   await runAsGM({ action: "moveToken", token: token.document.uuid ?? "", x: p.x, y: p.y, path: [grid.offsetToCube(cell)], teleport: true });
 }
 
-/** GM side: move a token along a forced path (traps on the way trigger). */
+/**
+ * GM side: move a token with Foundry's movement API, so region behaviors (traps, hazards) react.
+ * Forced movement walks (or flies) through each space of the path; Teleport is a Blink to the
+ * destination. Walls were already checked when the spaces were offered.
+ */
 export async function forcedMoveToken(tokenUuid: string, x: number, y: number, path: HexCube[], teleport = false): Promise<void> {
-  const token = (await fromUuid(tokenUuid)) as TokenDocument.Implementation | null;
-  // Teleport: no animation through the spaces between; only the destination counts for terrain.
-  await token?.update({ x, y } as never, {
-    gloomForced: !teleport, gloomTeleport: teleport, gloomPath: path, gloomFrom: { x: token.x, y: token.y },
-    ...(teleport ? { animate: false, teleport: true } : {}),
-  } as never);
+  const token = (await fromUuid(tokenUuid)) as (TokenDocument.Implementation & {
+    movementAction?: string; move?(w: unknown[], o: unknown): Promise<boolean>;
+  }) | null;
+  if (!token) return;
+  const grid = (token.parent as unknown as { grid: { cubeToOffset(c: HexCube): Offset; getTopLeftPoint(o: Offset): { x: number; y: number } } }).grid;
+  const action = teleport ? "blink" : token.movementAction === "fly" ? "fly" : "walk";
+  const waypoints = teleport || !path.length
+    ? [{ x, y, action }]
+    : path.map((c) => ({ ...grid.getTopLeftPoint(grid.cubeToOffset(c)), action }));
+  if (typeof token.move === "function") {
+    await token.move(waypoints, { method: "api", constrainOptions: { ignoreWalls: true, ignoreCost: true }, showRuler: false });
+  } else {
+    await token.update({ x, y } as never);
+  }
 }
 
 async function placeRegion(kind: keyof typeof COLORS, cells: Offset[], name: string, actor: Actor.Implementation, extra: Record<string, unknown> = {}): Promise<void> {
@@ -507,6 +519,7 @@ export async function createRegion(sceneUuid: string, name: string, color: strin
     shapes: polygons.map((points) => ({ type: "polygon", points, hole: false })),
     visibility: 2, // CONST.REGION_VISIBILITY.ALWAYS: everyone sees it
     flags: { [SYSTEM_ID]: flags },
+    behaviors: behaviorsFor(flags as TerrainFlags),
   }] as never);
 }
 

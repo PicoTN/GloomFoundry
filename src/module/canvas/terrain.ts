@@ -1,13 +1,15 @@
 /**
- * Terrain on the map (p. 76, 77): Regions flagged with a kind.
- * - trap: damage + conditions when a token enters; placed traps are used up once triggered.
- * - hazard: damage when a token enters (hazardous terrain).
- * - difficult: 1 extra movement point (shown only).
- * - obstacle: no token may end its movement there.
+ * Terrain on the map (p. 74-77), built on Foundry's Regions, Region Behaviors and movement actions.
+ * - trap: a "trap" behavior deals damage and conditions when a token moves into the region;
+ *   traps placed by abilities are used up once triggered.
+ * - hazard: a "hazard" behavior deals damage when a token moves in (hazardous terrain).
+ * - difficult: Foundry's "Modify Movement Cost" behavior, walking costs double (1 extra point).
+ * - obstacle: no token may end a walk or jump there (flying may).
  * - space: a marked space (Tinkerer...): its effect is recalled at the start of the turn of a
  *   token standing in or next to it.
- * Flying tokens ignore traps and hazards; a Jumping or Teleporting token only triggers its final
- * space (p. 74).
+ * Movement actions (Foundry's): Walk, Fly (ignores terrain, p. 74), Jump (only the destination
+ * counts) and Blink = Teleport (only the destination counts, ignores walls). Swim, climb, crawl
+ * and burrow are hidden. GM "Displace" never triggers anything.
  */
 import { SYSTEM_ID } from "../config.ts";
 import { CONDITION_IDS } from "../conditions.ts";
@@ -15,7 +17,7 @@ import { sufferDamage } from "../combat/damage.ts";
 import { isActiveGM } from "../deck/registry.ts";
 import { currentCampaignLevel } from "../npc.ts";
 import { COMBAT_CHALLENGE } from "../rules/npc.ts";
-import { cubeKey, neighbors, pathThrough, type Cube } from "../rules/hex.ts";
+import { cubeKey, neighbors, type Cube } from "../rules/hex.ts";
 import { hexPolygon, pickHexes, type Offset } from "./hex-place.ts";
 
 const t = (key: string) => game.i18n!.localize(key);
@@ -29,15 +31,18 @@ export type TerrainKind = keyof typeof TERRAIN_COLORS;
 
 export interface TerrainFlags { kind?: string; damage?: number; effects?: string[]; oneShot?: boolean }
 
-type RegionDoc = RegionDocument.Implementation & { flags: Record<string, TerrainFlags | undefined> };
+type RegionDoc = RegionDocument.Implementation & {
+  flags: Record<string, TerrainFlags | undefined>;
+  testPoint(p: { x: number; y: number; elevation: number }): boolean;
+};
 
 function grid() {
   return canvas?.grid as unknown as {
     isHexagonal: boolean; size: number;
     getOffset(p: { x: number; y: number }): Offset;
     offsetToCube(o: Offset): Cube;
+    getCenterPoint(o: Offset): { x: number; y: number };
     cubeToOffset(c: Cube): Offset;
-    getTopLeftPoint(o: Offset): { x: number; y: number };
   } | undefined;
 }
 
@@ -72,68 +77,155 @@ export function terrainMap(scene: Scene.Implementation | null | undefined): Map<
   return out;
 }
 
-/** Hex of a token whose top-left corner is at (x, y). */
-export function tokenCell(doc: TokenDocument.Implementation, x = doc.x, y = doc.y): Cube | null {
-  const g = grid();
-  if (!g?.isHexagonal) return null;
-  const w = (doc.width ?? 1) * g.size;
-  const h = (doc.height ?? 1) * g.size;
-  return g.offsetToCube(g.getOffset({ x: x + w / 2, y: y + h / 2 }));
+/** Centre of a token at a position (its top-left corner). */
+function tokenCentre(token: TokenDocument.Implementation, pos: { x?: number; y?: number } = {}): { x: number; y: number } {
+  const size = grid()?.size ?? 100;
+  return { x: (pos.x ?? token.x) + ((token.width ?? 1) * size) / 2, y: (pos.y ?? token.y) + ((token.height ?? 1) * size) / 2 };
 }
 
-export function hasObstacle(map: Map<string, RegionDoc[]>, cell: Cube): boolean {
-  return (map.get(cubeKey(cell)) ?? []).some((r) => flagsOf(r).kind === "obstacle");
+function regionsAt(scene: Scene.Implementation, point: { x: number; y: number }, elevation: number, kind: string): RegionDoc[] {
+  return (scene.regions as unknown as RegionDoc[]).filter((r) => flagsOf(r).kind === kind && r.testPoint({ ...point, elevation }));
 }
-
-const flying = (actor: Actor.Implementation | null | undefined) => !!actor?.statuses.has("flying");
 
 // ---------------------------------------------------------------------------
-// Triggers (active GM)
+// Movement actions
 
-async function triggerTrap(region: RegionDoc, actor: Actor.Implementation): Promise<void> {
-  const fl = flagsOf(region);
-  const effects = (fl.effects ?? []).map((e) => e.toLowerCase()).filter((e) => CONDITION_IDS.has(e));
+/** Keep Walk, Fly, Jump and Blink (= Teleport, ignoring walls between, p. 74). Call during `init`. */
+export function configureMovementActions(): void {
+  const actions = (CONFIG.Token as unknown as { movement: { actions: Record<string, Record<string, unknown>> } }).movement.actions;
+  for (const id of ["swim", "burrow", "crawl", "climb"]) if (actions[id]) actions[id]["canSelect"] = false;
+  if (actions["blink"]) Object.assign(actions["blink"], { label: "GLOOM.Terrain.teleport", walls: null });
+}
+
+type Waypoint = { action?: string };
+type Movement = { destination?: { x: number; y: number; elevation?: number }; passed?: { waypoints?: Waypoint[] } } | null | undefined;
+
+/** The movement action of the last part of a move (or the token's current one). */
+function actionOf(token: TokenDocument.Implementation, movement?: Movement): string {
+  return movement?.passed?.waypoints?.at(-1)?.action ?? (token as unknown as { movementAction?: string }).movementAction ?? "walk";
+}
+
+// ---------------------------------------------------------------------------
+// Triggers (active GM, from the region behaviors)
+
+interface MoveEvent { region: RegionDoc; data: { token: TokenDocument.Implementation; movement?: Movement } }
+
+/** Should terrain in this region affect the token for this move? */
+function affects(event: MoveEvent): boolean {
+  if (!isActiveGM()) return false;
+  const { token, movement } = event.data;
+  const action = actionOf(token, movement);
+  if (action === "fly" || action === "displace") return false;
+  if (action === "jump" || action === "blink") {
+    // Jumping and teleporting only count the destination space.
+    const dest = movement?.destination;
+    if (!dest) return false;
+    return event.region.testPoint({ ...tokenCentre(token, dest), elevation: dest.elevation ?? token.elevation ?? 0 });
+  }
+  return true;
+}
+
+async function triggerTrap(region: RegionDoc, actor: Actor.Implementation, trap: { damage: number; conditions: string[]; oneShot: boolean }): Promise<void> {
   await ChatMessage.create({
     speaker: ChatMessage.getSpeaker({ actor: actor as Actor.Stored }),
     content: `<p class="gloom-trap"><i class="fa-solid fa-triangle-exclamation"></i> ${f("GLOOM.Terrain.trapTriggered", { name: escape(actor.name ?? ""), trap: escape(region.name ?? "") })}</p>`,
   } as never);
-  if (fl.damage) await sufferDamage(actor, fl.damage, { source: region.name ?? t("GLOOM.Terrain.trap") });
-  for (const id of effects) if (!actor.statuses.has(id)) await actor.toggleStatusEffect(id, { active: true });
-  if (fl.oneShot !== false) await region.delete();
+  if (trap.damage) await sufferDamage(actor, trap.damage, { source: region.name ?? t("GLOOM.Terrain.trap") });
+  for (const id of trap.conditions.map((c) => c.toLowerCase()).filter((c) => CONDITION_IDS.has(c))) {
+    if (!actor.statuses.has(id)) await actor.toggleStatusEffect(id, { active: true });
+  }
+  if (trap.oneShot) await region.delete();
 }
 
-async function triggerHazard(region: RegionDoc, actor: Actor.Implementation): Promise<void> {
-  const damage = flagsOf(region).damage ?? COMBAT_CHALLENGE[Math.min(7, currentCampaignLevel())]!.hazard;
-  await sufferDamage(actor, damage, { source: t("GLOOM.Terrain.hazard") });
+// ---------------------------------------------------------------------------
+// Region behavior types (declared in system.json under RegionBehavior)
+
+const fields = foundry.data.fields;
+type Ctor = new (...args: never[]) => object;
+const BaseBehavior = (foundry.data as unknown as { regionBehaviors: { RegionBehaviorType: Ctor } }).regionBehaviors.RegionBehaviorType;
+const MOVE_IN = "tokenMoveIn";
+
+/** Trap: damage and conditions when a token moves in (p. 76). */
+export class TrapBehavior extends BaseBehavior {
+  static LOCALIZATION_PREFIXES = ["GLOOM.TrapBehavior"];
+
+  static defineSchema() {
+    return {
+      damage: new fields.NumberField({ required: true, nullable: false, integer: true, min: 0, initial: 3 }),
+      conditions: new fields.SetField(new fields.StringField({ required: true, blank: false })),
+      oneShot: new fields.BooleanField({ required: true, initial: true }),
+    };
+  }
+
+  static events = {
+    [MOVE_IN]: async function (this: { damage: number; conditions: Set<string>; oneShot: boolean }, event: MoveEvent) {
+      if (!affects(event)) return;
+      const actor = event.data.token.actor as Actor.Implementation | null;
+      if (actor) await triggerTrap(event.region, actor, { damage: this.damage, conditions: [...this.conditions], oneShot: this.oneShot });
+    },
+  };
 }
 
-/** Apply terrain for the hexes a token entered. */
-export async function enterCells(scene: Scene.Implementation, actor: Actor.Implementation, cells: Cube[], jumped: boolean): Promise<void> {
-  if (flying(actor) || !cells.length) return;
-  const entered = jumped ? cells.slice(-1) : cells;
-  const map = terrainMap(scene);
-  for (const cell of entered) {
-    for (const region of map.get(cubeKey(cell)) ?? []) {
-      const kind = flagsOf(region).kind;
-      if (kind === "trap") await triggerTrap(region, actor);
-      else if (kind === "hazard") await triggerHazard(region, actor);
-    }
+/** Hazardous terrain: damage when a token moves in (p. 76). */
+export class HazardBehavior extends BaseBehavior {
+  static LOCALIZATION_PREFIXES = ["GLOOM.TrapBehavior"];
+
+  static defineSchema() {
+    return { damage: new fields.NumberField({ required: true, nullable: false, integer: true, min: 0, initial: 2 }) };
+  }
+
+  static events = {
+    [MOVE_IN]: async function (this: { damage: number }, event: MoveEvent) {
+      if (!affects(event)) return;
+      const actor = event.data.token.actor as Actor.Implementation | null;
+      if (actor && this.damage) await sufferDamage(actor, this.damage, { source: event.region.name ?? t("GLOOM.Terrain.hazard") });
+    },
+  };
+}
+
+/** Call during `init`. */
+export function registerBehaviorTypes(): void {
+  const cfg = CONFIG.RegionBehavior as unknown as { dataModels: Record<string, unknown>; typeIcons: Record<string, string> };
+  Object.assign(cfg.dataModels, { trap: TrapBehavior, hazard: HazardBehavior });
+  Object.assign(cfg.typeIcons, { trap: "fa-solid fa-triangle-exclamation", hazard: "fa-solid fa-fire" });
+}
+
+/** The behaviors a terrain region gets. */
+export function behaviorsFor(flags: TerrainFlags): Record<string, unknown>[] {
+  switch (flags.kind) {
+    case "trap": return [{ type: "trap", name: t("TYPES.RegionBehavior.trap"), system: { damage: flags.damage ?? 0, conditions: flags.effects ?? [], oneShot: flags.oneShot !== false } }];
+    case "hazard": return [{ type: "hazard", name: t("TYPES.RegionBehavior.hazard"), system: { damage: flags.damage ?? COMBAT_CHALLENGE[Math.min(7, currentCampaignLevel())]!.hazard } }];
+    case "difficult": return [{ type: "modifyMovementCost", name: t("GLOOM.Terrain.difficult"), system: { difficulties: { walk: 2 } } }];
+    default: return [];
   }
 }
+
+/** Regions placed before behaviors existed get them (active GM, on canvas ready). */
+async function addMissingBehaviors(scene: Scene.Implementation): Promise<void> {
+  for (const region of scene.regions as unknown as RegionDoc[]) {
+    const wanted = behaviorsFor(flagsOf(region));
+    if (!wanted.length) continue;
+    const have = [...((region as unknown as { behaviors: Iterable<{ type: string }> }).behaviors)];
+    if (have.some((b) => b.type === wanted[0]!["type"])) continue;
+    await (region as unknown as { createEmbeddedDocuments(t: string, d: unknown[]): Promise<unknown> }).createEmbeddedDocuments("RegionBehavior", wanted);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Marked spaces
 
 /** Marked spaces in or next to a token's hex (their effects are recalled at its turn start). */
 export function nearbySpaces(token: TokenDocument.Implementation): RegionDoc[] {
-  const cell = tokenCell(token);
-  if (!cell) return [];
-  const map = terrainMap(token.parent as Scene.Implementation);
-  const seen = new Set<string>();
-  const out: RegionDoc[] = [];
+  const g = grid();
+  const scene = token.parent as Scene.Implementation | null;
+  if (!g?.isHexagonal || !scene) return [];
+  const cell = g.offsetToCube(g.getOffset(tokenCentre(token)));
+  const elevation = token.elevation ?? 0;
+  const out = new Set<RegionDoc>();
   for (const c of [cell, ...neighbors(cell)]) {
-    for (const r of map.get(cubeKey(c)) ?? []) {
-      if (flagsOf(r).kind === "space" && !seen.has(r.id ?? "")) { seen.add(r.id ?? ""); out.push(r); }
-    }
+    for (const r of regionsAt(scene, g.getCenterPoint(g.cubeToOffset(c)), elevation, "space")) out.add(r);
   }
-  return out;
+  return [...out];
 }
 
 export async function remindSpaces(actor: Actor.Implementation): Promise<void> {
@@ -152,11 +244,13 @@ export async function remindSpaces(actor: Actor.Implementation): Promise<void> {
 // GM placement
 
 export async function createTerrain(scene: Scene.Implementation, kind: TerrainKind, cells: Offset[], name: string, extra: TerrainFlags = {}): Promise<void> {
+  const flags = { kind, ...extra };
   await scene.createEmbeddedDocuments("Region", cells.map((cell) => ({
     name, color: TERRAIN_COLORS[kind],
     shapes: [{ type: "polygon", points: hexPolygon(cell), hole: false }],
     visibility: 2,
-    flags: { [SYSTEM_ID]: { kind, ...extra } },
+    flags: { [SYSTEM_ID]: flags },
+    behaviors: behaviorsFor(flags),
   })) as never);
 }
 
@@ -199,53 +293,24 @@ export async function placeTerrainDialog(): Promise<void> {
 // ---------------------------------------------------------------------------
 // Hooks
 
-interface MoveOptions { gloomFrom?: { x: number; y: number }; gloomPath?: Cube[]; gloomForced?: boolean; gloomTeleport?: boolean }
-
 export function registerTerrainHooks(): void {
-  // Remember where the token came from, and refuse to end a move in an obstacle.
+  // No token ends a walk or jump in an obstacle (p. 76); flying may, the GM may.
   Hooks.on("preUpdateToken", (doc, changes, options) => {
-    const c = changes as { x?: number; y?: number };
+    const c = changes as { x?: number; y?: number; elevation?: number };
     if (c.x === undefined && c.y === undefined) return;
     const token = doc as TokenDocument.Implementation;
-    const opts = options as MoveOptions;
-    opts.gloomFrom ??= { x: token.x, y: token.y };
-    const dest = tokenCell(token, c.x ?? token.x, c.y ?? token.y);
-    if (!dest || !token.parent) return;
-    if (hasObstacle(terrainMap(token.parent as Scene.Implementation), dest)) {
-      if (!game.user?.isGM) {
-        ui.notifications?.warn("GLOOM.Terrain.obstacleBlocks", { localize: true });
-        return false;
-      }
-      ui.notifications?.info("GLOOM.Terrain.obstacleGM", { localize: true });
+    const scene = token.parent as Scene.Implementation | null;
+    if (!scene || game.user?.isGM) return;
+    const movement = (options as { movement?: Record<string, { waypoints?: Waypoint[] }> }).movement?.[token.id ?? ""];
+    const action = movement?.waypoints?.at(-1)?.action ?? (token as unknown as { movementAction?: string }).movementAction;
+    if (action === "fly") return;
+    if (regionsAt(scene, tokenCentre(token, { x: c.x, y: c.y }), c.elevation ?? token.elevation ?? 0, "obstacle").length) {
+      ui.notifications?.warn("GLOOM.Terrain.obstacleBlocks", { localize: true });
+      return false;
     }
   });
 
-  Hooks.on("updateToken", (doc, changes, options) => {
-    if (!isActiveGM()) return;
-    const c = changes as { x?: number; y?: number };
-    if (c.x === undefined && c.y === undefined) return;
-    const token = doc as TokenDocument.Implementation;
-    const actor = token.actor as Actor.Implementation | null;
-    const opts = options as MoveOptions;
-    if (!actor || !token.parent) return;
-    const from = opts.gloomFrom ? tokenCell(token, opts.gloomFrom.x, opts.gloomFrom.y) : null;
-    const to = tokenCell(token);
-    if (!to) return;
-    const path = opts.gloomPath ?? (from ? pathThrough([from, to]) : [to]);
-    const one = ["jumping", "teleporting"].filter((id) => actor.statuses.has(id));
-    const jumped = opts.gloomTeleport || (!opts.gloomForced && one.length > 0);
-    void (async () => {
-      await enterCells(token.parent as Scene.Implementation, actor, path, jumped);
-      if (!opts.gloomForced && !opts.gloomTeleport) for (const id of one) await actor.toggleStatusEffect(id, { active: false });
-    })();
+  Hooks.on("canvasReady", () => {
+    if (isActiveGM() && canvas?.scene) void addMissingBehaviors(canvas.scene as Scene.Implementation);
   });
-}
-
-/** Status effects used by movement: Flying (ignores terrain) and Jumping (next move only). */
-export function movementStatuses(): { id: string; name: string; img: string }[] {
-  return [
-    { id: "flying", name: "GLOOM.Terrain.flying", img: "icons/svg/wing.svg" },
-    { id: "jumping", name: "GLOOM.Terrain.jumping", img: "icons/svg/upgrade.svg" },
-    { id: "teleporting", name: "GLOOM.Terrain.teleporting", img: "icons/svg/portal.svg" },
-  ];
 }

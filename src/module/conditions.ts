@@ -12,7 +12,6 @@
 import { SYSTEM_PATH, type AttributeKey } from "./config.ts";
 import { abilityStatuses } from "./abilities.ts";
 import { markStatuses } from "./class-mechanics.ts";
-import { movementStatuses } from "./canvas/terrain.ts";
 
 export type ConditionKind = "positive" | "negative";
 
@@ -68,7 +67,6 @@ export function registerStatusEffects(): void {
     ...CONDITIONS.map((c) => ({ id: c.id, name: conditionLabel(c.id), img: pack[`condition.${c.id}`] ?? img(c.coreIcon) })),
     ...abilityStatuses(),
     ...markStatuses(),
-    ...movementStatuses(),
     ...EXTRA_STATUSES.map((s) => ({ id: s.id, name: conditionLabel(s.id), img: img(s.coreIcon) })),
   ] as typeof CONFIG.statusEffects;
 

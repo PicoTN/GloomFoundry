@@ -20,6 +20,10 @@
     },
     "Card": {
       "modifier": "Modifier Card"
+    },
+    "RegionBehavior": {
+      "trap": "Trap (Gloomhaven)",
+      "hazard": "Hazardous terrain (Gloomhaven)"
     }
   },
   "GLOOM": {
@@ -1102,9 +1106,20 @@
       "spacesNear": "{name} is in or next to:",
       "obstacleBlocks": "You can't end a move in an obstacle.",
       "obstacleGM": "Token placed in an obstacle (GM).",
-      "flying": "Flying",
-      "jumping": "Jumping (next move)",
-      "teleporting": "Teleporting (next move)"
+      "teleport": "Teleport"
+    },
+    "TrapBehavior": {
+      "FIELDS": {
+        "damage": {
+          "label": "Damage"
+        },
+        "conditions": {
+          "label": "Conditions"
+        },
+        "oneShot": {
+          "label": "Used up when triggered"
+        }
+      }
     }
   }
 }

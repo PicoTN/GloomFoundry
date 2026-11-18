@@ -110,6 +110,10 @@
     },
     "Card": {
       "modifier": {}
+    },
+    "RegionBehavior": {
+      "trap": {},
+      "hazard": {}
     }
   },
   "socket": true,
