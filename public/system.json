@@ -40,6 +40,14 @@
           "description",
           "tacticsText"
         ]
+      },
+      "company": {
+        "htmlFields": [
+          "concept",
+          "missions",
+          "relationships",
+          "notes"
+        ]
       }
     },
     "Item": {
@@ -87,6 +95,11 @@
         "htmlFields": [
           "description",
           "boons"
+        ]
+      },
+      "companyBenefit": {
+        "htmlFields": [
+          "description"
         ]
       }
     },

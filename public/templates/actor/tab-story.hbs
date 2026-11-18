@@ -1,4 +1,10 @@
 <section class="tab story-tab {{tabs.story.cssClass}}" data-tab="story" data-group="primary">
+  {{#if companies.length}}
+  <section class="companies">
+    <h3>{{localize "TYPES.Actor.company"}}</h3>
+    {{#each companies}}<a class="company-link" data-action="openCompany" data-uuid="{{uuid}}"><img src="{{img}}" alt=""> {{name}} <span class="tag">{{localize "GLOOM.Company.level"}} {{level}}</span></a>{{/each}}
+  </section>
+  {{/if}}
   <section class="biography">
     <h3>{{localize "GLOOM.Mercenary.personalGoal"}}</h3>
     <input type="text" name="system.personalGoal" value="{{system.personalGoal}}">

@@ -41,6 +41,7 @@ https://github.com/PicoTN/GloomFoundry/releases/latest/download/system.json
 - **Character creation:** a step-by-step wizard (ancestry, class, faction, Attribute points, Backgrounds, starting gear, personal quest) using the items in your world and compendiums.
 - **Level up:** the GM enables leveling from the Gloomhaven scene controls; mercenaries then get a Level up button that walks through the new level's choices.
 - **Class mechanics:** Berserk, Notes and Songs, Augments, Doom, Plague, the Quartermaster Supply, Medical Packs, Prescriptions, Invocations, Command and class summons, tracked in a Class panel and used by power buttons (from your own content).
+- **Mercenary company:** a shared company sheet with members, level 0–5, temporary and permanent benefits (some automated: Bless, gold, Ward, City Watch ally).
 - **Factions:** reputation tiers per faction, membership, Faction Request successes/failures with automatic tier changes.
 - **Content import:** turn your own content folder (an `index.json` listing JSON files of Items and Actors) into world compendiums in one click (Settings > Import content). The system ships no content; you bring your own.
 - **Conditions:** the Gloomhaven conditions replace Foundry's token statuses. Toggle them on the sheet or the token; Strengthen/Muddle and the target's Poison/Ward are applied in the draw dialogs, and each negative condition can be resisted from the sheet.

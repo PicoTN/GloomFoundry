@@ -1,0 +1,27 @@
+<section class="tab overview-tab {{tabs.overview.cssClass}}" data-tab="overview" data-group="primary">
+  <div class="grid-fields company-fields">
+    <label>{{localize "GLOOM.Company.service"}}<input type="text" name="system.service" value="{{system.service}}" placeholder="{{localize 'GLOOM.Company.servicePlaceholder'}}"></label>
+    <label>{{localize "GLOOM.Company.district"}}<input type="text" name="system.district" value="{{system.district}}"></label>
+    <label>{{localize "GLOOM.Company.leader"}}<select name="system.leader">{{selectOptions leaderOptions selected=system.leader valueAttr="key" labelAttr="label"}}</select></label>
+    <label>{{localize "GLOOM.Company.closestFaction"}}<input type="text" name="system.closestFaction" value="{{system.closestFaction}}"></label>
+  </div>
+
+  <section class="members">
+    <h3>{{localize "GLOOM.Company.members"}}</h3>
+    <div class="member-grid">
+      {{#each members}}
+      <div class="member{{#if leader}} leader{{/if}}" data-uuid="{{uuid}}">
+        <img src="{{img}}" alt="" data-action="openMember">
+        <div><a data-action="openMember">{{name}}</a>{{#if leader}} <i class="fa-solid fa-crown" data-tooltip="GLOOM.Company.leader"></i>{{/if}}
+          <div class="hint">{{className}} · {{localize "GLOOM.Mercenary.level"}} {{level}}</div></div>
+        {{#if @root.editable}}<a class="item-control" data-action="removeMember" data-tooltip="GLOOM.Company.removeMember"><i class="fa-solid fa-xmark"></i></a>{{/if}}
+      </div>
+      {{else}}<p class="hint">{{localize "GLOOM.Company.dropMembers"}}</p>{{/each}}
+    </div>
+  </section>
+
+  <h3>{{localize "GLOOM.Company.concept"}}</h3>
+  {{formInput systemFields.concept value=system.concept enriched=enrichedConcept toggled=true name="system.concept"}}
+  <h3>{{localize "GLOOM.Company.missions"}}</h3>
+  {{formInput systemFields.missions value=system.missions enriched=enrichedMissions toggled=true name="system.missions"}}
+</section>

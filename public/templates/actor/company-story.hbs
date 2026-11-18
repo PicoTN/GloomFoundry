@@ -1,0 +1,7 @@
+<section class="tab story-tab {{tabs.story.cssClass}}" data-tab="story" data-group="primary">
+  <h3>{{localize "GLOOM.Company.relationships"}}</h3>
+  <p class="hint">{{localize "GLOOM.Company.relationshipsHint"}}</p>
+  {{formInput systemFields.relationships value=system.relationships enriched=enrichedRelationships toggled=true name="system.relationships"}}
+  <h3>{{localize "GLOOM.Company.notes"}}</h3>
+  {{formInput systemFields.notes value=system.notes enriched=enrichedNotes toggled=true name="system.notes"}}
+</section>

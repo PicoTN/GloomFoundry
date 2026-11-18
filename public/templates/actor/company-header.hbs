@@ -1,0 +1,15 @@
+<header class="sheet-header">
+  <img class="profile" src="{{actor.img}}" alt="{{actor.name}}" data-action="editImage" data-edit="img">
+  <div class="identity">
+    <input class="name" type="text" name="name" value="{{actor.name}}" placeholder="{{localize 'GLOOM.Company.namePlaceholder'}}">
+    <div class="row company-level">
+      <span class="label">{{localize "GLOOM.Company.level"}} <strong>{{system.level}}</strong></span>
+      <span class="pips level">{{#each levelPips}}<i class="fa-{{#if on}}solid{{else}}regular{{/if}} fa-star"></i>{{/each}}</span>
+      {{#unless maxLevel}}
+      <span class="label">{{localize "GLOOM.Company.progress"}}</span>
+      <span class="pips progress">{{#each progressPips}}<i class="fa-{{#if on}}solid{{else}}regular{{/if}} fa-circle"></i>{{/each}}</span>
+      {{/unless}}
+      {{#if editable}}<button type="button" data-action="gainBenefit"><i class="fa-solid fa-plus"></i> {{localize "GLOOM.Company.gainTemporary"}}</button>{{/if}}
+    </div>
+  </div>
+</header>

@@ -15,6 +15,7 @@ import { recordRequest, type FactionStanding } from "../rules/factions.ts";
 import { powerDetails } from "../combat/power-actions.ts";
 import { classPanel, classPanelAction } from "../class-mechanics.ts";
 import { refreshFromCompendiums } from "../refresh.ts";
+import { companiesOf } from "../company.ts";
 import { availablePowers, getPlan, submitPlan } from "../combat/planning.ts";
 import { getPhase } from "../combat/combat.ts";
 import type { PerkStep } from "../rules/perks.ts";
@@ -55,6 +56,7 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       levelUp: MercenarySheet.#onLevelUp,
       classMech: MercenarySheet.#onClassMech,
       refreshItems: MercenarySheet.#onRefreshItems,
+      openCompany: MercenarySheet.#onOpenCompany,
       toggleDetails: MercenarySheet.#onToggleDetails,
       planPick: MercenarySheet.#onPlanPick,
       planInitiative: MercenarySheet.#onPlanInitiative,
@@ -199,6 +201,7 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
       ...context,
       isBlank: isBlankMercenary(actor) && actor.isOwner,
       classMechanics: classPanel(actor),
+      companies: companiesOf(actor).map((c) => ({ uuid: c.uuid, name: c.name, img: c.img, level: (c.system as unknown as { level: number }).level })),
       plan: planning ? {
         primary: findPower(draft.primary), secondary: findPower(draft.secondary), from: draft.from,
         initiative: (draft.from === "secondary" ? findPower(draft.secondary) : findPower(draft.primary))?.initiative ?? null,
@@ -344,6 +347,11 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
     const options = availablePowers(this.document);
     const find = (id: string) => options.find((p) => p.id === id) ?? null;
     await submitPlan(combatant, find(this.#draft.primary), find(this.#draft.secondary), this.#draft.from);
+  }
+
+  static async #onOpenCompany(this: MercenarySheet, _event: PointerEvent, target: HTMLElement) {
+    const company = (await fromUuid(target.dataset["uuid"] ?? "")) as Actor.Implementation | null;
+    await company?.sheet?.render(true);
   }
 
   static async #onRefreshItems(this: MercenarySheet) {

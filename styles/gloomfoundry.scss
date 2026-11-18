@@ -622,3 +622,19 @@ img.gloom-inline-icon {
   .entry.held { opacity: 0.6; }
   .mech-btn { margin-left: auto; }
 }
+
+.gloomfoundry.company {
+  .company-level { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+    .pips.level i { color: var(--gloom-gold); } .pips.progress i { color: var(--gloom-green); font-size: 0.8rem; }
+    button { width: auto; margin-left: auto; } }
+  .company-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; label { display: flex; flex-direction: column; } }
+  .member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.4rem; min-height: 3rem;
+    border: 1px dashed rgb(127 127 127 / 40%); border-radius: 6px; padding: 0.4rem; }
+  .member { display: flex; align-items: center; gap: 0.4rem; img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; cursor: pointer; }
+    > div { flex: 1; } &.leader { font-weight: bold; } .fa-crown { color: var(--gloom-gold); } }
+  .benefit { align-items: flex-start; .desc { font-size: 0.85rem; opacity: 0.9; p { margin: 0.1rem 0; } } &.used { opacity: 0.55; } }
+  .notice { padding: 0.4rem 0.6rem; border-left: 3px solid var(--gloom-gold); background: rgb(217 164 65 / 12%); }
+}
+.gloom-benefit-choices { display: flex; flex-direction: column; gap: 0.3rem; max-height: 420px; overflow-y: auto;
+  .choice { display: block; padding: 0.3rem; border: 1px solid rgb(127 127 127 / 30%); border-radius: 4px; .desc { font-size: 0.85rem; margin-left: 1.4rem; } } }
+.gloomfoundry .companies .company-link { display: inline-flex; align-items: center; gap: 0.4rem; img { width: 28px; height: 28px; border: none; } }

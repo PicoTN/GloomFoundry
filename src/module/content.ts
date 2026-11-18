@@ -12,7 +12,7 @@ import { SYSTEM_ID } from "./config.ts";
 import { loadIconPack, resolvePath } from "./icons.ts";
 
 interface ContentFile { path: string; folder?: string }
-interface ContentPack { name: string; label: string; type: "Actor" | "Item"; files: ContentFile[] }
+interface ContentPack { name: string; label: string; type: "Actor" | "Item" | "JournalEntry"; files: ContentFile[] }
 interface ContentIndex { name?: string; iconPack?: string; packs?: ContentPack[] }
 type DocData = Record<string, unknown> & { img?: string; items?: DocData[]; prototypeToken?: { texture?: { src?: string } } };
 
@@ -113,7 +113,8 @@ export async function importContent(indexUrl: string): Promise<number> {
     for (const file of def.files) {
       const data = await fetchJson(resolvePath(base, file.path));
       for (const doc of (Array.isArray(data) ? data : [data]) as DocData[]) {
-        if (!doc || typeof doc !== "object" || typeof doc["type"] !== "string") continue;
+        // Journal entries have no type; actors and items need one.
+        if (!doc || typeof doc !== "object" || (def.type !== "JournalEntry" && typeof doc["type"] !== "string")) continue;
         const path = [...(file.folder ? [file.folder] : []), ...subfolder(doc)];
         entries.push({ doc: fixImages(doc, base), path });
       }

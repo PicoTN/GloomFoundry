@@ -9,7 +9,7 @@ import { EQUIPMENT_SLOTS } from "../rules/progression.ts";
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const t = (key: string) => game.i18n!.localize(key);
 
-export const ITEM_SHEET_TYPES = ["skill", "talent", "equipment", "background", "class", "ancestry", "faction", "npcAction"] as const;
+export const ITEM_SHEET_TYPES = ["skill", "talent", "equipment", "background", "class", "ancestry", "faction", "companyBenefit", "npcAction"] as const;
 
 const choices = (keys: readonly string[], prefix: string) => keys.map((k) => ({ key: k, label: t(`${prefix}.${k}`) }));
 
@@ -64,6 +64,8 @@ export class GloomItemSheet extends HandlebarsApplicationMixin(foundry.applicati
         category: choices(["occupation", "origin", "social"], "GLOOM.Background.category"),
         hpTrack: choices(["low", "medium", "high"], "GLOOM.Class.hpTrack"),
         npcActionKind: choices(["action", "break", "stunt"], "GLOOM.NpcAction.kind"),
+        benefitKind: choices(["temporary", "permanent"], "GLOOM.Company.kinds"),
+        benefitAutomation: choices(["", "bless", "gold", "ward", "ally"], "GLOOM.Company.automations"),
         tier: [0, 1, 2, 3, 4, 5].map((n) => ({ key: n, label: `${n} · ${t(`GLOOM.Faction.tier.${["hostile", "neutral", "positive", "novice", "junior", "senior"][n]}`)}` })),
       },
       attributes: ATTRIBUTES.map((a) => ({

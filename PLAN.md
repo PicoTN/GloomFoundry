@@ -1,6 +1,6 @@
 # Gloomhaven RPG for FoundryVTT: Project Plan
 
-Status: phases 0–9 implemented (latest release v0.12.1); phase 10 (mercenary company) in progress. Only v0.1 has been play-tested on Forge; everything after it is typechecked and unit-tested but not yet tried in a live game. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
+Status: phases 0–10 implemented (latest release v0.13.0). Only v0.1 has been play-tested on Forge; everything after it is typechecked and unit-tested but not yet tried in a live game. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
 
 > PDF page numbers are the printed page number **+3** (printed p.343 is PDF page 346).
 
@@ -176,7 +176,7 @@ The face cards cover the temporary cards:
 | **5. Combat** ✅ (first pass) | Planning phase each round: mercenaries pick primary/secondary powers and initiative, the GM picks enemy speeds (no repeat), elites before normals, summons before their controller; ascending order. Then the action phase. Turn start: Regenerate, then Wound. Turn end: infusions become Strong, "until end of next turn" conditions expire, planned Skills/items are expended or lost. Round end: elements decay, Critical/Null decks reshuffle. Element tracker in the combat sidebar. "Apply damage" on attack cards (Ward, Regenerate). End of combat: unconscious mercenaries heal 1. Not yet: persistent/round effects, surprise, targeting rules for Invisible. |
 | **5b. Power actions** ✅ | Structured actions stored on every Skill, Talent, item, NPC action and perk card (`content/ACTIONS.md`), with the text parser as a fallback. Buttons in expandable power rows, chat cards and NPC sheets: attacks (one draw per target, Pierce, areas), heals, conditions, Infuse, Shield/Retaliate/Taunt (round statuses; Shield pre-filled in attacks, Retaliate button), traps, obstacles, marked spaces, summons. Hex area placement (clusters, lines, arcs, cones, all-within-range; rotate and mirror) as Regions that target opposing tokens. Element bonuses and requirements (each element once per turn, consumed only when stated), X values. Planning from the sheet (P/S picks, lock in). |
 | **6. NPCs** ✅ | One `npc` actor for enemies, allies, summons and townsfolk. Bestiary stat block by CL (normal/elite, Attribute columns, DFNS/OFNS markers), or manual stats. Adversary and nemesis derived stats. NPC actions (F/N/S, elite-only, break/stunt). Uses the GM deck, or the controller's deck for summons. Switch side (sheet + token HUD), new NPCs Hostile at the current CL. GM window shows M, CL, the Combat Challenge values and scene Threat vs the difficulty max. Printed nemeses (final stats, HP and Threat ×M) are supported. Bestiary transcribed into `content/` (49 actors with portraits). Class summons are NPC actors (Summons compendium, 23), placed for their controller (its side, deck and owners; HP by the controller's level when needed). |
-| **10. Mercenary company** (in progress) | Company actor (concept, service, district, leader, closest faction, missions, members, relationships), levels 0–5 from temporary benefits (5 per level), permanent benefits by level, benefit automation where possible (Bless, gold, Ward, ally). |
+| **10. Mercenary company** ✅ | Company actor shared by the group (concept, service, home district, leader, closest faction, how missions come in, members by drag-and-drop, relationships and notes), level 0–5 with progress pips: "Gain a temporary benefit" (mission, milestone or retirement); the fifth raises the level and offers the permanent benefits it qualifies for. Benefit items with automation: Bless card for every member, gold for every member, Ward at the next combat, a City Watch ally placed at the current CL under a member's control. Mercenary sheets link to their company. Content: benefits and a company guide journal (Reference compendium). |
 | **7. Content** (local only) | Done in the git-ignored `content/` folder: perks (16 classes, checked against the class chapters), 46 Backgrounds, 16 classes and 8 ancestries with their Talents and Skills, 160 equipment items with each class's starting gear, 20 factions, 49 bestiary actors with portraits, 23 class summons, class mechanics, structured actions for everything (re-checked against the book), and an icon pack (13 conditions, 7 elements, 18 stats). The system loads an icon pack from a JSON manifest, and imports the whole folder into world compendiums from its `index.json` (Settings > Import content, v0.7.0). No compendia are published (see IP note). |
 | **8. Character creation** ✅ | Wizard following "Making a Mercenary" (p. 105): identity, ancestry, class, major faction (member at Tier 2), 6 Attribute points (max 3), 4 Backgrounds, class starting gear or 50 g of common gear, personal quest. Opens from a "New mercenary" button in the Actors sidebar, a button on blank sheets, and automatically for players opening their blank mercenary. |
 | **8b. Factions & equipment** ✅ | `faction` items: tier 0–5, membership, request successes/failures with automatic rise/fall (p. 234), one faction's benefits active per mission. Equipment can be used per round, scene or rest. |
@@ -244,6 +244,8 @@ This only matters on scenes with Token Vision enabled. Targeting is not blocked 
 | v0.11.0 | Structured actions stored on powers, items, NPC actions and perk cards (parser as fallback); element bonuses with once-per-turn tracking; area anchors, "all within range", mirroring; card effect buttons |
 | v0.11.1 | Action requirements ("only if Dark is active", "only if Berserk") and X values that ask for a number |
 | v0.12.0 | Shield/Retaliate/Taunt as round statuses (auto Shield in attacks, Retaliate button); class mechanics (Berserk, Notes and Songs, Augments, Doom, Plague, Supply, Medical Packs, Prescriptions, Invocations, Command, summons) with a Class panel; Summons compendium; refresh items from compendiums |
+| v0.12.1 | Marked spaces (Tinkerer), spending class counters (Concentrated Rage), talent-gated mechanics |
+| v0.13.0 | Mercenary company: company actor and sheet, levels and benefits, benefit automation, company content and reference journal |
 
 ## 10. What remains
 
@@ -271,7 +273,7 @@ Character, factions and items:
 
 NPCs and content:
 - Fill the Rogue Mercenary's missing "bandit commander" base actions if the book ever prints them.
-- Shops (rarity by level and prosperity, company discounts), mission rewards (company +10 g, recruits' 50 g).
+- Shops (rarity by level and prosperity, company discounts), mission rewards (company +10 g, recruits' 50 g), the Level 5 "+1 faction rank for 100 g" and "one less Faction Request" company benefits (text for now).
 - Icons on the modifier card faces themselves (the effect currently shows as a star, with the text and icons below the cards in chat).
 
 Polish:

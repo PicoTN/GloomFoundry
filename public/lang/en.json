@@ -2,7 +2,8 @@
   "TYPES": {
     "Actor": {
       "mercenary": "Mercenary",
-      "npc": "NPC"
+      "npc": "NPC",
+      "company": "Mercenary Company"
     },
     "Item": {
       "background": "Background",
@@ -13,7 +14,8 @@
       "class": "Class",
       "ancestry": "Ancestry",
       "npcAction": "NPC Action",
-      "faction": "Faction"
+      "faction": "Faction",
+      "companyBenefit": "Company Benefit"
     },
     "Card": {
       "modifier": "Modifier Card"
@@ -25,7 +27,8 @@
       "background": "Background Sheet",
       "perk": "Perk Sheet",
       "item": "GloomFoundry Item Sheet",
-      "npc": "NPC Sheet"
+      "npc": "NPC Sheet",
+      "company": "Mercenary Company Sheet"
     },
     "Attribute": {
       "cunning": {
@@ -322,7 +325,8 @@
       "story": "Story",
       "overview": "Overview",
       "statblock": "Stat block",
-      "notes": "Notes"
+      "notes": "Notes",
+      "benefits": "Benefits"
     },
     "Power": {
       "primary": "Primary action",
@@ -868,6 +872,69 @@
       "hint": "Refresh from compendiums: update class, powers, perks and items with the latest imported content (keeps their state)",
       "confirm": "Update every item of this character that comes from a compendium (class, ancestry, powers, perks, items, factions) with the compendium's current data? Their state at the table (ready/expended, prepared, perk boxes taken, quantities, faction standing) is kept.",
       "done": "{count} items refreshed."
+    },
+    "Company": {
+      "namePlaceholder": "Company name",
+      "level": "Level",
+      "progress": "Toward next level",
+      "gainTemporary": "Gain a temporary benefit",
+      "gainTemporaryHint": "The company gains a temporary benefit when the group completes a mission, hits a major story milestone, or retires a mercenary who completed their personal goal. Five temporary benefits raise the company's level.",
+      "reason": "Why",
+      "reasons": {
+        "mission": "Mission completed",
+        "milestone": "Story milestone",
+        "retirement": "Retirement (personal goal)",
+        "level": "New level"
+      },
+      "levelReq": "Level {n}+",
+      "noBenefits": "No company benefits found: import your content (Company Benefits) or create Company Benefit items.",
+      "gained": "{name} gains a temporary benefit: {benefit}.",
+      "levelReached": "{name} reaches company level {level}!",
+      "choosePermanent": "Choose a permanent benefit",
+      "choosePermanentHint": "New company level {level}: choose one permanent benefit the company qualifies for.",
+      "used": "Company benefit used: {benefit}.",
+      "usedTag": "used",
+      "toggleUsed": "Mark used / unused",
+      "use": "Use this benefit",
+      "wardPending": "All members gain Ward at the start of the next combat.",
+      "noMembers": "Add members to the company first (drop mercenaries on its sheet).",
+      "allyType": "Ally",
+      "allyGuard": "City Watch guard",
+      "allyArcher": "City Watch archer",
+      "allyController": "Controlled by",
+      "service": "Service",
+      "servicePlaceholder": "monster hunting, item retrieval, guard duty...",
+      "district": "Home district",
+      "leader": "Leader",
+      "closestFaction": "Closest faction",
+      "members": "Members",
+      "dropMembers": "Drop mercenaries here to add them to the company.",
+      "removeMember": "Remove from the company",
+      "concept": "Concept",
+      "missions": "How the company obtains and assigns missions",
+      "permanent": "Permanent benefits",
+      "temporary": "Temporary benefits",
+      "none": "None yet.",
+      "rulesHint": "Five temporary benefits raise the company's level (max 5); each new level grants one permanent benefit. Benefits and levels are never lost.",
+      "relationships": "Relationships",
+      "relationshipsHint": "Answer establishment and interpersonal prompts, the leader, ties between mercenaries and with groups outside the company.",
+      "notes": "Notes",
+      "kind": "Kind",
+      "kinds": {
+        "temporary": "Temporary",
+        "permanent": "Permanent"
+      },
+      "levelRequired": "Company level required",
+      "automation": "Automation",
+      "amount": "Amount",
+      "automations": {
+        "": "None",
+        "bless": "Bless card for each member",
+        "gold": "Gold for each member",
+        "ward": "Ward at the next combat",
+        "ally": "City Watch ally"
+      },
+      "newCompany": "New company"
     }
   }
 }

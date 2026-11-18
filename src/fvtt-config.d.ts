@@ -4,11 +4,12 @@ import type { BackgroundModel } from "./module/data/background.ts";
 import type { PerkModel } from "./module/data/perk.ts";
 import type { AncestryModel, ClassModel, EquipmentModel, SkillModel, TalentModel } from "./module/data/powers.ts";
 import type { FactionModel } from "./module/data/faction.ts";
+import type { CompanyBenefitModel, CompanyModel } from "./module/data/company.ts";
 import type { ModifierCardModel } from "./module/data/modifier-card.ts";
 
 declare module "fvtt-types/configuration" {
   interface DataModelConfig {
-    Actor: { mercenary: typeof MercenaryModel; npc: typeof NpcModel };
+    Actor: { mercenary: typeof MercenaryModel; npc: typeof NpcModel; company: typeof CompanyModel };
     Item: {
       background: typeof BackgroundModel;
       perk: typeof PerkModel;
@@ -17,6 +18,7 @@ declare module "fvtt-types/configuration" {
       equipment: typeof EquipmentModel;
       class: typeof ClassModel;
       faction: typeof FactionModel;
+      companyBenefit: typeof CompanyBenefitModel;
       ancestry: typeof AncestryModel;
       npcAction: typeof NpcActionModel;
     };

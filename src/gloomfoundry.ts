@@ -16,6 +16,9 @@ import { NpcActionModel, NpcModel } from "./module/data/npc.ts";
 import { PerkModel } from "./module/data/perk.ts";
 import { AncestryModel, ClassModel, EquipmentModel, SkillModel, TalentModel } from "./module/data/powers.ts";
 import { FactionModel } from "./module/data/faction.ts";
+import { CompanyBenefitModel, CompanyModel } from "./module/data/company.ts";
+import { CompanySheet } from "./module/sheets/company-sheet.ts";
+import { registerCompanyHooks } from "./module/company.ts";
 import { ModifierCardModel } from "./module/data/modifier-card.ts";
 import { addTemporary, drawAttack, testAttribute } from "./module/deck/actions.ts";
 import { registerCombatHooks } from "./module/deck/combat-hooks.ts";
@@ -59,7 +62,7 @@ Hooks.once("init", async () => {
   console.log("GloomFoundry | Initializing");
   (game as unknown as Record<string, unknown>)[SYSTEM_ID] = api;
 
-  Object.assign(CONFIG.Actor.dataModels, { mercenary: MercenaryModel, npc: NpcModel });
+  Object.assign(CONFIG.Actor.dataModels, { mercenary: MercenaryModel, npc: NpcModel, company: CompanyModel });
   Object.assign(CONFIG.Item.dataModels, {
     background: BackgroundModel,
     perk: PerkModel,
@@ -68,6 +71,7 @@ Hooks.once("init", async () => {
     equipment: EquipmentModel,
     class: ClassModel,
     faction: FactionModel,
+    companyBenefit: CompanyBenefitModel,
     ancestry: AncestryModel,
     npcAction: NpcActionModel,
   });
@@ -83,6 +87,11 @@ Hooks.once("init", async () => {
     types: ["npc"],
     makeDefault: true,
     label: "GLOOM.Sheet.npc",
+  } as never);
+  DocumentSheetConfig.registerSheet(Actor, SYSTEM_ID, CompanySheet, {
+    types: ["company"],
+    makeDefault: true,
+    label: "GLOOM.Sheet.company",
   } as never);
   DocumentSheetConfig.registerSheet(Item, SYSTEM_ID, GloomItemSheet, {
     types: [...ITEM_SHEET_TYPES],
@@ -109,6 +118,7 @@ Hooks.once("init", async () => {
   registerIconEnricher();
   registerPowerActionButtons();
   registerClassMechanicHooks();
+  registerCompanyHooks();
   registerPlanningSheetHooks();
   registerNpcHooks();
   registerCombatFlow();

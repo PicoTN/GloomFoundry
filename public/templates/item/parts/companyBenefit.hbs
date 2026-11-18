@@ -1,0 +1,9 @@
+<div class="grid-fields">
+  <label>{{localize "GLOOM.Company.kind"}}<select name="system.kind">{{selectOptions options.benefitKind selected=system.kind valueAttr="key" labelAttr="label"}}</select></label>
+  <label>{{localize "GLOOM.Company.levelRequired"}}<input type="number" name="system.level" value="{{system.level}}" min="0" max="5" step="1"></label>
+  <label>{{localize "GLOOM.Company.automation"}}<select name="system.automation">{{selectOptions options.benefitAutomation selected=system.automation valueAttr="key" labelAttr="label"}}</select></label>
+  <label>{{localize "GLOOM.Company.amount"}}<input type="number" name="system.amount" value="{{system.amount}}" min="0" step="1"></label>
+  <label class="checkbox"><input type="checkbox" name="system.used"{{#if system.used}} checked{{/if}}> {{localize "GLOOM.Company.usedTag"}}</label>
+</div>
+<h4>{{localize "GLOOM.Item.description"}}</h4>
+{{formInput systemFields.description value=system.description enriched=enriched.description toggled=true name="system.description"}}
