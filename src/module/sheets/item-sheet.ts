@@ -60,7 +60,7 @@ export class GloomItemSheet extends HandlebarsApplicationMixin(foundry.applicati
         talentKind: choices(["active", "passive"], "GLOOM.Talent.kind"),
         slot: choices(EQUIPMENT_SLOTS, "GLOOM.Equipment.slot"),
         rarity: choices(["common", "uncommon", "rare", "masterwork", "legendary"], "GLOOM.Equipment.rarity"),
-        per: choices(["scene", "rest"], "GLOOM.Equipment.per"),
+        per: choices(["round", "scene", "rest"], "GLOOM.Equipment.per"),
         category: choices(["occupation", "origin", "social"], "GLOOM.Background.category"),
         hpTrack: choices(["low", "medium", "high"], "GLOOM.Class.hpTrack"),
         npcActionKind: choices(["action", "break", "stunt"], "GLOOM.NpcAction.kind"),

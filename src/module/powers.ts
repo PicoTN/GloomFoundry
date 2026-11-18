@@ -97,9 +97,24 @@ export async function recoverPowers(actor: Actor.Implementation, { lost }: { los
     const update: Record<string, unknown> = {};
     if (s.state === "expended" || (lost && s.state === "lost")) update["system.state"] = "ready";
     if (item.type === "background" && s.expended) update["system.expended"] = false;
-    if (s.uses?.spent && (lost || s.uses.per === "scene")) update["system.uses.spent"] = 0;
+    if (s.uses?.spent && (lost || s.uses.per !== "rest")) update["system.uses.spent"] = 0;
     if (Object.keys(update).length) updates.push({ _id: item.id, ...update });
   }
+  if (updates.length) await actor.updateEmbeddedDocuments("Item", updates as never);
+}
+
+/** End of round: items usable "1/round" get their uses back. */
+export async function recoverRoundUses(actor: Actor.Implementation): Promise<void> {
+  const updates = actor.items
+    .filter((i) => i.type === "equipment")
+    .filter((i) => {
+      const s = sys<{ uses?: { spent: number; per: string } }>(i);
+      return s.uses?.per === "round" && s.uses.spent > 0;
+    })
+    .map((i) => {
+      const s = sys<{ state?: PowerState; lostOnUse?: boolean }>(i);
+      return { _id: i.id, "system.uses.spent": 0, ...(s.state === "expended" ? { "system.state": "ready" } : {}) };
+    });
   if (updates.length) await actor.updateEmbeddedDocuments("Item", updates as never);
 }
 

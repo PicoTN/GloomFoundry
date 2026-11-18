@@ -388,6 +388,7 @@
       "usesLeft": "Uses left",
       "perLabel": "Uses reset",
       "per": {
+        "round": "Each round",
         "scene": "Each scene",
         "rest": "Full Rest"
       },

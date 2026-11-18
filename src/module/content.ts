@@ -61,14 +61,16 @@ async function preparePack(def: ContentPack): Promise<CompendiumCollection.Any> 
 const levelOf = (doc: DocData): number => Number((doc["system"] as { level?: number } | undefined)?.level ?? 0) || 0;
 const label = (key: string) => game.i18n!.localize(`GLOOM.Content.folder.${key}`);
 
-/** Folder path inside the file's folder, by document type: Talents, Skills/Level N, Perks... */
+/** Folder path inside the file's folder: the document's own, or by type (Talents, Skills/Level N, Perks...). */
 function subfolder(doc: DocData): string[] {
+  // A file can name the subfolder itself (e.g. equipment: Armor/Head, Small/Alchemic).
+  const own = (doc["flags"] as Record<string, { folder?: string }> | undefined)?.[SYSTEM_ID]?.folder;
+  if (own) return [own];
   const system = (doc["system"] ?? {}) as { level?: number; category?: string; master?: boolean };
   switch (doc["type"]) {
     case "talent": return [label("talents")];
     case "skill": return [label("skills"), game.i18n!.format("GLOOM.Content.folder.level", { level: String(levelOf(doc)) })];
     case "perk": return [label("perks")];
-    case "equipment": return [label("equipment")];
     case "background": return [system.master ? label("master") : label(system.category ?? "other")];
     default: return [];
   }

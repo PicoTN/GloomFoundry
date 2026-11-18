@@ -101,7 +101,7 @@ function defineEquipmentSchema() {
       /** Uses before the item becomes expended; empty = unlimited ("~"). */
       max: optionalInt(1),
       spent: int(0),
-      per: new fields.StringField({ required: true, initial: "scene", choices: ["scene", "rest"] }),
+      per: new fields.StringField({ required: true, initial: "scene", choices: ["round", "scene", "rest"] }),
     }),
     rarity: new fields.StringField({
       required: true, initial: "common", choices: ["common", "uncommon", "rare", "masterwork", "legendary"],
