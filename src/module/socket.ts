@@ -10,6 +10,7 @@ import { sufferDamage, type DamageOptions } from "./combat/damage.ts";
 import { handleElementRequest } from "./combat/elements.ts";
 import { createRegion, spawnSummon } from "./combat/power-actions.ts";
 import { heal } from "./powers.ts";
+import { handleShopBuy, handleShopSell } from "./shop.ts";
 import { gainAbility } from "./abilities.ts";
 import { removeMarkEffect, setMarkEffect } from "./class-mechanics.ts";
 
@@ -27,6 +28,8 @@ export type SocketRequest =
   | { action: "deleteItem"; actor: string; item: string }
   | { action: "heal"; actor: string; amount: number; source: string }
   | { action: "createRegion"; scene: string; name: string; color: string; polygons: number[][]; flags: Record<string, unknown> }
+  | { action: "shopBuy"; shop: string; item: string; buyer: string; quantity: number; once: { company: string; item: string }[]; user: string }
+  | { action: "shopSell"; shop: string; item: string; buyer: string; quantity: number; user: string }
   | { action: "spawnSummon"; scene: string; actor: string; x: number; y: number; controller: string; disposition: number; user?: string };
 
 async function handle(req: SocketRequest): Promise<void> {
@@ -87,6 +90,10 @@ async function handle(req: SocketRequest): Promise<void> {
     }
     case "createRegion":
       return createRegion(req.scene, req.name, req.color, req.polygons, req.flags);
+    case "shopBuy":
+      return handleShopBuy(req);
+    case "shopSell":
+      return handleShopSell(req);
     case "spawnSummon":
       return spawnSummon(req.scene, req.actor, req.x, req.y, req.controller, req.disposition, req.user ?? "");
     case "applyDamage": {

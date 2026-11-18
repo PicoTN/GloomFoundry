@@ -225,6 +225,10 @@ export function registerLevelUpControls(): void {
           name: "clearAreas", order: 3, title: "GLOOM.Place.clearAreas", icon: "fa-solid fa-eraser", button: true,
           onChange: () => void clearAreas(canvas?.scene),
         },
+        mission: {
+          name: "mission", order: 4, title: "GLOOM.Mission.title", icon: "fa-solid fa-flag-checkered", button: true,
+          onChange: () => void (game as unknown as { gloomfoundry: { missionCompleted: () => Promise<void> } }).gloomfoundry.missionCompleted(),
+        },
         gmDeck: {
           name: "gmDeck", order: 2, title: "GLOOM.Deck.gmDeck", icon: "fa-solid fa-cards", button: true,
           onChange: () => (game as unknown as { gloomfoundry: { openGMDeck: () => void } }).gloomfoundry.openGMDeck(),

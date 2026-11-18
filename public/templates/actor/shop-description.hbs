@@ -1,0 +1,6 @@
+<section class="tab description-tab {{tabs.description.cssClass}}" data-tab="description" data-group="primary">
+  {{#if isGM}}
+  {{formInput systemFields.description value=system.description enriched=enrichedDescription toggled=true name="system.description"}}
+  {{else}}<div class="desc">{{{enrichedDescription}}}</div>{{/if}}
+  <p class="hint">{{localize "GLOOM.Shop.rulesHint"}}</p>
+</section>

@@ -5,6 +5,7 @@
 import { ATTRIBUTE_LABELS, ATTRIBUTES, templatePath } from "../config.ts";
 import { promptItemFile } from "../perks/import.ts";
 import { EQUIPMENT_SLOTS } from "../rules/progression.ts";
+import { BENEFIT_AUTOMATIONS } from "../data/company.ts";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const t = (key: string) => game.i18n!.localize(key);
@@ -65,7 +66,7 @@ export class GloomItemSheet extends HandlebarsApplicationMixin(foundry.applicati
         hpTrack: choices(["low", "medium", "high"], "GLOOM.Class.hpTrack"),
         npcActionKind: choices(["action", "break", "stunt"], "GLOOM.NpcAction.kind"),
         benefitKind: choices(["temporary", "permanent"], "GLOOM.Company.kinds"),
-        benefitAutomation: choices(["", "bless", "gold", "ward", "ally"], "GLOOM.Company.automations"),
+        benefitAutomation: choices([...BENEFIT_AUTOMATIONS], "GLOOM.Company.automations"),
         tier: [0, 1, 2, 3, 4, 5].map((n) => ({ key: n, label: `${n} · ${t(`GLOOM.Faction.tier.${["hostile", "neutral", "positive", "novice", "junior", "senior"][n]}`)}` })),
       },
       attributes: ATTRIBUTES.map((a) => ({

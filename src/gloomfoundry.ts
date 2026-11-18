@@ -2,6 +2,9 @@
  * GloomFoundry - Gloomhaven: The Roleplaying Game system for Foundry VTT.
  * Entry point: registers data models, sheets, settings, hooks and the public API.
  */
+import { ShopModel } from "./module/data/shop.ts";
+import { ShopSheet, registerShopSheetHooks } from "./module/sheets/shop-sheet.ts";
+import { missionCompleted, registerShopHooks } from "./module/shop.ts";
 import { registerRegionMarkers } from "./module/canvas/region-markers.ts";
 import "../styles/gloomfoundry.scss";
 
@@ -56,6 +59,7 @@ const api = {
   drawAttack,
   addTemporary,
   openGMDeck: () => GMDeckApp.instance.render(true),
+  missionCompleted,
 };
 export type GloomFoundryApi = typeof api;
 
@@ -63,7 +67,7 @@ Hooks.once("init", async () => {
   console.log("GloomFoundry | Initializing");
   (game as unknown as Record<string, unknown>)[SYSTEM_ID] = api;
 
-  Object.assign(CONFIG.Actor.dataModels, { mercenary: MercenaryModel, npc: NpcModel, company: CompanyModel });
+  Object.assign(CONFIG.Actor.dataModels, { mercenary: MercenaryModel, npc: NpcModel, company: CompanyModel, shop: ShopModel });
   Object.assign(CONFIG.Item.dataModels, {
     background: BackgroundModel,
     perk: PerkModel,
@@ -94,6 +98,11 @@ Hooks.once("init", async () => {
     makeDefault: true,
     label: "GLOOM.Sheet.company",
   } as never);
+  DocumentSheetConfig.registerSheet(Actor, SYSTEM_ID, ShopSheet, {
+    types: ["shop"],
+    makeDefault: true,
+    label: "GLOOM.Sheet.shop",
+  } as never);
   DocumentSheetConfig.registerSheet(Item, SYSTEM_ID, GloomItemSheet, {
     types: [...ITEM_SHEET_TYPES],
     makeDefault: true,
@@ -120,6 +129,8 @@ Hooks.once("init", async () => {
   registerPowerActionButtons();
   registerClassMechanicHooks();
   registerCompanyHooks();
+  registerShopHooks();
+  registerShopSheetHooks();
   registerRegionMarkers();
   registerPlanningSheetHooks();
   registerNpcHooks();

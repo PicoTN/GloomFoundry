@@ -1,6 +1,6 @@
 # Gloomhaven RPG for FoundryVTT: Project Plan
 
-Status: phases 0–10 implemented (latest release v0.13.1). v0.13 had a first play-test on Forge (creation, power buttons, areas, elements, summons, Soothsinger Notes worked); v0.13.1 fixes what it found. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
+Status: phases 0–11 implemented (latest release v0.14.0). v0.13 had a first play-test on Forge (creation, power buttons, areas, elements, summons, Soothsinger Notes worked); v0.13.1 fixes what it found. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
 
 > PDF page numbers are the printed page number **+3** (printed p.343 is PDF page 346).
 
@@ -177,6 +177,7 @@ The face cards cover the temporary cards:
 | **5b. Power actions** ✅ | Structured actions stored on every Skill, Talent, item, NPC action and perk card (`content/ACTIONS.md`), with the text parser as a fallback. Buttons in expandable power rows, chat cards and NPC sheets: attacks (one draw per target, Pierce, areas), heals, conditions, Infuse, Shield/Retaliate/Taunt (round statuses; Shield pre-filled in attacks, Retaliate button), traps, obstacles, marked spaces, summons. Hex area placement (clusters, lines, arcs, cones, all-within-range; rotate and mirror) as Regions that target opposing tokens. Element bonuses and requirements (each element once per turn, consumed only when stated), X values. Planning from the sheet (P/S picks, lock in). |
 | **6. NPCs** ✅ | One `npc` actor for enemies, allies, summons and townsfolk. Bestiary stat block by CL (normal/elite, Attribute columns, DFNS/OFNS markers), or manual stats. Adversary and nemesis derived stats. NPC actions (F/N/S, elite-only, break/stunt). Uses the GM deck, or the controller's deck for summons. Switch side (sheet + token HUD), new NPCs Hostile at the current CL. GM window shows M, CL, the Combat Challenge values and scene Threat vs the difficulty max. Printed nemeses (final stats, HP and Threat ×M) are supported. Bestiary transcribed into `content/` (49 actors with portraits). Class summons are NPC actors (Summons compendium, 23), placed for their controller (its side, deck and owners; HP by the controller's level when needed). |
 | **10. Mercenary company** ✅ | Company actor shared by the group (concept, service, home district, leader, closest faction, how missions come in, members by drag-and-drop, relationships and notes), level 0–5 with progress pips: "Gain a temporary benefit" (mission, milestone or retirement); the fifth raises the level and offers the permanent benefits it qualifies for. Benefit items with automation: Bless card for every member, gold for every member, Ward at the next combat, a City Watch ally placed at the current CL under a member's control. Mercenary sheets link to their company. Content: benefits and a company guide journal (Reference compendium). |
+| **11. Shops & mission rewards** ✅ | `shop` actor (Prosperity 1–5, district, in Gloomhaven, price change %, open to players, resell) whose equipment items are its stock. GM rolls the stock from the Equipment compendiums by Prosperity (highest rarity and display count from p. 269, optional categories and common Basic items) or drops items in. Players browse with Observer rights and buy/sell for one of their mercenaries; the GM applies it. Prices: cost × shop change × (1 − company discounts), +10 g per missing Prosperity step for rarer items, rounded up; selling pays half, rounded down. Level gate (Rare L4, Masterwork L7; never Legendary) as a world setting, the GM can override. Company benefits automated: home-district and Gloomhaven-wide discounts, one-time discount (ticked per purchase), extra mission gold, recruits' gold. "Mission completed" (scene controls and company sheet): reward per mercenary (10–20 g), company extras, treasure, Faction Request outcome and gold per mercenary, extra gold, opens level-ups, grants the company's temporary benefit, counts missions, chat summary. |
 | **7. Content** (local only) | Done in the git-ignored `content/` folder: perks (16 classes, checked against the class chapters), 46 Backgrounds, 16 classes and 8 ancestries with their Talents and Skills, 160 equipment items with each class's starting gear, 20 factions, 49 bestiary actors with portraits, 23 class summons, class mechanics, structured actions for everything (re-checked against the book), and an icon pack (13 conditions, 7 elements, 18 stats). The system loads an icon pack from a JSON manifest, and imports the whole folder into world compendiums from its `index.json` (Settings > Import content, v0.7.0). No compendia are published (see IP note). |
 | **8. Character creation** ✅ | Wizard following "Making a Mercenary" (p. 105): identity, ancestry, class, major faction (member at Tier 2), 6 Attribute points (max 3), 4 Backgrounds, class starting gear or 50 g of common gear, personal quest. Opens from a "New mercenary" button in the Actors sidebar, a button on blank sheets, and automatically for players opening their blank mercenary. |
 | **8b. Factions & equipment** ✅ | `faction` items: tier 0–5, membership, request successes/failures with automatic rise/fall (p. 234), one faction's benefits active per mission. Equipment can be used per round, scene or rest. |
@@ -221,7 +222,9 @@ This only matters on scenes with Token Vision enabled. Targeting is not blocked 
 1. **Advantage + disadvantage together.** The rulebook doesn't say how they combine; we currently cancel them out.
 2. **Critical damage.** "Twice your base damage": we currently double the value after +X/−X attack effects, before Shield and Ward.
 3. **Leftover gold** when buying the 50 g of starting gear: we keep it (p. 118 doesn't say).
-4. **Faction Tier 1 members**: one success brings them back to Tier 2 (the "successes = tier" rule), three failures make them Hostile.
+4. **Company gold benefits**: "Missions always offer 10 additional gold" and the recruits' "Gain 50 g between each mission" don't say per mercenary or for the group; the Mission completed dialog pre-fills them per mercenary and the GM can change the amounts.
+5. **Rounding in shops**: gold is whole, so purchases round up (5 torches at 1/5 g cost 1 g) and sales round down.
+6. **Faction Tier 1 members**: one success brings them back to Tier 2 (the "successes = tier" rule), three failures make them Hostile.
 
 ## 9. Releases
 
@@ -247,6 +250,7 @@ This only matters on scenes with Token Vision enabled. Targeting is not blocked 
 | v0.12.1 | Marked spaces (Tinkerer), spending class counters (Concentrated Rage), talent-gated mechanics |
 | v0.13.0 | Mercenary company: company actor and sheet, levels and benefits, benefit automation, company content and reference journal |
 | v0.13.1 | Play-test fixes: scrolling sheet tabs, icon-pack icons in action buttons, light outline on dark icons, icon and name on traps/obstacles/marked spaces, Player field on mercenaries, summons owned by their summoner, faction goals (content) |
+| v0.14.0 | Shops (stock by Prosperity, buying/selling through the GM, company discounts, level gate) and the Mission completed rewards dialog |
 
 ## 10. What remains
 
@@ -268,13 +272,14 @@ Content model gaps found while transcribing actions (currently notes or text act
 
 Character, factions and items:
 - Faction boons are text only: Keepers' prayers, Guild Bazaar, Freebooters' sovereigns and Night Market, Sect rituals and charges, Shields' titles (Vanguard removes modifier cards), University Thesis and citations, Robin deathfeathers. Keepers' Hostile (Bless becomes Curse) could be automated.
-- Equipment rules: equipped limits (1 head, 1 body, 2 hands with two-handed items, 1 feet, small slots by level), the 5-space inventory, swapping in combat, buying limits by level and shop rarity, selling at half price.
+- Equipment rules: equipped limits (1 head, 1 body, 2 hands with two-handed items, 1 feet, small slots by level), the 5-space inventory, swapping in combat.
 - Starting above level 1 (p. 120–121): extra levels, faction tier by level.
 - Retirement benefits for new characters (p. 121) in the creation wizard (and the company's retirement temporary benefit).
 
 NPCs and content:
 - Fill the Rogue Mercenary's missing "bandit commander" base actions if the book ever prints them.
-- Shops (rarity by level and prosperity, company discounts), mission rewards (company +10 g, recruits' 50 g), the Level 5 "+1 faction rank for 100 g" and "one less Faction Request" company benefits (text for now).
+- Company benefits still text: the Level 5 "+1 faction rank for 100 g", "one less Faction Request", crafting intervals, Loaned Gear. Crafting projects and haggling (contested CU or LO vs CU) aren't automated; the GM changes prices by hand.
+- Faction shops (Merchant's Guild special shop by tier, Night Market) are just shops the GM sets up.
 - Icons on the modifier card faces themselves (the effect currently shows as a star, with the text and icons below the cards in chat).
 
 Polish:

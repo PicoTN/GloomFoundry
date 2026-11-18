@@ -1,0 +1,32 @@
+<header class="sheet-header">
+  <img class="profile" src="{{actor.img}}" alt="{{actor.name}}" {{#if isGM}}data-action="editImage" data-edit="img"{{/if}}>
+  <div class="identity">
+    <input class="name" type="text" name="name" value="{{actor.name}}" {{#unless isGM}}disabled{{/unless}}>
+    {{#if isGM}}
+    <div class="shop-fields">
+      <label>{{localize "GLOOM.Shop.prosperity"}}
+        <select name="system.prosperity">{{selectOptions prosperityOptions selected=system.prosperity}}</select></label>
+      <label>{{localize "GLOOM.Shop.district"}}<input type="text" name="system.district" value="{{system.district}}"></label>
+      <label>{{localize "GLOOM.Shop.markup"}}<input type="number" name="system.markup" value="{{system.markup}}" step="5"></label>
+      <label class="checkbox"><input type="checkbox" name="system.inGloomhaven" {{checked system.inGloomhaven}}> {{localize "GLOOM.Shop.inGloomhaven"}}</label>
+      <label class="checkbox"><input type="checkbox" name="system.resell" {{checked system.resell}}> {{localize "GLOOM.Shop.resell"}}</label>
+      <label class="checkbox"><input type="checkbox" name="system.open" {{checked system.open}}> {{localize "GLOOM.Shop.open"}}</label>
+    </div>
+    {{else}}
+    <div class="shop-summary">
+      <span class="tag">{{localize "GLOOM.Shop.prosperity"}} {{system.prosperity}}</span>
+      {{#if system.district}}<span class="tag">{{system.district}}</span>{{/if}}
+      {{#if system.markup}}<span class="tag">{{localize "GLOOM.Shop.markup"}} {{system.markup}}%</span>{{/if}}
+      {{#unless system.open}}<span class="tag closed">{{localize "GLOOM.Shop.closed"}}</span>{{/unless}}
+    </div>
+    {{/if}}
+    <div class="buyer-row">
+      {{#if buyers.length}}
+      <label>{{localize "GLOOM.Shop.buyer"}}
+        <select data-buyer data-player-control>{{selectOptions buyerOptions selected=buyerId}}</select></label>
+      <span class="gold"><i class="fa-solid fa-coins"></i> {{buyerGold}} g</span>
+      {{#each discounts}}<span class="tag discount" data-tooltip="{{label}}"><i class="fa-solid fa-tag"></i> −{{percent}}%{{#if once}} *{{/if}}</span>{{/each}}
+      {{else}}<span class="hint">{{localize "GLOOM.Shop.noBuyer"}}</span>{{/if}}
+    </div>
+  </div>
+</header>

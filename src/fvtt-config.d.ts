@@ -5,11 +5,12 @@ import type { PerkModel } from "./module/data/perk.ts";
 import type { AncestryModel, ClassModel, EquipmentModel, SkillModel, TalentModel } from "./module/data/powers.ts";
 import type { FactionModel } from "./module/data/faction.ts";
 import type { CompanyBenefitModel, CompanyModel } from "./module/data/company.ts";
+import type { ShopModel } from "./module/data/shop.ts";
 import type { ModifierCardModel } from "./module/data/modifier-card.ts";
 
 declare module "fvtt-types/configuration" {
   interface DataModelConfig {
-    Actor: { mercenary: typeof MercenaryModel; npc: typeof NpcModel; company: typeof CompanyModel };
+    Actor: { mercenary: typeof MercenaryModel; npc: typeof NpcModel; company: typeof CompanyModel; shop: typeof ShopModel };
     Item: {
       background: typeof BackgroundModel;
       perk: typeof PerkModel;
@@ -38,6 +39,7 @@ declare module "fvtt-types/configuration" {
     "gloomfoundry.iconPack": object;
     "gloomfoundry.contentIndex": string;
     "gloomfoundry.levelUpEnabled": boolean;
+    "gloomfoundry.shopLevelLimit": boolean;
     "gloomfoundry.difficulty": "easy" | "normal" | "hard" | "deadly";
   }
 }

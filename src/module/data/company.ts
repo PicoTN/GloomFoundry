@@ -26,6 +26,8 @@ function defineCompanySchema() {
     level: new fields.NumberField({ required: true, nullable: false, integer: true, min: 0, max: COMPANY_MAX_LEVEL, initial: 0 }),
     /** Temporary benefits gained toward the next level (0-4). */
     progress: new fields.NumberField({ required: true, nullable: false, integer: true, min: 0, max: BENEFITS_PER_LEVEL, initial: 0 }),
+    /** Missions completed (Mission completed dialog). */
+    missionsCompleted: new fields.NumberField({ required: true, nullable: false, integer: true, min: 0, initial: 0 }),
     relationships: html(),
     notes: html(),
     /** Benefits waiting for a trigger, e.g. Ward at the start of the next combat. */
@@ -40,7 +42,13 @@ export class CompanyModel extends foundry.abstract.TypeDataModel<CompanySchema, 
   }
 }
 
-export const BENEFIT_AUTOMATIONS = ["", "bless", "gold", "ward", "ally"] as const;
+export const BENEFIT_AUTOMATIONS = [
+  "", "bless", "gold", "ward", "ally",
+  // Shops: home-district and Gloomhaven-wide discounts, a one-time discount (percent in `amount`).
+  "discountHome", "discountCity", "discountOnce",
+  // Mission rewards: extra gold per mercenary for each mission, recruits' gold between missions.
+  "missionGold", "recruitGold",
+] as const;
 
 function defineBenefitSchema() {
   return {

@@ -49,13 +49,13 @@ async function benefitOptions(kind: "temporary" | "permanent"): Promise<BenefitO
   return out.sort((a, b) => a.system.level - b.system.level || a.name.localeCompare(b.name));
 }
 
-async function chooseBenefit(title: string, intro: string, options: BenefitOption[], reasons = false): Promise<{ option: BenefitOption; reason: string } | null> {
+async function chooseBenefit(title: string, intro: string, options: BenefitOption[], reasons = false, reason = ""): Promise<{ option: BenefitOption; reason: string } | null> {
   if (!options.length) {
     ui.notifications?.warn("GLOOM.Company.noBenefits", { localize: true });
     return null;
   }
   const reasonSelect = reasons
-    ? `<label>${t("GLOOM.Company.reason")} <select name="reason">${["mission", "milestone", "retirement"].map((r) => `<option value="${r}">${t(`GLOOM.Company.reasons.${r}`)}</option>`).join("")}</select></label>`
+    ? `<label>${t("GLOOM.Company.reason")} <select name="reason">${["mission", "milestone", "retirement"].map((r) => `<option value="${r}"${r === reason ? " selected" : ""}>${t(`GLOOM.Company.reasons.${r}`)}</option>`).join("")}</select></label>`
     : "";
   const content = `<p>${intro}</p>${reasonSelect}<div class="gloom-benefit-choices">${options.map((o, i) => `
     <label class="choice"><input type="radio" name="benefit" value="${i}"${i === 0 ? " checked" : ""}>
@@ -79,8 +79,8 @@ async function addBenefit(company: Actor.Implementation, option: BenefitOption, 
 }
 
 /** Gain a temporary benefit; the fifth raises the level and grants a permanent benefit (p. 124). */
-export async function gainTemporaryBenefit(company: Actor.Implementation): Promise<void> {
-  const choice = await chooseBenefit(t("GLOOM.Company.gainTemporary"), t("GLOOM.Company.gainTemporaryHint"), await benefitOptions("temporary"), true);
+export async function gainTemporaryBenefit(company: Actor.Implementation, reason = ""): Promise<void> {
+  const choice = await chooseBenefit(t("GLOOM.Company.gainTemporary"), t("GLOOM.Company.gainTemporaryHint"), await benefitOptions("temporary"), true, reason);
   if (!choice) return;
   await addBenefit(company, choice.option, choice.reason);
   const s = sys(company);

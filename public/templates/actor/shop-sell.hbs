@@ -1,0 +1,15 @@
+<section class="tab sell-tab {{tabs.sell.cssClass}}" data-tab="sell" data-group="primary">
+  <p class="hint">{{localize "GLOOM.Shop.sellHint"}}</p>
+  <ul class="item-list shop-items">
+    {{#each sellable as |i|}}
+    <li class="item shop-item" data-item-id="{{i.id}}">
+      <img src="{{i.img}}" alt="">
+      <div class="item-name">{{i.name}} <span class="tag rarity rarity-{{i.rarity}}">{{i.rarityLabel}}</span>
+        {{#if i.equipped}}<span class="tag">{{localize "GLOOM.Equipment.equipped"}}</span>{{/if}}</div>
+      <span class="stock-count">×{{i.quantity}}</span>
+      <span class="price">{{i.price}} g</span>
+      <button type="button" class="buy" data-action="sell" data-player-control><i class="fa-solid fa-hand-holding-dollar"></i> {{localize "GLOOM.Shop.sell"}}</button>
+    </li>
+    {{else}}<li class="empty">{{localize "GLOOM.Shop.nothingToSell"}}</li>{{/each}}
+  </ul>
+</section>

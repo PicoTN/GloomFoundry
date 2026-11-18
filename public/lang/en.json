@@ -3,7 +3,8 @@
     "Actor": {
       "mercenary": "Mercenary",
       "npc": "NPC",
-      "company": "Mercenary Company"
+      "company": "Mercenary Company",
+      "shop": "Shop"
     },
     "Item": {
       "background": "Background",
@@ -28,7 +29,8 @@
       "perk": "Perk Sheet",
       "item": "GloomFoundry Item Sheet",
       "npc": "NPC Sheet",
-      "company": "Mercenary Company Sheet"
+      "company": "Mercenary Company Sheet",
+      "shop": "Gloomhaven Shop"
     },
     "Attribute": {
       "cunning": {
@@ -327,7 +329,10 @@
       "overview": "Overview",
       "statblock": "Stat block",
       "notes": "Notes",
-      "benefits": "Benefits"
+      "benefits": "Benefits",
+      "stock": "Stock",
+      "sell": "Sell",
+      "description": "Description"
     },
     "Power": {
       "primary": "Primary action",
@@ -933,9 +938,86 @@
         "bless": "Bless card for each member",
         "gold": "Gold for each member",
         "ward": "Ward at the next combat",
-        "ally": "City Watch ally"
+        "ally": "City Watch ally",
+        "discountHome": "Discount in home-district shops (%)",
+        "discountCity": "Discount in Gloomhaven shops (%)",
+        "discountOnce": "One-time shop discount (%)",
+        "missionGold": "Extra gold per mercenary for each mission",
+        "recruitGold": "Gold per mercenary between missions"
       },
-      "newCompany": "New company"
+      "newCompany": "New company",
+      "autoHint": "Applied automatically in shops or in the Mission completed rewards."
+    },
+    "Shop": {
+      "prosperity": "Prosperity",
+      "district": "District",
+      "markup": "Price change (%)",
+      "inGloomhaven": "In Gloomhaven",
+      "resell": "Puts sold items on display",
+      "open": "Open to players",
+      "closed": "This shop is closed.",
+      "prosperityLevels": {
+        "1": "village or traveling merchant",
+        "2": "larger village, remote area",
+        "3": "established city",
+        "4": "large trade port",
+        "5": "Gloomhaven or another large city"
+      },
+      "buyer": "Buying as",
+      "noBuyer": "You have no mercenary to buy for.",
+      "restock": "Roll stock",
+      "dropHint": "Drop items from the Equipment compendium to add them.",
+      "restockHint": "Draws random items a Prosperity {prosperity} shop sells (up to {rarity}) from the Equipment compendiums.",
+      "count": "Items on display",
+      "replace": "Replace the current stock",
+      "basics": "Also stock every common Basic item",
+      "categories": "Categories",
+      "restocked": "{n} items put on display.",
+      "empty": "Nothing on display.",
+      "stock": "In stock",
+      "buy": "Buy",
+      "sell": "Sell",
+      "legendary": "Legendary items are never sold in shops.",
+      "soldOut": "Sold out.",
+      "levelGate": "{rarity} items need a higher level (Rare: Level 4, Masterwork: Level 7).",
+      "notEnoughGold": "Not enough gold.",
+      "gmOverride": "(GM: you may sell it anyway.)",
+      "buyTitle": "Buy {item}",
+      "buyPrompt": "{buyer} buys {item} (has {gold} g).",
+      "quantity": "Quantity",
+      "useOnce": "Use {name} (−{n}%, once)",
+      "unitPrice": "Price: {n} g each (rounded up for the whole purchase).",
+      "sellTitle": "Sell {item}",
+      "sellPrompt": "Sell {item} for {n} g?",
+      "sellEach": "Half the cost: {n} g each (rounded down).",
+      "sellHint": "Items sell back for half their gold cost (p. 93).",
+      "nothingToSell": "No items to sell.",
+      "bought": "{buyer} buys {n}× {item} for {gold} g at {shop}.",
+      "sold": "{seller} sells {n}× {item} for {gold} g to {shop}.",
+      "rarityMarkupHint": "Rarer than this shop normally sells: +10 g per Prosperity step (p. 269).",
+      "rulesHint": "Prosperity sets the rarest items on display (p. 269). Haggling (contested CU or LO against CU) is up to the GM: change the price % or the stock by hand.",
+      "settingLevelLimit": "Limit shop rarity by level",
+      "settingLevelLimitHint": "Players can't buy Rare items before Level 4 or Masterwork items before Level 7 (Core Rulebook p. 93). The GM can always sell anything.",
+      "newShop": "New shop"
+    },
+    "Mission": {
+      "title": "Mission completed",
+      "count": "Missions completed",
+      "hint": "Pays the reward to the checked mercenaries, records Faction Requests, opens level-ups and grants the company's temporary benefit (p. 268).",
+      "name": "Mission",
+      "namePlaceholder": "optional name for the chat card",
+      "gold": "Reward per mercenary ({min}–{max} g)",
+      "goldLabel": "Reward",
+      "contracts": "Company: {names} (per mercenary)",
+      "recruits": "Company: {names} (per mercenary)",
+      "treasure": "Treasure per mercenary (up to 5 g)",
+      "mercenary": "Mercenary",
+      "request": "Faction Request ({min}–{max} g)",
+      "extra": "Extra gold",
+      "requestGold": "Gold for a successful Faction Request",
+      "levelUp": "Allow level-ups (each mercenary gains a level after a mission)",
+      "benefit": "{company} gains a temporary benefit",
+      "levelUpOpen": "Level-ups are open: use the Level up button on your sheet."
     }
   }
 }

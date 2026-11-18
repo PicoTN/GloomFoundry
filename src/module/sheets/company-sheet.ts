@@ -4,10 +4,13 @@
  */
 import { templatePath } from "../config.ts";
 import { companyMembers, gainTemporaryBenefit, useBenefit } from "../company.ts";
+import { missionCompleted } from "../shop.ts";
 import { BENEFITS_PER_LEVEL, COMPANY_MAX_LEVEL } from "../data/company.ts";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const t = (key: string) => game.i18n!.localize(key);
+/** Benefits with a "use" button; discounts and mission gold apply in shops and mission rewards. */
+const ACTIVE = new Set(["bless", "gold", "ward", "ally"]);
 
 type Handler = (this: CompanySheet, event: PointerEvent, target: HTMLElement) => Promise<void> | void;
 
@@ -19,6 +22,7 @@ export class CompanySheet extends HandlebarsApplicationMixin(foundry.application
     form: { submitOnChange: true },
     actions: {
       gainBenefit: CompanySheet.#onGainBenefit,
+      mission: CompanySheet.#onMission,
       useBenefit: CompanySheet.#onUseBenefit,
       toggleUsed: CompanySheet.#onToggleUsed,
       editItem: CompanySheet.#onEditItem,
@@ -57,7 +61,7 @@ export class CompanySheet extends HandlebarsApplicationMixin(foundry.application
     const members = companyMembers(actor);
     const benefits = actor.items.filter((i) => i.type === "companyBenefit").map((i) => {
       const s = i.system as unknown as { kind: string; level: number; description: string; automation: string; used: boolean; reason: string };
-      return { id: i.id, name: i.name, img: i.img, ...s, reasonLabel: s.reason ? t(`GLOOM.Company.reasons.${s.reason}`) : "" };
+      return { id: i.id, name: i.name, img: i.img, ...s, usable: ACTIVE.has(s.automation), reasonLabel: s.reason ? t(`GLOOM.Company.reasons.${s.reason}`) : "" };
     });
     return {
       ...context,
@@ -66,6 +70,8 @@ export class CompanySheet extends HandlebarsApplicationMixin(foundry.application
       system,
       systemFields: (actor.system as unknown as { schema: { fields: unknown } }).schema.fields,
       editable: this.isEditable,
+      isGM: game.user?.isGM ?? false,
+      missionsCompleted: (system as unknown as { missionsCompleted?: number }).missionsCompleted ?? 0,
       levelPips: Array.from({ length: COMPANY_MAX_LEVEL }, (_, i) => ({ on: i < system.level })),
       progressPips: Array.from({ length: BENEFITS_PER_LEVEL }, (_, i) => ({ on: i < system.progress })),
       maxLevel: system.level >= COMPANY_MAX_LEVEL,
@@ -92,6 +98,10 @@ export class CompanySheet extends HandlebarsApplicationMixin(foundry.application
     if (!members.includes(actor.uuid ?? "")) members.push(actor.uuid ?? "");
     await this.document.update({ "system.members": members } as never);
     return null as never;
+  }
+
+  static async #onMission(this: CompanySheet) {
+    await missionCompleted(this.document);
   }
 
   static async #onGainBenefit(this: CompanySheet) {

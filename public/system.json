@@ -48,6 +48,11 @@
           "relationships",
           "notes"
         ]
+      },
+      "shop": {
+        "htmlFields": [
+          "description"
+        ]
       }
     },
     "Item": {

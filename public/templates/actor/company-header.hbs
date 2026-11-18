@@ -9,6 +9,8 @@
       <span class="label">{{localize "GLOOM.Company.progress"}}</span>
       <span class="pips progress">{{#each progressPips}}<i class="fa-{{#if on}}solid{{else}}regular{{/if}} fa-circle"></i>{{/each}}</span>
       {{/unless}}
+      <span class="tag" data-tooltip="GLOOM.Mission.count"><i class="fa-solid fa-flag-checkered"></i> {{missionsCompleted}}</span>
+      {{#if isGM}}<button type="button" data-action="mission"><i class="fa-solid fa-flag-checkered"></i> {{localize "GLOOM.Mission.title"}}</button>{{/if}}
       {{#if editable}}<button type="button" data-action="gainBenefit"><i class="fa-solid fa-plus"></i> {{localize "GLOOM.Company.gainTemporary"}}</button>{{/if}}
     </div>
   </div>
