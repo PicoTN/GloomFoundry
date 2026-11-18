@@ -1,6 +1,6 @@
 # Gloomhaven RPG for FoundryVTT: Project Plan
 
-Status: phases 0–8 implemented (latest release v0.11.1). Only v0.1 has been play-tested on Forge; everything after it is typechecked and unit-tested but not yet tried in a live game. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
+Status: phases 0–8 implemented (latest release v0.12.0). Only v0.1 has been play-tested on Forge; everything after it is typechecked and unit-tested but not yet tried in a live game. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
 
 > PDF page numbers are the printed page number **+3** (printed p.343 is PDF page 346).
 
@@ -240,6 +240,7 @@ This only matters on scenes with Token Vision enabled. Targeting is not blocked 
 | v0.10.0 | Power action buttons (attack, heal, conditions, infuse, areas, traps, obstacles, summons) in sheets and chat; hex area placement as Regions; expandable power rows; planning from the sheet |
 | v0.11.0 | Structured actions stored on powers, items, NPC actions and perk cards (parser as fallback); element bonuses with once-per-turn tracking; area anchors, "all within range", mirroring; card effect buttons |
 | v0.11.1 | Action requirements ("only if Dark is active", "only if Berserk") and X values that ask for a number |
+| v0.12.0 | Shield/Retaliate/Taunt as round statuses (auto Shield in attacks, Retaliate button); class mechanics (Berserk, Notes and Songs, Augments, Doom, Plague, Supply, Medical Packs, Prescriptions, Invocations, Command, summons) with a Class panel; Summons compendium; refresh items from compendiums |
 
 ## 10. What remains
 
@@ -255,7 +256,7 @@ Combat:
 - Nemesis Break actions at half HP and Stunts per round.
 
 Content model gaps found while transcribing actions (currently notes or text actions):
-- Taunt, Doom, Plague, Augments, Songs/Notes, Prescriptions are class mechanics with no model yet.
+- Class mechanics still text: damage per Plague on all enemies, marked board spaces (Tinkerer), Wildfury rage tokens, talents that change a mechanic's limits (Oppressive Strikes), "grant your summons a primary action", triggers on an enemy's death.
 - Push/Pull/damage without an attack, conditions on several targets, "granted to an ally/summon" and "controlled enemy" actions are notes.
 - Persistent and round effects ("the next 2 times...", "this round") are text.
 
@@ -266,7 +267,6 @@ Character, factions and items:
 - Retirement benefits for new characters (p. 121) in the creation wizard.
 
 NPCs and content:
-- Class summons as ready-made `npc` actors linked to their controller.
 - Fill the Rogue Mercenary's missing "bandit commander" base actions if the book ever prints them.
 - Icons on the modifier card faces themselves (the effect currently shows as a star, with the text and icons below the cards in chat).
 
