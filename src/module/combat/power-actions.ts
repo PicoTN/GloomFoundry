@@ -5,7 +5,7 @@
  * at the end of the acting character's turn, traps and obstacles stay until removed.
  */
 import { grantMove } from "./movement.ts";
-import { parseLasting } from "../rules/lasting.ts";
+import { parseLasting, parseLastingBonus } from "../rules/lasting.ts";
 import { startLasting } from "../lasting.ts";
 import { cubeKey, forcedMoves, type Cube as HexCube } from "../rules/hex.ts";
 import { behaviorsFor, flagsOf, terrainMap, type TerrainFlags } from "../canvas/terrain.ts";
@@ -393,9 +393,10 @@ async function onAttack(actor: Actor.Implementation, a: Extract<PowerAction, { k
     targetTokensIn(cells, actor);
   }
   const targets = targetedActors();
-  if (targets.length <= 1) return drawAttack(deck, { actor, base, target: targets[0] ?? null, pierce: a.pierce });
-  // One draw per target (p. 63).
-  for (const target of targets) await drawAttack(deck, { actor, base, target, pierce: a.pierce });
+  const group = foundry.utils.randomID();
+  if (targets.length <= 1) return drawAttack(deck, { actor, base, target: targets[0] ?? null, pierce: a.pierce, group });
+  // One draw per target (p. 63); lasting-effect charges are spent once for the whole ability.
+  for (const target of targets) await drawAttack(deck, { actor, base, target, pierce: a.pierce, group });
 }
 
 async function applyCondition(target: Actor.Implementation, id: string): Promise<void> {
@@ -506,7 +507,8 @@ export async function runPowerAction(actor: Actor.Implementation, a: PowerAction
     case "space": {
       const cells = await pickHexes({ count: a.count ?? 1, color: 0x16a085, hint: t("GLOOM.Place.hintSingle") });
       if (!cells) return;
-      for (const cell of cells) await placeRegion("space", [cell], `${a.label}: ${a.effect}`, actor);
+      // The space's attack bonus (e.g. Enhancement Field: +1 attack in or next to it).
+      for (const cell of cells) await placeRegion("space", [cell], `${a.label}: ${a.effect}`, actor, { bonus: parseLastingBonus(a.effect) });
       return;
     }
     case "summon": {

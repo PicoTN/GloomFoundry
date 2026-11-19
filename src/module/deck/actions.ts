@@ -2,6 +2,8 @@
  * High-level draw actions: prompt the user, draw, resolve with the rules engine,
  * post the chat card, and apply side effects (expending a Background, ...).
  */
+import { attackBonuses, bonusSummary, spendLasting } from "../lasting.ts";
+import type { PowerAction } from "../rules/power-actions.ts";
 import { abilityValue } from "../abilities.ts";
 import { actionButtonsHTML } from "../combat/power-actions.ts";
 import { ATTRIBUTE_LABELS, ATTRIBUTES, templatePath, type AttributeKey } from "../config.ts";
@@ -194,11 +196,21 @@ export interface AttackOptions {
   target?: Actor.Implementation | null;
   /** Pierce: ignores that much of the target's Shield. */
   pierce?: number;
+  /** One attack ability with several targets: lasting-effect charges are spent once. */
+  group?: string;
 }
+
+/** Charges already spent by an attack ability (group|effect). */
+const spentByGroup = new Set<string>();
 
 export async function drawAttack(deck: ModifierDeck, options: AttackOptions = {}): Promise<void> {
   const attacker = options.actor ?? deck.actor;
-  const { mode: defaultMode, sources } = conditionMode(attacker);
+  const lasting = attackBonuses(attacker);
+  const condition = conditionMode(attacker);
+  // Advantage from lasting effects combines with Strengthen / Muddle (p. 63).
+  const lastingAdvantage = lasting.some((l) => l.bonus.advantage);
+  const defaultMode = lastingAdvantage ? combineModes(true, hasCondition(attacker, "muddle")) : condition.mode;
+  const sources = condition.sources;
   const target = options.target !== undefined ? options.target : currentTargetActor();
   const form = await input(target ? `${t("GLOOM.Attack.title")} → ${target.name ?? ""}` : t("GLOOM.Attack.title"), "apps/attack-dialog.hbs", {
     base: options.base ?? 2,
@@ -207,13 +219,17 @@ export async function drawAttack(deck: ModifierDeck, options: AttackOptions = {}
     poisoned: hasCondition(target, "poison"),
     shield: abilityValue(target, "shield"),
     warded: hasCondition(target, "ward"),
+    lasting: lasting.map((l, i) => ({ index: i, label: l.label, summary: bonusSummary(l.bonus), text: l.text, counted: l.counted })),
   });
   if (!form) return;
+  const chosen = lasting.filter((_, i) => form[`lasting${i}`]);
+  const lastingAttack = chosen.reduce((n, l) => n + l.bonus.attack, 0);
+  const lastingPierce = chosen.reduce((n, l) => n + l.bonus.pierce, 0);
   const base = readNumber(form["base"], 2); // basic attack is "Attack 2" (p. 66)
   const poisoned = Boolean(form["poisoned"]);
   // Poison: +1 attack, applied with the other attack bonuses (p. 85).
-  const bonus = readNumber(form["bonus"], 0) + (poisoned ? 1 : 0);
-  const shield = Math.max(0, readNumber(form["shield"], 0) - (options.pierce ?? 0));
+  const bonus = readNumber(form["bonus"], 0) + (poisoned ? 1 : 0) + lastingAttack;
+  const shield = Math.max(0, readNumber(form["shield"], 0) - (options.pierce ?? 0) - lastingPierce);
   const ward = Boolean(form["ward"]);
   const mode = (form["mode"] as DrawMode | undefined) ?? "normal";
 
@@ -227,6 +243,7 @@ export async function drawAttack(deck: ModifierDeck, options: AttackOptions = {}
   if (ward) details.push({ label: t("GLOOM.Attack.ward"), value: `-${result.warded}` });
   if (target) details.unshift({ label: t("GLOOM.Attack.target"), value: target.name ?? "" });
   if (poisoned) details.push({ label: t("GLOOM.Condition.poison.name"), value: "+1" });
+  for (const l of chosen) details.push({ label: l.label, value: bonusSummary(l.bonus) });
   details.push(...conditionsDetail(sources));
 
   const outcome = result.null
@@ -237,6 +254,26 @@ export async function drawAttack(deck: ModifierDeck, options: AttackOptions = {}
       };
   const kept = drawn[result.keptIndex];
   const effect = kept?.data.effect;
+  // Conditions and Push/Pull added by lasting effects become buttons on the card.
+  const extra: PowerAction[] = [];
+  for (const c of new Set(chosen.flatMap((l) => l.bonus.conditions))) {
+    extra.push(c === "plague" ? { kind: "mark", id: "plague" } : { kind: "condition", id: c, self: false });
+  }
+  const push = chosen.reduce((n, l) => n + (l.bonus.push ?? 0), 0);
+  const pull = chosen.reduce((n, l) => n + (l.bonus.pull ?? 0), 0);
+  if (push) extra.push({ kind: "forced", dir: "push", value: push });
+  if (pull) extra.push({ kind: "forced", dir: "pull", value: pull });
+  const effectActs = [
+    kept?.data.effect && attacker ? actionButtonsHTML(attacker, kept.data.actions?.length ? kept.data.actions : kept.data.effect) : "",
+    extra.length && attacker ? actionButtonsHTML(attacker, extra) : "",
+  ].join("");
+  // Spend charges ("the next 2 times you attack"), once per attack ability.
+  for (const l of chosen.filter((x) => x.counted)) {
+    const key = `${options.group ?? foundry.utils.randomID()}|${l.uuid}`;
+    if (spentByGroup.has(key)) continue;
+    spentByGroup.add(key);
+    await spendLasting(l.uuid);
+  }
 
   await postDrawMessage(
     {
@@ -248,9 +285,7 @@ export async function drawAttack(deck: ModifierDeck, options: AttackOptions = {}
       tie: result.tie,
       details: effect ? [...details, { label: t("GLOOM.Attack.effect"), value: effect }] : details,
       outcome,
-      ...(kept?.data.effect && attacker
-        ? { effectActs: actionButtonsHTML(attacker, kept.data.actions?.length ? kept.data.actions : kept.data.effect) }
-        : {}),
+      ...(effectActs ? { effectActs } : {}),
       ...(target && abilityValue(target, "retaliate") && attacker
         ? { retaliate: { amount: abilityValue(target, "retaliate"), label: f("GLOOM.Ability.retaliateButton", { amount: String(abilityValue(target, "retaliate")), name: attacker.name ?? "" }) } }
         : {}),

@@ -709,3 +709,7 @@ img.gloom-inline-icon:not(.icon-stat), img.gloom-act-icon:not(.icon-stat),
 .gloom-surprised { margin-left: 0.3rem; color: var(--gloom-gold); }
 .gloom-acts .act-source { align-self: center; opacity: 0.5; font-size: 0.8rem; cursor: help; &:hover { opacity: 0.9; } }
 .gloom-phase .move-left { display: inline-flex; align-items: center; gap: 0.25rem; font-weight: bold; padding: 0 0.3rem; }
+.gloom-dialog .lasting-bonuses { display: flex; flex-direction: column; gap: 0.2rem; margin: 0.3rem 0;
+  label.checkbox { display: flex; align-items: center; gap: 0.35rem; } .hint { font-size: 0.75rem; opacity: 0.8; margin: 0.2rem 0 0; } }
+.gloom-lasting-form fieldset { display: flex; flex-direction: column; gap: 0.25rem;
+  > label { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; input[type="number"] { width: 5rem; flex: 0 0 auto; } input[type="text"] { flex: 1; } } }

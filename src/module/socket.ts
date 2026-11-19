@@ -10,6 +10,7 @@ import { sufferDamage, type DamageOptions } from "./combat/damage.ts";
 import { handleElementRequest } from "./combat/elements.ts";
 import { createRegion, forcedMoveToken, spawnSummon } from "./combat/power-actions.ts";
 import { heal } from "./powers.ts";
+import { useLasting } from "./lasting.ts";
 import { handleShopBuy, handleShopSell } from "./shop.ts";
 import { gainAbility } from "./abilities.ts";
 import { removeMarkEffect, setMarkEffect } from "./class-mechanics.ts";
@@ -31,6 +32,7 @@ export type SocketRequest =
   | { action: "shopBuy"; shop: string; item: string; buyer: string; quantity: number; once: { company: string; item: string }[]; user: string; stash?: string }
   | { action: "shopSell"; shop: string; item: string; buyer: string; quantity: number; user: string }
   | { action: "moveToken"; token: string; x: number; y: number; path: { q: number; r: number; s: number }[]; teleport?: boolean }
+  | { action: "lastingUse"; effect: string }
   | { action: "spawnSummon"; scene: string; actor: string; x: number; y: number; controller: string; disposition: number; user?: string };
 
 async function handle(req: SocketRequest): Promise<void> {
@@ -97,6 +99,11 @@ async function handle(req: SocketRequest): Promise<void> {
       return handleShopSell(req);
     case "moveToken":
       return forcedMoveToken(req.token, req.x, req.y, req.path, !!req.teleport);
+    case "lastingUse": {
+      const effect = (await fromUuid(req.effect)) as ActiveEffect.Implementation | null;
+      if (effect?.parent) await useLasting(effect.parent as Actor.Implementation, effect);
+      return;
+    }
     case "spawnSummon":
       return spawnSummon(req.scene, req.actor, req.x, req.y, req.controller, req.disposition, req.user ?? "");
     case "applyDamage": {

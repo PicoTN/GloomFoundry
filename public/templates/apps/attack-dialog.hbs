@@ -9,6 +9,16 @@
     <input type="number" name="bonus" value="0" step="1">
     <p class="hint">{{localize "GLOOM.Attack.bonusHint"}}</p>
   </div>
+  {{#if lasting.length}}
+  <fieldset class="lasting-bonuses">
+    <legend>{{localize "GLOOM.Lasting.heading"}}</legend>
+    {{#each lasting}}
+    <label class="checkbox" data-tooltip="{{text}}"><input type="checkbox" name="lasting{{index}}" checked>
+      <strong>{{label}}</strong> {{summary}}{{#if counted}} <i class="fa-solid fa-hourglass-half" data-tooltip="GLOOM.Lasting.spends"></i>{{/if}}</label>
+    {{/each}}
+    <p class="hint">{{localize "GLOOM.Lasting.dialogHint"}}</p>
+  </fieldset>
+  {{/if}}
   <div class="form-group">
     <label>{{localize "GLOOM.Attack.poisoned"}}</label>
     <input type="checkbox" name="poisoned"{{#if poisoned}} checked{{/if}}>

@@ -1085,7 +1085,19 @@
       "usesLeft": "{n} uses left",
       "roundsLeft": "{n} more rounds",
       "use": "Use one",
-      "end": "End the effect"
+      "end": "End the effect",
+      "bonus": "Attack bonus",
+      "who": "Applies to",
+      "whoOptions": {
+        "self": "You",
+        "allies": "Your allies",
+        "selfAndAllies": "You and your allies",
+        "enemies": "Enemies (penalty)"
+      },
+      "attack": "Attack (+/-)",
+      "conditions": "Conditions added",
+      "spends": "Uses one charge",
+      "dialogHint": "Untick what doesn't apply to this attack (melee only, a specific target...). Advantage from these effects is pre-selected in the mode below."
     },
     "Terrain": {
       "title": "Place terrain",
