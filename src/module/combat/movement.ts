@@ -2,10 +2,11 @@
  * Movement enforcement in combat (rules/movement.ts). Move buttons (powers, NPC actions, the basic
  * Move 4 / Move 3) grant movement for the turn; Foundry's preMoveToken hook refuses moves that go
  * beyond it, out of turn, during planning, or while Immobilized/Stunned. Outside combat and for
- * the GM, movement is free. Used movement is measured by Foundry (difficult terrain included).
+ * the GM, movement is free. Used movement is the token's Foundry movement history, which Foundry
+ * clears at the start of each turn and shrinks when a move is undone (Ctrl+Z), so undoing a
+ * mistaken move gives the movement back. Difficult terrain is included in the measured cost.
  */
 import { SYSTEM_ID } from "../config.ts";
-import { isActiveGM } from "../deck/registry.ts";
 import { checkMove, granted, type MoveGrant } from "../rules/movement.ts";
 import { getPhase } from "./combat.ts";
 
@@ -13,7 +14,6 @@ const t = (key: string) => game.i18n!.localize(key);
 const f = (key: string, data: Record<string, string>) => game.i18n!.format(key, data);
 
 const GRANTS = "moves";
-const USED = "moveUsed";
 
 export const enforceMovement = (): boolean => !!game.settings?.get(SYSTEM_ID, "enforceMovement");
 
@@ -21,8 +21,14 @@ export function grantsOf(combatant: Combatant.Implementation): MoveGrant[] {
   return (combatant.getFlag(SYSTEM_ID as never, GRANTS as never) as MoveGrant[] | undefined) ?? [];
 }
 
+/** Movement used this turn: the cost of the token's movement history (cleared each turn start). */
 export function usedOf(combatant: Combatant.Implementation): number {
-  return Number(combatant.getFlag(SYSTEM_ID as never, USED as never) ?? 0);
+  const token = combatant.token as (TokenDocument.Implementation & {
+    movementHistory?: unknown[]; measureMovementPath?(w: unknown[]): { cost: number };
+  }) | null;
+  const history = token?.movementHistory ?? [];
+  if (!token || history.length < 2 || typeof token.measureMovementPath !== "function") return 0;
+  return points(token, token.measureMovementPath(history).cost);
 }
 
 /** Movement left this turn (null when nothing was granted). */
@@ -49,7 +55,7 @@ function points(token: TokenDocument.Implementation, cost: number): number {
 
 /** Reset at the start of a turn (called from combat.ts). */
 export function turnStartMovementUpdate(): Record<string, unknown> {
-  return { [`flags.${SYSTEM_ID}.${GRANTS}`]: [], [`flags.${SYSTEM_ID}.${USED}`]: 0 };
+  return { [`flags.${SYSTEM_ID}.${GRANTS}`]: [] };
 }
 
 /** A Move ability was performed: grant its movement (in combat) and set the token's movement type. */
@@ -94,8 +100,9 @@ export function registerMovementRules(): void {
     const token = doc as TokenDocument.Implementation;
     const found = combatOf(token);
     if (!found) return;
-    const m = movement as unknown as { passed?: Section; pending?: Section; method?: string };
-    if (m.method === "api") return; // forced movement and teleports go through the GM
+    const m = movement as unknown as { passed?: Section; pending?: Section; history?: Section; method?: string };
+    // Forced movement and teleports go through the GM; undoing a move is always allowed.
+    if (m.method === "api" || m.method === "undo") return;
     const actor = token.actor as Actor.Implementation | null;
     const action = m.pending?.waypoints?.at(-1)?.action ?? m.passed?.waypoints?.at(-1)?.action
       ?? (token as unknown as { movementAction?: string }).movementAction ?? "walk";
@@ -103,23 +110,16 @@ export function registerMovementRules(): void {
       inCombat: true, phase: getPhase(found.combat), isCurrent: found.combat.combatant?.id === found.combatant.id,
       immobilized: !!actor?.statuses.has("immobilize"), stunned: !!actor?.statuses.has("stun"),
       action, cost: points(token, (m.passed?.cost ?? 0) + (m.pending?.cost ?? 0)),
-      used: usedOf(found.combatant), grants: grantsOf(found.combatant),
+      used: m.history?.cost !== undefined ? points(token, m.history.cost) : usedOf(found.combatant), grants: grantsOf(found.combatant),
     });
     if (verdict.ok) return;
     ui.notifications?.warn(f(REASONS[verdict.reason]!, { left: String(verdict.left ?? 0) }));
     return false;
   });
 
-  // Count the movement used this turn (active GM).
-  Hooks.on("moveToken", (doc, movement) => {
-    if (!isActiveGM()) return;
-    const token = doc as TokenDocument.Implementation;
-    const found = combatOf(token);
-    const m = movement as unknown as { passed?: Section; method?: string };
-    if (!found || m.method === "api" || found.combat.combatant?.id !== found.combatant.id) return;
-    const action = m.passed?.waypoints?.at(-1)?.action;
-    if (action === "displace") return;
-    const cost = points(token, m.passed?.cost ?? 0);
-    if (cost > 0) void found.combatant.update({ [`flags.${SYSTEM_ID}.${USED}`]: usedOf(found.combatant) + cost } as never);
+  // Keep the tracker's "movement left" up to date (moves and undos change the history).
+  Hooks.on("moveToken", (doc) => {
+    const found = combatOf(doc as TokenDocument.Implementation);
+    if (found && found.combat.combatant?.id === found.combatant.id) void ui.combat?.render();
   });
 }
