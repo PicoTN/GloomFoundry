@@ -2,6 +2,7 @@
  * GloomFoundry - Gloomhaven: The Roleplaying Game system for Foundry VTT.
  * Entry point: registers data models, sheets, settings, hooks and the public API.
  */
+import { registerMovementRules } from "./module/combat/movement.ts";
 import { configureMovementActions, registerBehaviorTypes, registerTerrainHooks } from "./module/canvas/terrain.ts";
 import { ShopModel } from "./module/data/shop.ts";
 import { ShopSheet, registerShopSheetHooks } from "./module/sheets/shop-sheet.ts";
@@ -136,6 +137,7 @@ Hooks.once("init", async () => {
   registerShopSheetHooks();
   registerRegionMarkers();
   registerTerrainHooks();
+  registerMovementRules();
   registerPlanningSheetHooks();
   registerNpcHooks();
   registerCombatFlow();

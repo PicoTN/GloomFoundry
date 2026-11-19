@@ -41,6 +41,7 @@ declare module "fvtt-types/configuration" {
     "gloomfoundry.levelUpEnabled": boolean;
     "gloomfoundry.shopLevelLimit": boolean;
     "gloomfoundry.teleportSight": boolean;
+    "gloomfoundry.enforceMovement": boolean;
     "gloomfoundry.difficulty": "easy" | "normal" | "hard" | "deadly";
   }
 }

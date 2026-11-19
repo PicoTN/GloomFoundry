@@ -4,6 +4,7 @@
  * (rules/power-actions.ts). Areas, traps and obstacles become scene Regions; areas are cleared
  * at the end of the acting character's turn, traps and obstacles stay until removed.
  */
+import { grantMove } from "./movement.ts";
 import { parseLasting } from "../rules/lasting.ts";
 import { startLasting } from "../lasting.ts";
 import { cubeKey, forcedMoves, type Cube as HexCube } from "../rules/hex.ts";
@@ -122,7 +123,7 @@ function label(actor: Actor.Implementation, a: PowerAction): { icon: string; tex
     case "move": {
       if (a.teleport) return { icon: "fa-person-through-window", button: true, text: f("GLOOM.Act.teleport", { n: String(a.value) }) };
       const v = a.relative ? (a.value >= 0 ? `+${a.value}` : String(a.value)) : String(a.value);
-      return { icon: a.jump ? "fa-person-running" : "fa-shoe-prints", button: false, text: `${t(a.jump ? "GLOOM.Act.jump" : "GLOOM.Act.move")} ${v}${a.flying ? ` (${t("GLOOM.Act.flying")})` : ""}` };
+      return { icon: a.jump ? "fa-person-running" : "fa-shoe-prints", button: true, text: `${t(a.jump ? "GLOOM.Act.jump" : "GLOOM.Act.move")} ${v}${a.flying ? ` (${t("GLOOM.Act.flying")})` : ""}` };
     }
     case "shield": return { icon: "fa-shield", button: true, text: `${t("GLOOM.Ability.shield")} ${a.value}${a.self ? "" : ` (${t("GLOOM.Act.ally")})`}${a.duration === "persistent" ? ` · ${t("GLOOM.Ability.persistent")}` : ""}` };
     case "retaliate": return { icon: "fa-hand-fist", button: true, text: `${t("GLOOM.Ability.retaliate")} ${a.value}${a.range ? ` · ${t("GLOOM.Act.rangeWord")} ${a.range}` : ""}${a.self === false ? ` (${t("GLOOM.Act.ally")})` : ""}${a.duration === "persistent" ? ` · ${t("GLOOM.Ability.persistent")}` : ""}` };
@@ -473,7 +474,13 @@ export async function runPowerAction(actor: Actor.Implementation, a: PowerAction
       return;
     }
     case "forced": return onForced(actor, a);
-    case "move": return a.teleport ? onTeleport(actor, a) : undefined;
+    case "move": {
+      if (a.teleport) return onTeleport(actor, a);
+      const npcMove = (actor.system as unknown as { current?: { move: number } }).current?.move ?? 2;
+      const amount = Math.max(0, a.relative ? npcMove + a.value : a.value);
+      const label = `${t(a.jump ? "GLOOM.Act.jump" : "GLOOM.Act.move")} ${amount}${a.flying ? ` (${t("GLOOM.Act.flying")})` : ""}`;
+      return grantMove(actor, { amount, jump: !!a.jump, fly: !!a.flying, label });
+    }
     case "infuse": return onInfuse(a.any ? { ...a, elements: [...ELEMENTS], either: true } : a);
     case "area": {
       const cells = await pickHexes({ area: a.area, origin: actingToken(actor), hint: t("GLOOM.Place.hint") });

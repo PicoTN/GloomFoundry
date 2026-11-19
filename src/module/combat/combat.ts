@@ -6,6 +6,7 @@
  *    your next turn" conditions expire, planned Skills/items are expended or lost;
  *  - round end (cleanup): elements decay, Critical/Null decks reshuffle (deck/combat-hooks.ts).
  */
+import { turnStartMovementUpdate } from "./movement.ts";
 import { expireLasting } from "../lasting.ts";
 import { remindSpaces } from "../canvas/terrain.ts";
 import { SYSTEM_ID } from "../config.ts";
@@ -105,6 +106,8 @@ async function startTurn(combat: Combat.Implementation, combatant: Combatant.Imp
     [`flags.${SYSTEM_ID}.turnStartedAt`]: timelinePosition(combat.round, combat.turn),
     // Each element can be used once per turn (p. 82): reset this character's uses.
     [`flags.${SYSTEM_ID}.elementsUsed`]: [],
+    // Movement is granted again by this turn's Move abilities.
+    ...turnStartMovementUpdate(),
   } as never);
   const actor = combatant.actor as Actor.Implementation | null;
   if (!actor) return;

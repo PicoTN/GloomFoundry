@@ -1120,6 +1120,24 @@
           "label": "Used up when triggered"
         }
       }
+    },
+    "Move": {
+      "setting": "Enforce movement in combat",
+      "settingHint": "Players can only move their character on its turn, within the Move abilities they used (Move buttons, basic Move 4 / Move 3). Free outside combat; the GM is never limited.",
+      "granted": "{name}: {label} ({left} movement left this turn).",
+      "notNow": "Movement is only granted on this character's turn in the action phase.",
+      "planning": "No moving during the planning phase.",
+      "notYourTurn": "It's not this character's turn.",
+      "immobilized": "Immobilized: you can't move.",
+      "stunned": "Stunned: you can't act.",
+      "noMove": "Use a Move ability first (a Move button, or the basic Move 4 / Move 3 in the combat tracker).",
+      "tooFar": "Too far: {left} movement left this turn (difficult terrain costs 1 extra).",
+      "noJump": "Jumping needs a Jump ability.",
+      "noFly": "Flying needs a Flying ability.",
+      "teleport": "Teleport with a Teleport button.",
+      "leftHint": "Movement left / granted this turn",
+      "basicPrimary": "Basic primary action: Move 4",
+      "basicSecondary": "Basic secondary action: Move 3"
     }
   }
 }

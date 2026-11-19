@@ -6,8 +6,10 @@ import { displayInitiative } from "../rules/combat.ts";
 import { activateElementBar, elementBarHTML } from "./elements.ts";
 import { chooseSurprised, getPhase, isSurprised, type GloomCombat } from "./combat.ts";
 import { getPlan, openPlanningSheet, planEnemies } from "./planning.ts";
+import { grantMove, movementLeft } from "./movement.ts";
 
 const t = (key: string) => game.i18n!.localize(key);
+const fmt = (n: number) => String(Math.round(n * 10) / 10);
 
 function phaseBanner(combat: Combat.Implementation): string {
   if (!combat.started) return "";
@@ -27,6 +29,16 @@ function phaseBanner(combat: Combat.Implementation): string {
     if (isGM) {
       buttons.push(`<button type="button" data-gloom-combat="enemies"><i class="fa-solid fa-gauge-high"></i> ${t("GLOOM.Plan.enemiesTitle")}</button>`);
       buttons.push(`<button type="button" data-gloom-combat="start"><i class="fa-solid fa-play"></i> ${t("GLOOM.Combat.startAction")}</button>`);
+    }
+  }
+  if (phase === "action" && combat.combatant) {
+    const current = combat.combatant as Combatant.Implementation;
+    const move = movementLeft(current);
+    const mine = current.isOwner && current.actor?.type === "mercenary";
+    buttons.push(`<span class="move-left" data-tooltip="${t("GLOOM.Move.leftHint")}"><i class="fa-solid fa-shoe-prints"></i> ${move ? `${fmt(move.left)}/${fmt(move.total)}` : "0"}</span>`);
+    if (mine) {
+      buttons.push(`<button type="button" data-gloom-combat="move4" data-tooltip="${t("GLOOM.Move.basicPrimary")}"><i class="fa-solid fa-shoe-prints"></i> ${t("GLOOM.Act.move")} 4</button>`);
+      buttons.push(`<button type="button" data-gloom-combat="move3" data-tooltip="${t("GLOOM.Move.basicSecondary")}"><i class="fa-solid fa-shoe-prints"></i> ${t("GLOOM.Act.move")} 3</button>`);
     }
   }
   return `<div class="gloom-phase phase-${phase}">
@@ -56,6 +68,12 @@ export function registerTrackerUI(): void {
         }
       }
     });
+    for (const n of [4, 3]) {
+      panel.querySelector(`[data-gloom-combat="move${n}"]`)?.addEventListener("click", () => {
+        const actor = combat?.combatant?.actor as Actor.Implementation | null | undefined;
+        if (actor) void grantMove(actor, { amount: n, label: t(n === 4 ? "GLOOM.Move.basicPrimary" : "GLOOM.Move.basicSecondary") });
+      });
+    }
     panel.querySelector('[data-gloom-combat="surprise"]')?.addEventListener("click", () => {
       if (combat) void chooseSurprised(combat);
     });
