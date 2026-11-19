@@ -1,0 +1,32 @@
+{
+  "name": "GloomFoundry example pack (homebrew)",
+  "packs": [
+    {
+      "name": "example-classes",
+      "label": "Example: Classes",
+      "type": "Item",
+      "files": [
+        { "path": "classes/lantern-warden.json", "folder": "Lantern Warden" },
+        { "path": "classes/lantern-warden-powers.json", "folder": "Lantern Warden" }
+      ]
+    },
+    {
+      "name": "example-items",
+      "label": "Example: Items and Backgrounds",
+      "type": "Item",
+      "files": [
+        { "path": "equipment/items.json", "folder": "Equipment" },
+        { "path": "backgrounds/backgrounds.json", "folder": "Backgrounds" }
+      ]
+    },
+    {
+      "name": "example-bestiary",
+      "label": "Example: Bestiary",
+      "type": "Actor",
+      "files": [
+        { "path": "bestiary/ash-wisp.json", "folder": "Wisps" },
+        { "path": "bestiary/lantern-spirit.json", "folder": "Summons" }
+      ]
+    }
+  ]
+}

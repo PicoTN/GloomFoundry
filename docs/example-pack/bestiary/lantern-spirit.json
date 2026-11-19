@@ -1,0 +1,101 @@
+{
+  "name": "Lantern Spirit",
+  "type": "npc",
+  "img": "icons/svg/light.svg",
+  "system": {
+    "mode": "manual",
+    "category": "normal",
+    "level": 0,
+    "hp": {
+      "value": 4,
+      "max": 4
+    },
+    "manual": {
+      "move": 3,
+      "attack": 2,
+      "attributes": {
+        "cunning": 0,
+        "finesse": 0,
+        "grit": 0,
+        "intuition": 0,
+        "logic": 0,
+        "understanding": 0
+      },
+      "threat": 0
+    },
+    "description": "<p>Summon of the Lantern Warden. Its HP follows the Warden's level.</p>"
+  },
+  "prototypeToken": {
+    "name": "Lantern Spirit",
+    "texture": {
+      "src": "icons/svg/light.svg"
+    },
+    "disposition": 1,
+    "actorLink": false,
+    "bar1": {
+      "attribute": "hp"
+    }
+  },
+  "items": [
+    {
+      "name": "Glow",
+      "type": "npcAction",
+      "img": "icons/svg/light.svg",
+      "system": {
+        "speeds": {
+          "fast": true,
+          "normal": true,
+          "slow": true
+        },
+        "kind": "action",
+        "eliteOnly": false,
+        "nemesisOnly": false,
+        "description": "<p>Move +0. Attack +0. Infuse Light.</p>",
+        "actions": {
+          "description": [
+            {
+              "kind": "move",
+              "value": 0,
+              "relative": true
+            },
+            {
+              "kind": "attack",
+              "value": 0,
+              "relative": true,
+              "range": null,
+              "targets": 1,
+              "pierce": 0,
+              "area": null,
+              "conditions": []
+            },
+            {
+              "kind": "infuse",
+              "elements": [
+                "light"
+              ],
+              "either": false
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "flags": {
+    "gloomfoundry": {
+      "source": "GloomFoundry example pack (homebrew)",
+      "class": "Lantern Warden",
+      "summon": true,
+      "hpByLevel": [
+        4,
+        4,
+        5,
+        5,
+        6,
+        6,
+        7,
+        7,
+        8
+      ]
+    }
+  }
+}

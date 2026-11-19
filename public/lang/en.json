@@ -191,7 +191,10 @@
       "level": "Level",
       "levelShort": "L",
       "initiative": "Initiative",
-      "description": "Description"
+      "description": "Description",
+      "classOwner": "Class",
+      "ancestryOwner": "Ancestry",
+      "ownerHint": "Exact name of the Class (or Ancestry) item this belongs to. The Level up dialog offers it to characters of that class."
     },
     "Rest": {
       "title": "Rest",

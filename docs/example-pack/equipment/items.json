@@ -1,0 +1,171 @@
+[
+  {
+    "name": "Warden's Lamp",
+    "type": "equipment",
+    "img": "icons/svg/light.svg",
+    "system": {
+      "slot": "small",
+      "effect": "<p>Free action: Infuse Light.</p><p>Trinket: expended on use.</p>",
+      "initiative": null,
+      "uses": {
+        "max": 1,
+        "spent": 0,
+        "per": "scene"
+      },
+      "rarity": "uncommon",
+      "cost": 15,
+      "space": 1,
+      "hands": 1,
+      "smallSlots": 0,
+      "consumable": false,
+      "quantity": 1,
+      "equipped": false,
+      "lostOnUse": false,
+      "state": "ready",
+      "crafting": "",
+      "actions": {
+        "effect": [
+          {
+            "kind": "infuse",
+            "elements": [
+              "light"
+            ],
+            "either": false
+          }
+        ]
+      }
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)",
+        "category": "Small",
+        "folder": "Small"
+      }
+    }
+  },
+  {
+    "name": "Ashwood Staff",
+    "type": "equipment",
+    "img": "icons/svg/sword.svg",
+    "system": {
+      "slot": "hand",
+      "effect": "<p>Attack 3, range 2.</p><p>Requires both Hand slots.</p>",
+      "initiative": 45,
+      "uses": {
+        "max": null,
+        "spent": 0,
+        "per": "scene"
+      },
+      "rarity": "common",
+      "cost": 20,
+      "space": 1,
+      "hands": 2,
+      "smallSlots": 0,
+      "consumable": false,
+      "quantity": 1,
+      "equipped": false,
+      "lostOnUse": false,
+      "state": "ready",
+      "crafting": "Woodworking",
+      "actions": {
+        "effect": [
+          {
+            "kind": "attack",
+            "value": 3,
+            "relative": false,
+            "range": 2,
+            "targets": 1,
+            "pierce": 0,
+            "area": null,
+            "conditions": []
+          }
+        ]
+      }
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)",
+        "category": "Hand",
+        "folder": "Hand"
+      }
+    }
+  },
+  {
+    "name": "Soot Cloak",
+    "type": "equipment",
+    "img": "icons/svg/shield.svg",
+    "system": {
+      "slot": "body",
+      "effect": "<p>+1 Small item slot.</p>",
+      "initiative": null,
+      "uses": {
+        "max": null,
+        "spent": 0,
+        "per": "scene"
+      },
+      "rarity": "rare",
+      "cost": 30,
+      "space": 1,
+      "hands": 1,
+      "smallSlots": 1,
+      "consumable": false,
+      "quantity": 1,
+      "equipped": false,
+      "lostOnUse": false,
+      "state": "ready",
+      "crafting": "Weaving",
+      "actions": {}
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)",
+        "category": "Armor",
+        "folder": "Armor/Body"
+      }
+    }
+  },
+  {
+    "name": "Ember Tonic",
+    "type": "equipment",
+    "img": "icons/svg/potion.svg",
+    "system": {
+      "slot": "small",
+      "effect": "<p>Heal 3, yourself.</p><p>Alchemic: free action, consumed on use.</p>",
+      "initiative": null,
+      "uses": {
+        "max": null,
+        "spent": 0,
+        "per": "scene"
+      },
+      "rarity": "common",
+      "cost": 5,
+      "space": 1,
+      "hands": 1,
+      "smallSlots": 0,
+      "consumable": true,
+      "quantity": 1,
+      "equipped": false,
+      "lostOnUse": false,
+      "state": "ready",
+      "crafting": "Alchemy",
+      "actions": {
+        "effect": [
+          {
+            "kind": "heal",
+            "value": 3,
+            "self": true,
+            "range": null,
+            "conditions": []
+          }
+        ]
+      }
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)",
+        "category": "Small",
+        "folder": "Small"
+      }
+    }
+  }
+]

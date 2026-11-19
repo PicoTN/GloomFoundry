@@ -1,0 +1,36 @@
+[
+  {
+    "name": "Lamplighter",
+    "type": "background",
+    "img": "icons/svg/light.svg",
+    "system": {
+      "category": "occupation",
+      "master": false,
+      "prerequisite": "",
+      "description": "<p>You kept a city's street lamps burning.</p>",
+      "expended": false
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)"
+      }
+    }
+  },
+  {
+    "name": "Ember Guild",
+    "type": "background",
+    "img": "icons/svg/fire.svg",
+    "system": {
+      "category": "social",
+      "master": false,
+      "prerequisite": "",
+      "description": "<p>A small guild of chandlers and lamp-makers owes you a favor.</p>",
+      "expended": false
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)"
+      }
+    }
+  }
+]

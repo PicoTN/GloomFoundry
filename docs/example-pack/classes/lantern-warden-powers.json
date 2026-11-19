@@ -1,0 +1,582 @@
+[
+  {
+    "name": "Kindled Watch",
+    "type": "talent",
+    "img": "icons/svg/aura.svg",
+    "system": {
+      "level": 1,
+      "kind": "passive",
+      "initiative": null,
+      "primary": "",
+      "secondary": "",
+      "passive": "<p>At the start of each of your turns, if Light is active, gain 1 Ember.</p>",
+      "replaces": "",
+      "actions": {}
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)",
+        "class": "Lantern Warden"
+      }
+    }
+  },
+  {
+    "name": "Lantern Swing",
+    "type": "talent",
+    "img": "icons/svg/aura.svg",
+    "system": {
+      "level": 1,
+      "kind": "active",
+      "initiative": 30,
+      "primary": "<p>Attack 3. If Light is active, add +1 attack.</p>",
+      "secondary": "<p>Move 3.</p>",
+      "passive": "",
+      "replaces": "",
+      "actions": {
+        "primary": [
+          {
+            "kind": "attack",
+            "value": 3,
+            "relative": false,
+            "range": null,
+            "targets": 1,
+            "pierce": 0,
+            "area": null,
+            "conditions": [],
+            "bonuses": [
+              {
+                "elements": [
+                  "light"
+                ],
+                "attack": 1
+              }
+            ]
+          }
+        ],
+        "secondary": [
+          {
+            "kind": "move",
+            "value": 3
+          }
+        ]
+      }
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)",
+        "class": "Lantern Warden"
+      }
+    }
+  },
+  {
+    "name": "Steady Flame",
+    "type": "talent",
+    "img": "icons/svg/aura.svg",
+    "system": {
+      "level": 3,
+      "kind": "passive",
+      "initiative": null,
+      "primary": "",
+      "secondary": "",
+      "passive": "<p>Whenever you infuse Light, you may also gain Shield 1 this round.</p>",
+      "replaces": "",
+      "actions": {}
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)",
+        "class": "Lantern Warden"
+      }
+    }
+  },
+  {
+    "name": "Lantern Swing+",
+    "type": "talent",
+    "img": "icons/svg/aura.svg",
+    "system": {
+      "level": 5,
+      "kind": "active",
+      "initiative": 30,
+      "primary": "<p>Attack 4. If Light is active, add +1 attack and Pierce 1.</p>",
+      "secondary": "<p>Move 3.</p>",
+      "passive": "",
+      "replaces": "Lantern Swing",
+      "actions": {
+        "primary": [
+          {
+            "kind": "attack",
+            "value": 4,
+            "relative": false,
+            "range": null,
+            "targets": 1,
+            "pierce": 0,
+            "area": null,
+            "conditions": [],
+            "bonuses": [
+              {
+                "elements": [
+                  "light"
+                ],
+                "attack": 1,
+                "pierce": 1
+              }
+            ]
+          }
+        ],
+        "secondary": [
+          {
+            "kind": "move",
+            "value": 3
+          }
+        ]
+      }
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)",
+        "class": "Lantern Warden"
+      }
+    }
+  },
+  {
+    "name": "Beacon",
+    "type": "skill",
+    "img": "icons/svg/book.svg",
+    "system": {
+      "source": "class",
+      "level": 1,
+      "initiative": 15,
+      "bonusOverride": null,
+      "flavor": "",
+      "primary": "<p>Attack 2, range 3, target 2. Infuse Light.</p>",
+      "secondary": "<p>Heal 2, range 2.</p>",
+      "lostOnUse": false,
+      "prepared": false,
+      "state": "ready",
+      "actions": {
+        "primary": [
+          {
+            "kind": "attack",
+            "value": 2,
+            "relative": false,
+            "range": 3,
+            "targets": 2,
+            "pierce": 0,
+            "area": null,
+            "conditions": []
+          },
+          {
+            "kind": "infuse",
+            "elements": [
+              "light"
+            ],
+            "either": false
+          }
+        ],
+        "secondary": [
+          {
+            "kind": "heal",
+            "value": 2,
+            "self": false,
+            "range": 2,
+            "conditions": []
+          }
+        ]
+      }
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)",
+        "class": "Lantern Warden"
+      }
+    }
+  },
+  {
+    "name": "Warding Glow",
+    "type": "skill",
+    "img": "icons/svg/book.svg",
+    "system": {
+      "source": "class",
+      "level": 1,
+      "initiative": 40,
+      "bonusOverride": null,
+      "flavor": "",
+      "primary": "<p>You and all adjacent allies gain Shield 1. Infuse Light.</p>",
+      "secondary": "<p>Move 3.</p>",
+      "lostOnUse": false,
+      "prepared": false,
+      "state": "ready",
+      "actions": {
+        "primary": [
+          {
+            "kind": "shield",
+            "value": 1,
+            "self": true
+          },
+          {
+            "kind": "shield",
+            "value": 1,
+            "self": false,
+            "note": "all adjacent allies"
+          },
+          {
+            "kind": "infuse",
+            "elements": [
+              "light"
+            ],
+            "either": false
+          }
+        ],
+        "secondary": [
+          {
+            "kind": "move",
+            "value": 3
+          }
+        ]
+      }
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)",
+        "class": "Lantern Warden"
+      }
+    }
+  },
+  {
+    "name": "Cinder Burst",
+    "type": "skill",
+    "img": "icons/svg/book.svg",
+    "system": {
+      "source": "class",
+      "level": 1,
+      "initiative": 25,
+      "bonusOverride": null,
+      "flavor": "",
+      "primary": "<p>Attack 2 on a 3-space cluster within range 3. If Fire is active, add Wound.</p>",
+      "secondary": "<p>Gain 1 Ember.</p>",
+      "lostOnUse": false,
+      "prepared": false,
+      "state": "ready",
+      "actions": {
+        "primary": [
+          {
+            "kind": "attack",
+            "value": 2,
+            "relative": false,
+            "range": 3,
+            "targets": 1,
+            "pierce": 0,
+            "area": {
+              "shape": "cluster",
+              "size": 3,
+              "anchor": "range"
+            },
+            "conditions": [],
+            "bonuses": [
+              {
+                "elements": [
+                  "fire"
+                ],
+                "conditions": [
+                  "Wound"
+                ]
+              }
+            ]
+          }
+        ],
+        "secondary": [
+          {
+            "kind": "gain",
+            "id": "embers",
+            "counter": "ember",
+            "count": 1
+          }
+        ]
+      }
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)",
+        "class": "Lantern Warden"
+      }
+    }
+  },
+  {
+    "name": "Call the Spirit",
+    "type": "skill",
+    "img": "icons/svg/book.svg",
+    "system": {
+      "source": "class",
+      "level": 1,
+      "initiative": 55,
+      "bonusOverride": null,
+      "flavor": "",
+      "primary": "<p>Summon Lantern Spirit. This is a persistent effect.</p>",
+      "secondary": "<p>Jump 2.</p>",
+      "lostOnUse": false,
+      "prepared": false,
+      "state": "ready",
+      "actions": {
+        "primary": [
+          {
+            "kind": "summon",
+            "name": "Lantern Spirit"
+          }
+        ],
+        "secondary": [
+          {
+            "kind": "move",
+            "value": 2,
+            "jump": true
+          }
+        ]
+      }
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)",
+        "class": "Lantern Warden"
+      }
+    }
+  },
+  {
+    "name": "Smother",
+    "type": "skill",
+    "img": "icons/svg/book.svg",
+    "system": {
+      "source": "class",
+      "level": 1,
+      "initiative": 70,
+      "bonusOverride": null,
+      "flavor": "",
+      "primary": "<p>Attack 3, Immobilize.</p>",
+      "secondary": "<p>Create one damage 2 trap in an adjacent space.</p>",
+      "lostOnUse": false,
+      "prepared": false,
+      "state": "ready",
+      "actions": {
+        "primary": [
+          {
+            "kind": "attack",
+            "value": 3,
+            "relative": false,
+            "range": null,
+            "targets": 1,
+            "pierce": 0,
+            "area": null,
+            "conditions": [
+              "Immobilize"
+            ]
+          }
+        ],
+        "secondary": [
+          {
+            "kind": "trap",
+            "count": 1,
+            "damage": 2,
+            "effects": [],
+            "note": "in an adjacent space"
+          }
+        ]
+      }
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)",
+        "class": "Lantern Warden"
+      }
+    }
+  },
+  {
+    "name": "Ember Shield",
+    "type": "skill",
+    "img": "icons/svg/book.svg",
+    "system": {
+      "source": "class",
+      "level": 1,
+      "initiative": 20,
+      "bonusOverride": null,
+      "flavor": "",
+      "primary": "<p>Spend 2 Embers: gain Shield 2 and Retaliate 2. Lose this Skill.</p>",
+      "secondary": "<p>Add +1 attack to all your attacks this round.</p>",
+      "lostOnUse": true,
+      "prepared": false,
+      "state": "ready",
+      "actions": {
+        "primary": [
+          {
+            "kind": "shield",
+            "value": 2,
+            "self": true,
+            "requires": {
+              "spend": {
+                "ember": 2
+              }
+            }
+          },
+          {
+            "kind": "retaliate",
+            "value": 2,
+            "self": true,
+            "requires": {
+              "spend": {
+                "ember": 2
+              }
+            }
+          }
+        ],
+        "secondary": [
+          {
+            "kind": "text",
+            "text": "+1 attack to all your attacks this round (track it as a lasting effect)"
+          }
+        ]
+      }
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)",
+        "class": "Lantern Warden"
+      }
+    }
+  },
+  {
+    "name": "Flare",
+    "type": "skill",
+    "img": "icons/svg/book.svg",
+    "system": {
+      "source": "class",
+      "level": 2,
+      "initiative": 10,
+      "bonusOverride": null,
+      "flavor": "",
+      "primary": "<p>Attack 3, Pierce 2, range 4. Infuse Light.</p>",
+      "secondary": "<p>Move 4.</p>",
+      "lostOnUse": false,
+      "prepared": false,
+      "state": "ready",
+      "actions": {
+        "primary": [
+          {
+            "kind": "attack",
+            "value": 3,
+            "relative": false,
+            "range": 4,
+            "targets": 1,
+            "pierce": 2,
+            "area": null,
+            "conditions": []
+          },
+          {
+            "kind": "infuse",
+            "elements": [
+              "light"
+            ],
+            "either": false
+          }
+        ],
+        "secondary": [
+          {
+            "kind": "move",
+            "value": 4
+          }
+        ]
+      }
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)",
+        "class": "Lantern Warden"
+      }
+    }
+  },
+  {
+    "name": "Add one +1, Infuse Light card",
+    "type": "perk",
+    "img": "icons/svg/card-hand.svg",
+    "system": {
+      "description": "Add 7♣ (+1, Infuse Light); second box: add 7♦",
+      "taken": 0,
+      "steps": [
+        {
+          "remove": "",
+          "add": [
+            {
+              "card": "7♣",
+              "attackKind": "number",
+              "attackValue": 1,
+              "attribute": 7,
+              "effect": "Infuse Light",
+              "actions": [
+                {
+                  "kind": "infuse",
+                  "elements": [
+                    "light"
+                  ],
+                  "either": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "remove": "",
+          "add": [
+            {
+              "card": "7♦",
+              "attackKind": "number",
+              "attackValue": 1,
+              "attribute": 7,
+              "effect": "Infuse Light",
+              "actions": [
+                {
+                  "kind": "infuse",
+                  "elements": [
+                    "light"
+                  ],
+                  "either": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)",
+        "class": "Lantern Warden"
+      }
+    }
+  },
+  {
+    "name": "Replace the -2 card with a +0 card",
+    "type": "perk",
+    "img": "icons/svg/card-hand.svg",
+    "system": {
+      "description": "Remove A♥, add A♥ as +0",
+      "taken": 0,
+      "steps": [
+        {
+          "remove": "A♥",
+          "add": [
+            {
+              "card": "A♥",
+              "attackKind": "number",
+              "attackValue": 0,
+              "attribute": 1,
+              "effect": "",
+              "actions": []
+            }
+          ]
+        }
+      ]
+    },
+    "flags": {
+      "gloomfoundry": {
+        "source": "GloomFoundry example pack (homebrew)",
+        "class": "Lantern Warden"
+      }
+    }
+  }
+]

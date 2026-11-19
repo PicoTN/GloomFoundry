@@ -9,7 +9,7 @@ An unofficial [Foundry VTT](https://foundryvtt.com) system for **Gloomhaven: The
 >
 > **It does not and will not include any official assets.** That means no rulebook text, artwork, card scans or icons from Cephalofair Games. You need your own copy of the game to play.
 
-> Status: early development (v0.1). It covers Modifier Decks and mercenary sheets. Combat automation, Skills and Talents, perks and enemies come later; see [PLAN.md](PLAN.md).
+> Status: in development, tested at one table. What's done and what remains is in [PLAN.md](PLAN.md).
 
 ## Installation
 
@@ -18,6 +18,14 @@ In Foundry (or The Forge), go to **Install System** and paste this manifest URL:
 ```
 https://github.com/PicoTN/GloomFoundry/releases/latest/download/system.json
 ```
+
+## Writing content
+
+The system has no classes, Skills, items or enemies of its own: you enter them from your own
+rulebook (for your table only) or write your own homebrew. The [content documentation](docs/README.md)
+has tutorials for entering content by hand or as a content pack, a reference for every field, an
+[example pack](docs/example-pack/) (also attached to each release as `example-pack.zip`) and a
+pack checker (`node tools/validate-pack.mjs path/to/index.json`).
 
 ## Features
 

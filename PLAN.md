@@ -1,6 +1,6 @@
 # Gloomhaven RPG for FoundryVTT: Project Plan
 
-Status: phases 0–14 implemented (latest release v0.20.0). v0.13 had a first play-test on Forge (creation, power buttons, areas, elements, summons, Soothsinger Notes worked); v0.13.1 fixes what it found. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
+Status: phases 0–14 implemented (latest release v0.20.1). v0.13 had a first play-test on Forge (creation, power buttons, areas, elements, summons, Soothsinger Notes worked); v0.13.1 fixes what it found. Written 2026-11-17, updated 2026-11-18. Sources are the core rulebook (Backerkit PDF, v1) and web research on Foundry v14.
 
 > PDF page numbers are the printed page number **+3** (printed p.343 is PDF page 346).
 
@@ -264,6 +264,7 @@ This only matters on scenes with Token Vision enabled. Targeting is not blocked 
 | v0.18.1 | Used movement read from Foundry's movement history: undoing a move (Ctrl+Z) gives the movement back |
 | v0.19.0 | Lasting-effect bonuses in attacks: +X attack, Pierce, Push/Pull, advantage and conditions from your effects, your allies' ("all allies add +1 attack"), enemies' penalties, and marked spaces you stand in or next to (Enhancement Field); ticked in the attack dialog, charges spent once per attack ability |
 | v0.20.0 | Creation wizard: starting level 1–9 and retirement benefits (p. 121): Backgrounds, faction tier, extra gold for gear up to the table's rarity, extra Attribute point, extra Perks, Level 1→2 Skill trade, free Legendary item; then one Level up dialog per extra level |
+| v0.20.1 | Content documentation (docs/: tutorials, reference, homebrew example pack attached to releases), pack checker (tools/validate-pack.mjs), Class/Ancestry fields on Skill and Talent sheets for the Level up dialog |
 
 ## 10. What remains
 

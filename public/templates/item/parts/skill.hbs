@@ -1,5 +1,10 @@
 <div class="grid-fields">
   <label>{{localize "GLOOM.Skill.sourceLabel"}}<select name="system.source">{{selectOptions options.source selected=system.source valueAttr="key" labelAttr="label"}}</select></label>
+  {{#if (eq system.source "ancestry")}}
+  <label data-tooltip="GLOOM.Item.ownerHint">{{localize "GLOOM.Item.ancestryOwner"}}<input type="text" name="flags.gloomfoundry.ancestry" value="{{item.flags.gloomfoundry.ancestry}}"></label>
+  {{else}}
+  <label data-tooltip="GLOOM.Item.ownerHint">{{localize "GLOOM.Item.classOwner"}}<input type="text" name="flags.gloomfoundry.class" value="{{item.flags.gloomfoundry.class}}"></label>
+  {{/if}}
   <label>{{localize "GLOOM.Item.level"}}<input type="number" name="system.level" value="{{system.level}}" min="1" step="1"></label>
   <label>{{localize "GLOOM.Item.initiative"}}<input type="number" name="system.initiative" value="{{system.initiative}}" min="1" max="100" step="1"></label>
   <label>{{localize "GLOOM.Skill.bonus"}}<input type="number" name="system.bonusOverride" value="{{system.bonusOverride}}" min="0" step="1" placeholder="+{{testBonus}}"></label>

@@ -1,0 +1,272 @@
+{
+  "name": "Ash Wisp",
+  "type": "npc",
+  "img": "icons/svg/fire.svg",
+  "system": {
+    "mode": "table",
+    "category": "normal",
+    "level": 0,
+    "printedNemesis": false,
+    "hp": {
+      "value": 3,
+      "max": 3
+    },
+    "stats": {
+      "normal": [
+        {
+          "defense": "",
+          "hp": 3,
+          "move": 2,
+          "attack": 2,
+          "other": 0,
+          "offense": ""
+        },
+        {
+          "defense": "",
+          "hp": 4,
+          "move": 2,
+          "attack": 2,
+          "other": 0,
+          "offense": ""
+        },
+        {
+          "defense": "",
+          "hp": 5,
+          "move": 2,
+          "attack": 3,
+          "other": 0,
+          "offense": ""
+        },
+        {
+          "defense": "",
+          "hp": 6,
+          "move": 2,
+          "attack": 3,
+          "other": 1,
+          "offense": ""
+        },
+        {
+          "defense": "",
+          "hp": 7,
+          "move": 3,
+          "attack": 4,
+          "other": 1,
+          "offense": ""
+        },
+        {
+          "defense": "",
+          "hp": 8,
+          "move": 3,
+          "attack": 4,
+          "other": 1,
+          "offense": ""
+        },
+        {
+          "defense": "",
+          "hp": 9,
+          "move": 3,
+          "attack": 5,
+          "other": 2,
+          "offense": ""
+        },
+        {
+          "defense": "",
+          "hp": 10,
+          "move": 3,
+          "attack": 5,
+          "other": 2,
+          "offense": ""
+        }
+      ],
+      "elite": [
+        {
+          "defense": "",
+          "hp": 5,
+          "move": 2,
+          "attack": 2,
+          "other": 0,
+          "offense": ""
+        },
+        {
+          "defense": "",
+          "hp": 6,
+          "move": 2,
+          "attack": 2,
+          "other": 0,
+          "offense": ""
+        },
+        {
+          "defense": "",
+          "hp": 7,
+          "move": 2,
+          "attack": 3,
+          "other": 0,
+          "offense": ""
+        },
+        {
+          "defense": "",
+          "hp": 8,
+          "move": 2,
+          "attack": 3,
+          "other": 1,
+          "offense": ""
+        },
+        {
+          "defense": "",
+          "hp": 9,
+          "move": 3,
+          "attack": 4,
+          "other": 1,
+          "offense": ""
+        },
+        {
+          "defense": "",
+          "hp": 10,
+          "move": 3,
+          "attack": 4,
+          "other": 1,
+          "offense": ""
+        },
+        {
+          "defense": "",
+          "hp": 11,
+          "move": 3,
+          "attack": 5,
+          "other": 2,
+          "offense": ""
+        },
+        {
+          "defense": "",
+          "hp": 12,
+          "move": 3,
+          "attack": 5,
+          "other": 2,
+          "offense": ""
+        }
+      ]
+    },
+    "columns": {
+      "move": [
+        "intuition",
+        "grit"
+      ],
+      "attack": [
+        "cunning",
+        "finesse"
+      ],
+      "other": [
+        "logic",
+        "understanding"
+      ]
+    },
+    "threat": {
+      "normal": 2,
+      "elite": 4
+    },
+    "initiative": {
+      "fast": 12,
+      "normal": 45,
+      "slow": 80
+    },
+    "markers": {
+      "defense": "",
+      "offense": ""
+    },
+    "tactics": 3,
+    "description": "<p>A homebrew example enemy: a drifting mote of cinders.</p>",
+    "tacticsText": "<p>Wisps keep their distance and flock around whoever carries light.</p>"
+  },
+  "prototypeToken": {
+    "name": "Ash Wisp",
+    "texture": {
+      "src": "icons/svg/fire.svg"
+    },
+    "disposition": -1,
+    "actorLink": false,
+    "bar1": {
+      "attribute": "hp"
+    }
+  },
+  "items": [
+    {
+      "name": "Basic",
+      "type": "npcAction",
+      "img": "icons/svg/sword.svg",
+      "system": {
+        "speeds": {
+          "fast": true,
+          "normal": true,
+          "slow": true
+        },
+        "kind": "action",
+        "eliteOnly": false,
+        "nemesisOnly": false,
+        "description": "<p>Move +0. Attack +0, range 2.</p>",
+        "actions": {
+          "description": [
+            {
+              "kind": "move",
+              "value": 0,
+              "relative": true
+            },
+            {
+              "kind": "attack",
+              "value": 0,
+              "relative": true,
+              "range": 2,
+              "targets": 1,
+              "pierce": 0,
+              "area": null,
+              "conditions": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Flicker",
+      "type": "npcAction",
+      "img": "icons/svg/fire.svg",
+      "system": {
+        "speeds": {
+          "fast": true,
+          "normal": true,
+          "slow": false
+        },
+        "kind": "action",
+        "eliteOnly": false,
+        "nemesisOnly": false,
+        "description": "<p>Jump +1. Attack -1, range 3, Muddle.</p>",
+        "actions": {
+          "description": [
+            {
+              "kind": "move",
+              "value": 1,
+              "relative": true,
+              "jump": true
+            },
+            {
+              "kind": "attack",
+              "value": -1,
+              "relative": true,
+              "range": 3,
+              "targets": 1,
+              "pierce": 0,
+              "area": null,
+              "conditions": [
+                "Muddle"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "flags": {
+    "gloomfoundry": {
+      "source": "GloomFoundry example pack (homebrew)",
+      "group": "Wisps",
+      "hasElite": true
+    }
+  }
+}
