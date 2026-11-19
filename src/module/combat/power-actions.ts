@@ -102,7 +102,7 @@ function bonusLabel(b: Bonus): string {
   const parts = [
     b.attack && `+${b.attack} ${t("GLOOM.Act.attackWord")}`, b.range && `+${b.range} ${t("GLOOM.Act.rangeWord")}`,
     b.targets && `+${b.targets} ${t("GLOOM.Act.targetWord")}`, b.heal && `+${b.heal} ${t("GLOOM.Act.healWord")}`,
-    b.pierce && `Pierce ${b.pierce}`, b.push && `Push ${b.push}`, b.pull && `Pull ${b.pull}`,
+    b.pierce && f("GLOOM.Act.pierce", { n: String(b.pierce) }), b.push && f("GLOOM.Act.push", { n: String(b.push) }), b.pull && f("GLOOM.Act.pull", { n: String(b.pull) }),
     ...(b.conditions ?? []).map(cond), b.area && areaLabel(b.area), b.text,
   ].filter(Boolean);
   return `${trigger}: ${parts.join(", ")}`;
@@ -114,8 +114,8 @@ function label(actor: Actor.Implementation, a: PowerAction): { icon: string; tex
       const base = a.relative ? npcAttack(actor) + a.value : a.value;
       const extra = [
         a.area && areaLabel(a.area), a.targets > 1 && f("GLOOM.Act.targets", { n: String(a.targets) }),
-        a.range && `${t("GLOOM.Act.rangeWord")} ${a.range}`, a.pierce && `Pierce ${a.pierce}`,
-        a.push && `Push ${a.push}`, a.pull && `Pull ${a.pull}`,
+        a.range && `${t("GLOOM.Act.rangeWord")} ${a.range}`, a.pierce && f("GLOOM.Act.pierce", { n: String(a.pierce) }),
+        a.push && f("GLOOM.Act.push", { n: String(a.push) }), a.pull && f("GLOOM.Act.pull", { n: String(a.pull) }),
       ].filter(Boolean);
       return { icon: "fa-swords", button: true, text: `${f("GLOOM.Act.attack", { n: String(base) })}${extra.length ? ` · ${extra.join(" · ")}` : ""}` };
     }
@@ -137,7 +137,7 @@ function label(actor: Actor.Implementation, a: PowerAction): { icon: string; tex
     case "summon": return { icon: "fa-ghost", button: true, text: a.name ? `${t("GLOOM.Act.summon")}: ${a.name}` : t("GLOOM.Act.summon") };
     case "choice": return { icon: "fa-list-check", button: false, text: f("GLOOM.Act.choose", { n: String(a.pick) }) };
     case "text": return { icon: "fa-circle-info", button: false, text: a.text };
-    case "forced": return { icon: a.dir === "push" ? "fa-arrow-right-from-bracket" : "fa-arrow-right-to-bracket", button: true, text: `${a.dir === "push" ? "Push" : "Pull"} ${a.value}` };
+    case "forced": return { icon: a.dir === "push" ? "fa-arrow-right-from-bracket" : "fa-arrow-right-to-bracket", button: true, text: f(`GLOOM.Act.${a.dir}`, { n: String(a.value) }) };
     case "mark": return { icon: "fa-crosshairs", button: true, text: `${t(`GLOOM.Mark.${a.id}`)}${a.option ? `: ${a.option}` : a.group ? ` (${a.group})` : ""}${(a.count ?? 1) > 1 ? ` ×${a.count}` : ""}${(a.targets ?? 1) > 1 ? ` · ${f("GLOOM.Act.targets", { n: String(a.targets) })}` : ""}` };
     case "gain": return { icon: "fa-music", button: true, text: f("GLOOM.Act.gain", { n: String(a.count), what: a.counter === "any" ? t("GLOOM.Act.anyCounter") : a.counter }) };
     case "play": return { icon: "fa-play", button: true, text: f("GLOOM.Act.play", { name: a.name }) };
@@ -310,7 +310,7 @@ async function onForced(actor: Actor.Implementation, a: Extract<PowerAction, { k
       continue;
     }
     const allowed = [...moves.values()].map((m) => grid.cubeToOffset(m.cell));
-    const picked = await pickHexes({ count: 1, allowed, color: 0x2980b9, hint: f("GLOOM.Act.forceHint", { name: target.name ?? "", dir: a.dir === "push" ? "Push" : "Pull", n: String(a.value) }) });
+    const picked = await pickHexes({ count: 1, allowed, color: 0x2980b9, hint: f("GLOOM.Act.forceHint", { name: target.name ?? "", dir: t(`GLOOM.Act.${a.dir}Word`), n: String(a.value) }) });
     const cell = picked?.[0];
     if (!cell) return;
     const move = moves.get(cubeKey(grid.offsetToCube(cell)));

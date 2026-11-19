@@ -857,7 +857,12 @@
       "noTeleport": "No empty space within range.",
       "noToken": "Place this character's token on the scene first.",
       "settingTeleportSight": "Teleport needs line of sight (house rule)",
-      "settingTeleportSightHint": "By the rules, Teleport ignores line of sight (p. 74). Turn this on to offer only spaces the character can see."
+      "settingTeleportSightHint": "By the rules, Teleport ignores line of sight (p. 74). Turn this on to offer only spaces the character can see.",
+      "pierce": "Pierce {n}",
+      "push": "Push {n}",
+      "pull": "Pull {n}",
+      "pushWord": "Push",
+      "pullWord": "Pull"
     },
     "Place": {
       "needHex": "Placing areas needs a scene with a hex grid.",

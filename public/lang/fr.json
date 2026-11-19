@@ -1,0 +1,1182 @@
+{
+  "TYPES": {
+    "Actor": {
+      "mercenary": "Mercenaire",
+      "npc": "PNJ",
+      "company": "Compagnie de mercenaires",
+      "shop": "Boutique"
+    },
+    "Item": {
+      "background": "Antécédent",
+      "perk": "Atout",
+      "skill": "Compétence",
+      "talent": "Talent",
+      "equipment": "Objet",
+      "class": "Classe",
+      "ancestry": "Ascendance",
+      "npcAction": "Action de PNJ",
+      "faction": "Faction",
+      "companyBenefit": "Avantage de compagnie"
+    },
+    "Card": {
+      "modifier": "Carte de modificateur"
+    },
+    "RegionBehavior": {
+      "trap": "Piège (Gloomhaven)",
+      "hazard": "Terrain dangereux (Gloomhaven)"
+    }
+  },
+  "GLOOM": {
+    "Sheet": {
+      "mercenary": "Fiche de mercenaire",
+      "background": "Fiche d'antécédent",
+      "perk": "Fiche d'atout",
+      "item": "Fiche d'objet GloomFoundry",
+      "npc": "Fiche de PNJ",
+      "company": "Fiche de compagnie",
+      "shop": "Boutique Gloomhaven"
+    },
+    "Attribute": {
+      "cunning": {
+        "label": "Ruse",
+        "abbr": "RU"
+      },
+      "finesse": {
+        "label": "Finesse",
+        "abbr": "FI"
+      },
+      "grit": {
+        "label": "Cran",
+        "abbr": "CR"
+      },
+      "intuition": {
+        "label": "Intuition",
+        "abbr": "IN"
+      },
+      "logic": {
+        "label": "Logique",
+        "abbr": "LO"
+      },
+      "understanding": {
+        "label": "Compréhension",
+        "abbr": "CO"
+      }
+    },
+    "Mercenary": {
+      "pronouns": "Pronoms",
+      "player": "Joueur·se",
+      "ancestry": "Ascendance",
+      "className": "Classe",
+      "level": "Niveau",
+      "hp": "PV",
+      "gold": "Or",
+      "attributes": "Attributs",
+      "personalGoal": "Quête personnelle",
+      "biography": "Biographie",
+      "FIELDS": {
+        "level": {
+          "label": "Niveau"
+        },
+        "gold": {
+          "label": "Or"
+        },
+        "biography": {
+          "label": "Biographie"
+        }
+      },
+      "attributeMax": "max",
+      "hpFromClass": "Fixés par la courbe de vie de la classe et votre niveau."
+    },
+    "Card": {
+      "bless": "Bénédiction",
+      "curse": "Malédiction",
+      "critical": "Critique",
+      "null": "Nul"
+    },
+    "Deck": {
+      "title": "Paquet de modificateurs",
+      "gmDeck": "Paquet de modificateurs du MJ",
+      "folderName": "Paquets de modificateurs",
+      "drawPileName": "{name} — Paquet de modificateurs",
+      "discardPileName": "{name} — Défausse",
+      "remaining": "Cartes restant dans le paquet",
+      "discarded": "Cartes dans la défausse",
+      "reshufflePending": "Un Critique ou un Nul a été tiré : le paquet sera remélangé à la fin du round",
+      "reshuffle": "Remélanger",
+      "rebuild": "Reconstruire",
+      "rebuildConfirm": "Reconstruire ce paquet de modificateurs à partir du paquet de base et de vos atouts cochés ? La défausse est remélangée dedans. Les cartes Bénédiction et Malédiction sont conservées.",
+      "clearTemporary": "Retirer Bénédiction/Malédiction",
+      "open": "Ouvrir",
+      "recent": "Tirées récemment",
+      "notReady": "Ce paquet de modificateurs n'a pas encore été créé. Un MJ doit être connecté pour le créer.",
+      "create": "Créer le paquet"
+    },
+    "Draw": {
+      "draw": "Tirer",
+      "tie": "Les deux cartes sont équivalentes mais leurs effets diffèrent : le MJ décide laquelle s'applique."
+    },
+    "Mode": {
+      "label": "Tirage",
+      "normal": "Normal",
+      "advantage": "Avantage",
+      "disadvantage": "Désavantage"
+    },
+    "Test": {
+      "title": "Test d'attribut",
+      "titleAttr": "Test de {attr}",
+      "chatTitle": "Test de {attr}",
+      "generic": "Attribut",
+      "attribute": "Attribut",
+      "score": "Score",
+      "bonus": "Bonus",
+      "bonusHint": "Autres modificateurs.",
+      "background": "Antécédent",
+      "total": "Total",
+      "tn": "Seuil",
+      "tnHidden": "Caché",
+      "clickToTest": "Cliquer pour tester cet attribut",
+      "resistTitle": "Résister à {condition}",
+      "resistChatTitle": "Résister à {condition} ({attr})",
+      "resistBackgroundHint": "Résister coûte un antécédent, qui ne donne aucun bonus ici.",
+      "skill": "Compétence",
+      "skillHint": "Épuisez une compétence prête pour ajouter la moitié de son niveau (arrondie au supérieur). Expliquez en quoi elle aide !",
+      "razorsEdge": "Sur le fil du rasoir",
+      "razorsEdgeHint": "Une compétence épuisée lors d'un test « sur le fil du rasoir » donne aussi l'avantage."
+    },
+    "Outcome": {
+      "criticalSuccess": "Réussite critique",
+      "success": "Réussite",
+      "failure": "Échec",
+      "criticalFailure": "Échec critique"
+    },
+    "Attack": {
+      "title": "Attaque",
+      "chatTitle": "Attaque",
+      "base": "Attaque de base",
+      "bonus": "Bonus d'attaque",
+      "bonusHint": "Somme des effets +X / -X attaque (par ex. +1 si la cible est empoisonnée).",
+      "value": "Valeur d'attaque",
+      "shield": "Bouclier de la cible",
+      "ward": "La cible a Garde",
+      "wardHint": "Divise les dégâts par deux, réduction arrondie au supérieur. Appliquée en dernier, après le Bouclier.",
+      "damage": "{damage} dégâts",
+      "nullHit": "Touché, mais aucun dégât",
+      "effect": "Effet de la carte",
+      "target": "Cible",
+      "poisoned": "La cible est empoisonnée",
+      "poisonedHint": "+1 attaque, appliqué avec les autres bonus d'attaque."
+    },
+    "Background": {
+      "plural": "Antécédents",
+      "none": "Aucun antécédent pour l'instant.",
+      "expended": "Épuisé",
+      "toggleExpended": "Épuisé / disponible",
+      "categoryLabel": "Catégorie",
+      "category": {
+        "occupation": "Métier",
+        "origin": "Origine",
+        "social": "Social"
+      },
+      "master": "Métier de maître (+2)",
+      "prerequisite": "Prérequis",
+      "bonusHint": "Épuiser pour ajouter à un test d'attribut :",
+      "create": "Ajouter un antécédent"
+    },
+    "Item": {
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "new": "Nouveau : {type}",
+      "create": "Créer",
+      "post": "Montrer dans le chat",
+      "level": "Niveau",
+      "levelShort": "N",
+      "initiative": "Initiative",
+      "description": "Description",
+      "classOwner": "Classe",
+      "ancestryOwner": "Ascendance",
+      "ownerHint": "Nom exact de la classe (ou de l'ascendance) à laquelle ceci appartient. La fenêtre de montée de niveau le propose aux personnages de cette classe."
+    },
+    "Rest": {
+      "title": "Repos",
+      "quickBreath": "Reprise de souffle",
+      "quickBreathHint": "Fin de scène : épuisez éventuellement les compétences restantes pour soigner 3 chacune, puis récupérez les pouvoirs et antécédents épuisés, et retirez les états.",
+      "quickBreathDone": "{name} reprend son souffle.",
+      "fullRest": "Repos complet",
+      "fullRestHint": "Récupère tous les PV et tous les pouvoirs (même perdus), retire les états et les Bénédictions/Malédictions, puis choisissez vos compétences.",
+      "fullRestDone": "{name} prend un repos complet.",
+      "quickBreathPrompt": "Il vous reste {count} compétence(s) prête(s). Vous pouvez les épuiser pour soigner 3 chacune avant de récupérer.",
+      "healWithSkills": "Les épuiser : soigner {amount}",
+      "justRecover": "Récupérer seulement"
+    },
+    "Notify": {
+      "noGM": "Un MJ doit être connecté pour faire cela.",
+      "notDeckOwner": "Ce paquet de modificateurs ne vous appartient pas.",
+      "deckEmpty": "Pas assez de cartes dans le paquet de modificateurs.",
+      "capReached": "Nombre maximum de cartes {kind} atteint (6)."
+    },
+    "Settings": {
+      "cardFace": {
+        "name": "Faces des cartes de modificateur",
+        "hint": "Comment les cartes de modificateur s'affichent pour vous : faces façon Gloomhaven, ou la carte à jouer correspondante (pour les tables qui utilisent un jeu de cartes classique).",
+        "gloomhaven": "Gloomhaven",
+        "playing": "Cartes à jouer"
+      },
+      "mercenaryCount": {
+        "name": "Mercenaires présents (M)",
+        "hint": "Sert aux caractéristiques des némésis et aux maximums de Menace. 0 = compter les mercenaires appartenant à des joueurs."
+      }
+    },
+    "Perk": {
+      "plural": "Atouts",
+      "new": "Nouvel atout",
+      "create": "Ajouter un atout",
+      "none": "Aucun atout pour l'instant. Ajoutez-en un et saisissez ses cartes depuis la liste d'atouts de votre classe.",
+      "namePlaceholder": "Nom de l'atout",
+      "description": "Aide-mémoire",
+      "descriptionPlaceholder": "par ex. Remplacer un −1 par un +0 Blessure",
+      "codesHint": "Chaque bloc ci-dessous est une case de l'atout. Écrivez les cartes en codes de cartes à jouer : 7♥ ou 7H, 10S, AC, RJ / BJ pour les jokers. Séparez plusieurs cartes par des espaces ou des +.",
+      "box": "Case",
+      "remove": "Retirer",
+      "add": "Ajouter",
+      "attack": "Attaque",
+      "attribute": "Attribut",
+      "effect": "Effet",
+      "effectPlaceholder": "par ex. Blessure",
+      "addCard": "Ajouter une carte",
+      "addStep": "Ajouter une case",
+      "duplicateStep": "Dupliquer cette case",
+      "deleteStep": "Supprimer cette case",
+      "deleteCard": "Retirer cette carte",
+      "attackKind": {
+        "number": "Modificateur",
+        "critical": "Critique ×2",
+        "null": "Nul"
+      },
+      "issue": {
+        "invalidCode": "{perk} (case {box}) : « {code} » n'est pas un code de carte valide.",
+        "missingCard": "{perk} (case {box}) : {code} n'est pas dans le paquet et ne peut donc pas être retirée.",
+        "duplicateCard": "{perk} (case {box}) : {code} est déjà dans le paquet. Les tables qui utilisent un jeu de cartes classique ne peuvent pas l'avoir en double."
+      },
+      "import": {
+        "title": "Importer des atouts",
+        "hint": "Choisissez un fichier JSON d'atouts (le fichier d'une classe, par exemple). Les atouts dont le nom existe déjà sur ce mercenaire sont ignorés."
+      },
+      "taken": "pris :"
+    },
+    "Condition": {
+      "plural": "États",
+      "resist": "Résister : testez cet attribut en épuisant un antécédent (il ne donne aucun bonus). Seuil = déplacement + attaque de l'ennemi.",
+      "bless": {
+        "name": "Bénédiction",
+        "hint": "Mélange une carte Bénédiction dans le paquet de modificateurs (max 6). Elle compte comme un Critique."
+      },
+      "curse": {
+        "name": "Malédiction",
+        "hint": "Mélange une carte Malédiction dans le paquet de modificateurs (max 6). Elle compte comme un Nul. Testez CO pour résister."
+      },
+      "invisible": {
+        "name": "Invisibilité",
+        "hint": "Les ennemis ne peuvent pas vous cibler, et les jetons adverses (Amical contre Hostile) ne voient pas votre jeton. Combat : jusqu'à la fin de votre prochain tour. Exploration : jusqu'à la fin de la scène."
+      },
+      "regenerate": {
+        "name": "Régénération",
+        "hint": "Soigne 1 au début de chacun de vos tours, avant Blessure. Dure jusqu'à ce que vous subissiez des dégâts."
+      },
+      "safeguard": {
+        "name": "Sauvegarde",
+        "hint": "Empêche le prochain état négatif que vous recevriez."
+      },
+      "strengthen": {
+        "name": "Renforcement",
+        "hint": "Vos actions ont l'avantage. Combat : jusqu'à la fin de votre prochain tour. Exploration : une action."
+      },
+      "ward": {
+        "name": "Garde",
+        "hint": "Divise par deux les prochains dégâts que vous subissez (réduction arrondie au supérieur), appliquée après tout le reste."
+      },
+      "immobilize": {
+        "name": "Immobilisation",
+        "hint": "Vous ne pouvez pas effectuer de capacité de déplacement (les déplacements forcés fonctionnent toujours). Combat : jusqu'à la fin de votre prochain tour. Testez FI pour résister."
+      },
+      "muddle": {
+        "name": "Confusion",
+        "hint": "Vos actions ont le désavantage. Combat : jusqu'à la fin de votre prochain tour. Testez LO pour résister."
+      },
+      "pacify": {
+        "name": "Pacification",
+        "hint": "Vous ne pouvez pas effectuer de capacité d'attaque. Combat : jusqu'à la fin de votre prochain tour. Testez IN pour résister."
+      },
+      "poison": {
+        "name": "Poison",
+        "hint": "Les attaques qui vous ciblent gagnent +1 attaque. Dure jusqu'à ce que vous soyez soigné·e (le soin retire seulement le Poison) ou jusqu'à la fin de la scène. Testez RU pour résister."
+      },
+      "stun": {
+        "name": "Étourdissement",
+        "hint": "Vous ne pouvez utiliser aucun objet ni effectuer aucune capacité. Combat : jusqu'à la fin de votre prochain tour. Testez CR pour résister (au lieu d'une action)."
+      },
+      "wound": {
+        "name": "Blessure",
+        "hint": "Subissez 1 dégât au début de chacun de vos tours (chaque minute en exploration). Dure jusqu'à un soin ou la fin de la scène. Testez CR pour résister."
+      },
+      "unconscious": {
+        "name": "Inconscient",
+        "hint": "À 0 PV : vous ne pouvez pas agir avant d'être soigné·e ou un repos complet."
+      },
+      "dead": {
+        "name": "Mort",
+        "hint": ""
+      },
+      "invisibleTarget": "{name} est invisible : les ennemis ne peuvent pas le cibler."
+    },
+    "Tab": {
+      "character": "Personnage",
+      "powers": "Pouvoirs",
+      "inventory": "Inventaire",
+      "progression": "Progression",
+      "story": "Histoire",
+      "overview": "Aperçu",
+      "statblock": "Profil",
+      "notes": "Notes",
+      "benefits": "Avantages",
+      "stock": "Étalage",
+      "sell": "Vendre",
+      "description": "Description",
+      "stash": "Inventaire partagé"
+    },
+    "Power": {
+      "primary": "Action principale",
+      "secondary": "Action secondaire",
+      "use": "Utiliser (montrer dans le chat, puis épuiser ou perdre)",
+      "recover": "Récupérer",
+      "lostOnUse": "Perdue après utilisation (au lieu d'épuisée)",
+      "stateLabel": "État",
+      "state": {
+        "ready": "Prête",
+        "expended": "Épuisée",
+        "lost": "Perdue",
+        "active": "Active"
+      }
+    },
+    "Skill": {
+      "sourceLabel": "Source",
+      "source": {
+        "class": "Classe",
+        "ancestry": "Ascendance"
+      },
+      "bonus": "Bonus de test",
+      "flavor": "Texte d'ambiance",
+      "prepared": "Dans la sélection actuelle (choisie lors d'un repos complet)",
+      "classSkills": "Compétences de classe",
+      "ancestrySkills": "Compétences d'ascendance",
+      "loadout": "sélection",
+      "none": "Aucune compétence pour l'instant.",
+      "healWith": "Épuiser pour soigner 3 (action secondaire de base)",
+      "negate": "Perdre pour annuler tous les dégâts d'une source",
+      "negated": "{name} perd {skill} pour annuler tous les dégâts d'une source.",
+      "legend": "Marque-page = dans votre sélection (2 d'ascendance + 4 de classe, choisies à chaque repos complet). Cliquez sur un nom pour le montrer dans le chat. Les compétences épuisées reviennent à la fin de la scène (reprise de souffle), les perdues lors d'un repos complet."
+    },
+    "Talent": {
+      "plural": "Talents",
+      "none": "Aucun talent pour l'instant.",
+      "kindLabel": "Type",
+      "kind": {
+        "active": "Actif",
+        "passive": "Passif"
+      },
+      "replaces": "Remplace",
+      "passiveEffect": "Effet passif"
+    },
+    "Equipment": {
+      "slotLabel": "Emplacement",
+      "slot": {
+        "head": "Tête",
+        "body": "Corps",
+        "hand": "Main",
+        "feet": "Pieds",
+        "small": "Petit objet",
+        "none": "Autres objets"
+      },
+      "rarityLabel": "Rareté",
+      "rarity": {
+        "common": "Commun",
+        "uncommon": "Peu commun",
+        "rare": "Rare",
+        "masterwork": "Chef-d'œuvre",
+        "legendary": "Légendaire"
+      },
+      "usesMax": "Utilisations",
+      "usesSpent": "Utilisées",
+      "usesLeft": "Utilisations restantes",
+      "perLabel": "Les utilisations reviennent",
+      "per": {
+        "round": "Chaque round",
+        "scene": "Chaque scène",
+        "rest": "Repos complet"
+      },
+      "cost": "Coût (po)",
+      "space": "Place dans l'inventaire",
+      "quantity": "Quantité",
+      "equipped": "Équipé",
+      "consumable": "Consommable",
+      "crafting": "Artisanat",
+      "effect": "Effet",
+      "hands": "Emplacements de main utilisés",
+      "smallSlots": "Emplacements de petit objet en plus"
+    },
+    "Class": {
+      "hpTrackLabel": "Vie",
+      "hpTrack": {
+        "low": "Faible (6–14 PV)",
+        "medium": "Moyenne (8–20 PV)",
+        "high": "Élevée (10–26 PV)"
+      },
+      "attributes": "Points d'attribut accordés",
+      "startingGear": "Équipement de départ",
+      "specialMechanics": "Mécaniques spéciales"
+    },
+    "Ancestry": {
+      "traditionalClasses": "Classes traditionnelles"
+    },
+    "Grants": {
+      "title": "Objets accordés",
+      "dropHint": "Déposez ici des talents, compétences, atouts ou autres objets, ou importez un fichier JSON (par ex. le fichier d'atouts de cette classe). Ils sont ajoutés à un mercenaire quand on lui ajoute ceci.",
+      "importTitle": "Importer des objets accordés",
+      "importHint": "Choisissez un fichier JSON d'objets (par exemple le fichier d'atouts d'une classe). Ils seront ajoutés aux objets accordés.",
+      "imported": "{count} objet(s) accordé(s) ajouté(s).",
+      "applied": "{name} : {count} objet(s) ajouté(s).",
+      "onlyOne": "Un mercenaire ne peut avoir qu'un(e) seul(e) {type}. Retirez d'abord l'actuel(le).",
+      "removeTitle": "Retirer les objets accordés ?",
+      "removeConfirm": "Supprimer aussi les objets que {name} a accordés à ce mercenaire ?"
+    },
+    "Progression": {
+      "title": "Classe et ascendance",
+      "dropClass": "Glissez un objet Classe ici (ou sur la fiche).",
+      "dropAncestry": "Glissez un objet Ascendance ici (ou sur la fiche).",
+      "levelHint": "À chaque niveau : 1 atout, 1 point d'attribut, plus de PV. Niveaux 2, 4, 6, 8, 9 : une nouvelle compétence de classe. Niveaux 3 et 7 : un talent passif et une compétence d'ascendance. Niveau 5 : amélioration des talents actifs et une nouvelle compétence de classe."
+    },
+    "Import": {
+      "title": "Importer des objets",
+      "hint": "Choisissez un fichier JSON d'objets. Les objets dont le nom existe déjà sur ce mercenaire sont ignorés.",
+      "fromServer": "Depuis les fichiers Foundry / Forge",
+      "fromComputer": "Depuis mon ordinateur",
+      "nothing": "Ce fichier ne contient rien à importer ici.",
+      "done": "{count} objet(s) importé(s), {skipped} déjà présent(s) ignoré(s).",
+      "failed": "Import impossible : {error}"
+    },
+    "Heal": {
+      "healed": "{name} est soigné·e de {amount}.",
+      "poisonRemoved": "{name} est soigné·e : le Poison est retiré au lieu de soigner des dégâts."
+    },
+    "Side": {
+      "switch": "Changer de camp (Amical ⇄ Hostile)",
+      "hostile": "Hostile",
+      "friendly": "Amical",
+      "neutral": "Neutre",
+      "nowHostile": "{name} est maintenant hostile.",
+      "nowFriendly": "{name} est maintenant amical."
+    },
+    "Npc": {
+      "categoryLabel": "Catégorie",
+      "category": {
+        "normal": "Normal",
+        "elite": "Élite",
+        "adversary": "Adversaire",
+        "nemesis": "Némésis"
+      },
+      "level": "Niveau (NC)",
+      "threat": "Menace",
+      "move": "Déplacement",
+      "attack": "Attaque",
+      "initiative": "Initiative",
+      "tactics": "Tactique",
+      "modeLabel": "Caractéristiques",
+      "mode": {
+        "table": "Profil (selon le NC)",
+        "manual": "Manuel"
+      },
+      "adversaryBoost": "Bonus d'adversaire",
+      "boost": {
+        "move": "Déplacement +25 %",
+        "attack": "Attaque +25 %"
+      },
+      "stuntPool": "Réserve de prouesses (némésis)",
+      "columnsTitle": "Colonnes d'attributs (la paire imprimée au-dessus de Déplacement et Attaque partage leur valeur)",
+      "column": {
+        "move": "Colonne Déplacement",
+        "attack": "Colonne Attaque",
+        "other": "Autre"
+      },
+      "markersDefense": "Marqueurs DFNS (ce que ■ / ▣ signifient pour cette variante)",
+      "markersOffense": "Marqueurs OFNS (ce que ✦ / ⊕ signifient pour cette variante)",
+      "summonOf": "invocation de",
+      "summonHint": "Déposez un mercenaire sur cette fiche pour en faire son invocation (elle tire alors dans son paquet).",
+      "clearController": "Ce n'est plus une invocation",
+      "printedNemesis": "Némésis imprimée (le tableau contient les valeurs finales ; PV et Menace sont par mercenaire, ×M)"
+    },
+    "NpcAction": {
+      "plural": "Actions",
+      "new": "Nouvelle action",
+      "none": "Aucune action pour l'instant.",
+      "fast": "Rapide",
+      "normal": "Normale",
+      "slow": "Lente",
+      "kindLabel": "Genre",
+      "kind": {
+        "action": "Action",
+        "break": "Rupture",
+        "stunt": "Prouesse"
+      },
+      "eliteOnly": "Élite seulement (jaune)",
+      "nemesisOnly": "Action unique de némésis",
+      "basicHint": "Tout ennemi peut à la place faire Déplacement −1 et interagir, ou Déplacement +0 et lancer une opposition (CR contre CR, RU contre RU, RU contre LO), à n'importe quelle vitesse."
+    },
+    "Threat": {
+      "label": "Menace",
+      "refresh": "Recompter",
+      "mercenariesHint": "Mercenaires présents (M). Réglez-le dans les paramètres du système, ou laissez 0 pour compter les mercenaires des joueurs.",
+      "clHint": "Niveau de campagne : la moitié du niveau moyen des mercenaires, arrondie au supérieur.",
+      "challengeHint": "Tableau de défi de combat pour ce NC.",
+      "trap": "pièges",
+      "hazard": "danger",
+      "sceneHint": "Jetons de PNJ hostiles avec des PV sur cette scène",
+      "difficulty": {
+        "easy": "Facile",
+        "normal": "Normal",
+        "hard": "Difficile",
+        "deadly": "Mortel",
+        "beyond": "Au-delà de mortel"
+      }
+    },
+    "Element": {
+      "air": "Air",
+      "dark": "Ténèbres",
+      "earth": "Terre",
+      "fire": "Feu",
+      "ice": "Glace",
+      "light": "Lumière",
+      "state": {
+        "0": "Inerte",
+        "1": "Déclinant",
+        "2": "Fort"
+      },
+      "pending": "fort à la fin de ce tour",
+      "hint": "Clic : infuser · Clic droit : consommer · MJ Maj-clic : faire défiler"
+    },
+    "Speed": {
+      "fast": "Rapide",
+      "normal": "Normale",
+      "slow": "Lente"
+    },
+    "Plan": {
+      "title": "Planifier le round : {name}",
+      "confirm": "Prêt",
+      "basic": "Action de base / aucune",
+      "hint": "Choisissez une action principale et une action secondaire venant de deux pouvoirs différents (talents, compétences prêtes, objets avec une action). Votre initiative est celle de l'un des deux pouvoirs. Les compétences choisies ici sont épuisées (ou perdues) à la fin de votre tour, même si vous ne les utilisez pas.",
+      "initiativeFrom": "Initiative de",
+      "custom": "Autre initiative",
+      "samePower": "Les actions principale et secondaire doivent venir de deux pouvoirs différents.",
+      "noInitiative": "Choisissez un pouvoir qui a une initiative, ou saisissez-en une.",
+      "ready": "{name} est prêt·e (initiative {initiative}).",
+      "enemiesTitle": "Vitesse des ennemis",
+      "enemiesHint": "Choisissez la vitesse d'initiative de chaque type d'ennemi. Un type ne peut pas reprendre la vitesse du round précédent. Les élites agissent avant les normaux de leur type.",
+      "lastSpeed": "round précédent :",
+      "noEnemies": "Aucun personnage contrôlé par le MJ dans ce combat.",
+      "barTitle": "Planifier ce round : choisissez P (principale) et S (secondaire) sur vos pouvoirs",
+      "lockedAt": "Validé à",
+      "pickHint": "choisir un pouvoir",
+      "useInitiative": "Utiliser l'initiative de ce pouvoir",
+      "lockIn": "Valider"
+    },
+    "Combat": {
+      "phase": {
+        "planning": "Phase de planification",
+        "action": "Phase d'action"
+      },
+      "planTurn": "Planifier mon tour",
+      "startAction": "Lancer la phase d'action",
+      "unplanned": "Ces personnages n'ont pas encore planifié : {names}. Lancer quand même ?",
+      "roundTitle": "Round {round}",
+      "planningHint": "Phase de planification : les mercenaires choisissent leurs actions et leur initiative, le MJ choisit la vitesse des ennemis, puis le MJ lance la phase d'action.",
+      "expired": "{name} : {conditions} terminé(s).",
+      "stunned": "{name} est étourdi·e et ne peut pas agir.",
+      "surprise": "Surprise",
+      "surpriseHint": "Cochez les personnages surpris : ils ne peuvent pas agir au premier round (p. 72).",
+      "surprisedTag": "Surpris : ne peut pas agir ce round",
+      "surprisedSkip": "{name} est surpris·e et ne peut pas agir ce round."
+    },
+    "Damage": {
+      "suffered": "{name} subit {amount} dégât(s).",
+      "applyTo": "Infliger {amount} dégât(s) à {name}",
+      "applySelected": "Infliger {amount} dégât(s) aux jetons sélectionnés",
+      "noTarget": "Sélectionnez ou ciblez d'abord un jeton."
+    },
+    "IconPack": {
+      "title": "Pack d'icônes",
+      "menuLabel": "Choisir un pack d'icônes",
+      "menuHint": "Remplacer les icônes du système (états, éléments, faces des cartes de modificateur) par les vôtres, depuis un manifeste JSON dans vos données Foundry ou vos fichiers Forge.",
+      "hint": "Choisissez le manifeste d'un pack d'icônes (iconpack.json). Ses chemins sont relatifs au manifeste. La page se recharge après un changement.",
+      "current": "Pack actuel :",
+      "none": "aucun",
+      "load": "Choisir un manifeste",
+      "clear": "Utiliser les icônes par défaut",
+      "loaded": "Pack d'icônes chargé : {count} icônes.",
+      "cleared": "Icônes par défaut rétablies."
+    },
+    "Content": {
+      "title": "Importer du contenu",
+      "menuLabel": "Importer du contenu dans des compendiums",
+      "menuHint": "Créer des compendiums de monde (classes, ascendances, antécédents, bestiaire) à partir de l'index.json de votre propre dossier de contenu, et charger son pack d'icônes.",
+      "hint": "Choisissez l'index.json de votre dossier de contenu (données Foundry ou fichiers Forge). Les compendiums Gloomhaven existants sont vidés et remplis à nouveau. Si l'index nomme un pack d'icônes, il est chargé et la page se recharge.",
+      "last": "Dernier import :",
+      "again": "Importer à nouveau",
+      "pick": "Choisir index.json",
+      "importing": "Import de {label}…",
+      "done": "Contenu importé : {count} documents.",
+      "folder": {
+        "talents": "Talents",
+        "skills": "Compétences",
+        "perks": "Atouts",
+        "equipment": "Équipement",
+        "level": "Niveau {level}",
+        "occupation": "Métiers",
+        "master": "Métiers de maître",
+        "origin": "Origines",
+        "social": "Social",
+        "other": "Autres"
+      }
+    },
+    "Creation": {
+      "title": "Créer un mercenaire",
+      "titleFor": "Créer un mercenaire : {name}",
+      "newMercenary": "Nouveau mercenaire",
+      "openWizard": "Création de personnage",
+      "world": "Objets du monde",
+      "defaultName": "Nouveau mercenaire",
+      "step": {
+        "identity": "Identité",
+        "ancestry": "Ascendance",
+        "class": "Classe",
+        "faction": "Faction",
+        "attributes": "Attributs",
+        "backgrounds": "Antécédents",
+        "inventory": "Inventaire de départ",
+        "quest": "Quête personnelle",
+        "review": "Récapitulatif"
+      },
+      "hint": {
+        "identity": "Nommez votre mercenaire. Cliquez sur le portrait pour choisir une image.",
+        "ancestry": "Votre ascendance définit vos origines et vous donne ses compétences de niveau 1.",
+        "class": "Votre classe vous donne des points d'attribut, une courbe de vie, ses talents et ses compétences de niveau 1, et ses atouts.",
+        "faction": "Votre faction est l'organisation à laquelle vous devez allégeance. Vous commencez au",
+        "attributes": "Après les points de votre classe, répartissez 6 points entre les six attributs. Aucun attribut ne peut dépasser 3.",
+        "backgrounds": "Choisissez 4 antécédents. Le choix habituel est 1 métier, 1 origine et 2 sociaux, mais tout mélange est permis. Les métiers de maître s'obtiennent en jeu.",
+        "inventory": "Prenez l'équipement de départ de votre classe, ou achetez pour 50 po d'équipement commun. Vos armes et votre équipement de base sont supposés acquis et ne demandent pas d'objet.",
+        "quest": "Un objectif qui, une fois atteint, permet à votre mercenaire de prendre sa retraite. Voyez grand et personnel."
+      },
+      "category": {
+        "occupation": "Métier",
+        "origin": "Origine",
+        "social": "Social"
+      },
+      "grants": "Donne :",
+      "tier": "Rang",
+      "pickImage": "Choisir un portrait",
+      "pointsLeft": "Points restants :",
+      "fromClass": "Classe",
+      "assigned": "Attribués",
+      "total": "Total",
+      "startingGear": "Équipement de départ de la classe",
+      "shop": "Acheter de l'équipement commun",
+      "spent": "Dépensé :",
+      "gearTextOnly": "Cette classe n'a pas encore d'objets de départ dans ses données : ajoutez-les à la fiche à la main.",
+      "noContent": "Aucune ascendance ni classe trouvée. Importez votre contenu (Paramètres > Importer du contenu) ou créez d'abord des objets Ascendance et Classe.",
+      "noFactions": "Aucune faction trouvée dans vos objets ou compendiums. Vous pouvez passer cette étape.",
+      "back": "Retour",
+      "next": "Suivant",
+      "finish": "Créer le mercenaire",
+      "incomplete": "Certaines étapes sont incomplètes. Créer le mercenaire quand même ?",
+      "done": "{name} est prêt·e.",
+      "failed": "La création de personnage a échoué : {error}",
+      "issue": {
+        "name": "Saisissez un nom.",
+        "ancestry": "Choisissez une ascendance.",
+        "class": "Choisissez une classe.",
+        "faction": "Choisissez une faction.",
+        "points": "Encore {n} point(s) d'attribut à attribuer.",
+        "backgrounds": "{n} antécédent(s) choisi(s) sur {max}.",
+        "tooManyBackgrounds": "Vous avez déjà {max} antécédents : retirez-en un d'abord.",
+        "overBudget": "Vos achats coûtent plus que votre budget.",
+        "quest": "Écrivez une quête personnelle.",
+        "legendary": "Choisissez votre objet légendaire gratuit."
+      },
+      "startLevel": "Niveau de départ",
+      "retired": "Mercenaires retraités (quête personnelle accomplie)",
+      "startTable": "{levelUps} montée(s) de niveau après la création (compétences, talents, points d'attribut, PV), {backgrounds} antécédents, rang {tier} dans la faction, +{gold} po pour de l'équipement jusqu'à {rarity}.",
+      "extraPerks": "Vous choisissez {n} case(s) d'atout en plus juste après la création.",
+      "extraPerksTitle": "Choisissez {n} atout(s) en plus",
+      "tooManyPerks": "Choisissez au plus {n} case(s) d'atout.",
+      "retirementTitle": "Avantages de retraite (cumulatifs)",
+      "retirement": {
+        "perk": "1re : 1 atout en plus",
+        "background": "2e : 1 antécédent en plus, de n'importe quelle catégorie",
+        "attributePoint": "3e : 1 point d'attribut en plus",
+        "skillTrade": "4e : échanger une compétence de niveau 1 contre une compétence de niveau 2",
+        "legendaryItem": "5e : un objet légendaire gratuit"
+      },
+      "extraGold": "Départ à plus haut niveau : +{gold} po à dépenser en équipement jusqu'à {rarity} (le reste est conservé).",
+      "tradeHint": "Quatrième avantage de retraite : abandonnez une compétence de classe de niveau 1 pour une compétence de classe de niveau 2.",
+      "tradeGive": "Abandonner",
+      "tradeTake": "Prendre"
+    },
+    "Faction": {
+      "plural": "Factions",
+      "major": "Faction majeure",
+      "tierLabel": "Rang",
+      "member": "Membre",
+      "active": "Bénéfices pour cette mission",
+      "activeHint": "Avec une réputation positive dans plusieurs factions, choisissez au début de chaque mission celle dont les bénéfices s'appliquent.",
+      "tier": {
+        "hostile": "Hostile",
+        "neutral": "Neutre",
+        "positive": "Positive",
+        "novice": "Membre novice",
+        "junior": "Membre confirmé",
+        "senior": "Membre éminent"
+      },
+      "successes": "Réussites",
+      "failures": "Échecs",
+      "requestSuccess": "Requête réussie",
+      "requestFailure": "Requête échouée",
+      "tiers": "Rangs",
+      "boons": "Faveurs",
+      "benefits": "Bénéfices actuels",
+      "none": "Aucune faction pour l'instant : glissez-en une depuis un compendium.",
+      "rose": "{name} monte au rang {tier} auprès de {faction}.",
+      "fell": "{name} descend au rang {tier} auprès de {faction}.",
+      "nonMember": "Pas membre : les requêtes ne changent pas le rang (on rejoint via une requête de faction).",
+      "progress": "{s}/{need} réussites pour monter · {f}/{limit} échecs pour descendre"
+    },
+    "LevelUp": {
+      "title": "Montée de niveau",
+      "titleFor": "Montée de niveau : {name}",
+      "button": "Monter de niveau",
+      "attribute": "1 point d'attribut",
+      "perk": "1 atout",
+      "classSkill": "1 nouvelle compétence de classe",
+      "passiveTalent": "1 nouveau talent passif",
+      "ancestrySkill": "1 nouvelle compétence d'ascendance",
+      "upgrades": "Talents actifs améliorés",
+      "initiative": "Initiative",
+      "details": "Détails",
+      "noPerks": "Plus aucune case d'atout. Votre MJ peut vous donner une autre récompense.",
+      "noOptions": "Aucune option trouvée dans votre monde ou vos compendiums (importez d'abord votre contenu).",
+      "noClass": "Ce mercenaire n'a pas d'objet Classe : ses PV ne suivront pas de courbe de vie.",
+      "atMax": "Ce mercenaire est déjà au niveau maximum (9).",
+      "incomplete": "Il manque des choix. Monter de niveau quand même ?",
+      "confirm": "Monter de niveau",
+      "reached": "{name} atteint le niveau {level} !",
+      "gained": "Nouveaux pouvoirs : {list}."
+    },
+    "Controls": {
+      "title": "Gloomhaven",
+      "select": "Sélectionner des jetons",
+      "levelUp": "Autoriser la montée de niveau (affiche un bouton Monter de niveau sur les fiches de mercenaire)"
+    },
+    "PerkText": {
+      "replace": "Remplacer {removed} par {added}.",
+      "remove": "Retirer {removed}.",
+      "add": "Ajouter {added}.",
+      "card": "{n} carte {card}",
+      "cards": "{n} cartes {card}",
+      "and": " et ",
+      "count": {
+        "1": "une",
+        "2": "deux",
+        "3": "trois",
+        "4": "quatre"
+      }
+    },
+    "Act": {
+      "attack": "Attaque {n}",
+      "targets": "{n} cibles",
+      "heal": "Soin {n}",
+      "healSelf": "Soin {n}, vous-même",
+      "self": "vous-même",
+      "infuse": "Infuser {list}",
+      "place": "Placer : {what}",
+      "trap": "Placer {n} piège(s) : dégâts {damage} {effects}",
+      "obstacle": "Placer {n} obstacle(s)",
+      "summon": "Placer une invocation",
+      "summonHint": "Choisissez l'invocation à placer, puis cliquez sur un hexagone vide. Elle utilise votre paquet de modificateurs.",
+      "noSummons": "Aucun PNJ trouvé dans le monde ou les compendiums à invoquer.",
+      "chooseElement": "Infuser quel élément ?",
+      "notYours": "Seul·e le ou la propriétaire de ce personnage peut utiliser cette action.",
+      "actions": "Actions",
+      "details": "Détails",
+      "anyElement": "n'importe quel élément",
+      "attackWord": "attaque",
+      "rangeWord": "portée",
+      "targetWord": "cible",
+      "healWord": "soin",
+      "move": "Déplacement",
+      "jump": "Saut",
+      "flying": "vol",
+      "ally": "allié",
+      "choose": "Choisissez-en {n} :",
+      "chooseElementUsed": "Quel élément utilisez-vous ?",
+      "elementInactive": "Pas actif : {list}.",
+      "elementUsed": "Déjà utilisé ce tour par ce personnage : {list} (chaque élément une fois par tour).",
+      "elementCheck": "Vérification des éléments",
+      "useAnyway": "L'utiliser quand même ?",
+      "ifActive": "si {list} actif",
+      "valueX": "Valeur de X",
+      "gain": "Gagner {n} {what}",
+      "anyCounter": "au choix",
+      "play": "Jouer {name}",
+      "give": "Donner {what}",
+      "targetHas": "la cible a {mark}",
+      "perMark": "par {mark} sur la cible",
+      "allyHas": "un allié a {mark}",
+      "requirementTitle": "Condition",
+      "requirementNotMet": "Non remplie : {what}. L'utiliser quand même ?",
+      "whoActs": "Qui l'effectue ?",
+      "performer": {
+        "companion": "Ordre",
+        "summon": "Invocation",
+        "ally": "Allié",
+        "enemy": "Ennemi contrôlé",
+        "self": ""
+      },
+      "space": "Marquer {n} case(s) : {label}",
+      "spend": "dépenser {list}",
+      "notEnough": "Pas assez de jetons : {list}.",
+      "cannotForce": "{name} ne peut pas être déplacé·e là.",
+      "forceHint": "{dir} {n} : cliquez là où {name} arrive (hexagones en surbrillance).",
+      "teleport": "Téléportation {n}",
+      "teleportHint": "Téléportation {n} : cliquez sur une case vide en surbrillance.",
+      "noTeleport": "Aucune case vide à portée.",
+      "noToken": "Placez d'abord le jeton de ce personnage sur la scène.",
+      "settingTeleportSight": "La téléportation demande une ligne de vue (règle maison)",
+      "settingTeleportSightHint": "Selon les règles, la téléportation ignore la ligne de vue (p. 74). Activez ceci pour ne proposer que les cases que le personnage voit.",
+      "pierce": "Perforation {n}",
+      "push": "Poussée {n}",
+      "pull": "Attraction {n}",
+      "pushWord": "Poussée",
+      "pullWord": "Attraction"
+    },
+    "Place": {
+      "needHex": "Placer des zones demande une scène avec une grille hexagonale.",
+      "hint": "Déplacez le curseur pour placer la zone ; molette ou R pour la tourner ; clic pour placer ; clic droit ou Échap pour annuler.",
+      "hintSingle": "Cliquez sur les hexagones à utiliser ; clic droit ou Échap pour annuler.",
+      "trapName": "Piège (dégâts {damage}{effects})",
+      "obstacleName": "Obstacle",
+      "shape": {
+        "cluster": "groupe de {n} cases",
+        "line": "ligne de {n} cases",
+        "adjacent": "{n} cases adjacentes",
+        "circle": "cercle de {n} cases",
+        "cone": "cône",
+        "arc": "arc de {n} cases",
+        "all": "tout à portée {n}"
+      },
+      "clearAreas": "Retirer les zones placées"
+    },
+    "Ability": {
+      "shield": "Bouclier",
+      "retaliate": "Riposte",
+      "taunt": "Provocation",
+      "persistent": "persistant",
+      "retaliateButton": "Riposte {amount} → {name}"
+    },
+    "Mech": {
+      "title": "Classe",
+      "active": "actif",
+      "inactive": "inactif",
+      "none": "aucun",
+      "clear": "Tout effacer",
+      "end": "Terminer",
+      "remove": "Retirer",
+      "markTarget": "Marquer le ou les jetons ciblés",
+      "return": "Remettre dans la réserve",
+      "giveTarget": "Donner à l'allié ciblé (ou à vous-même)",
+      "place": "Placer cette invocation",
+      "missing": "Cette classe n'a pas de mécanique « {id} ».",
+      "counterFull": "{label} : déjà au maximum ({max}).",
+      "played": "{name} est en jeu ({label}).",
+      "ended": "Terminé : {list}.",
+      "gave": "{item} donné à {name}.",
+      "poolEmpty": "{label} : plus rien à donner.",
+      "noSummon": "Aucun PNJ nommé « {name} » dans le monde ou les compendiums (importez le compendium des invocations).",
+      "pool": {
+        "supply": "un objet de ravitaillement",
+        "medicalPack": "une trousse de soins"
+      }
+    },
+    "Mark": {
+      "doom": "Condamnation",
+      "plague": "Peste",
+      "prescription": "Ordonnance",
+      "choose": "Choisir : {mark}"
+    },
+    "State": {
+      "berserk": "Berserk"
+    },
+    "Refresh": {
+      "title": "Actualiser depuis les compendiums",
+      "hint": "Actualiser depuis les compendiums : met à jour la classe, les pouvoirs, les atouts et les objets avec le dernier contenu importé (en gardant leur état)",
+      "confirm": "Mettre à jour chaque objet de ce personnage qui vient d'un compendium (classe, ascendance, pouvoirs, atouts, objets, factions) avec les données actuelles du compendium ? Leur état en jeu (prêt/épuisé, sélection, cases d'atout cochées, quantités, réputation de faction) est conservé.",
+      "done": "{count} objets actualisés."
+    },
+    "Company": {
+      "namePlaceholder": "Nom de la compagnie",
+      "level": "Niveau",
+      "progress": "Vers le niveau suivant",
+      "gainTemporary": "Obtenir un avantage temporaire",
+      "gainTemporaryHint": "La compagnie obtient un avantage temporaire quand le groupe termine une mission, franchit une étape importante de l'histoire, ou qu'un mercenaire prend sa retraite après avoir accompli sa quête personnelle. Cinq avantages temporaires font monter la compagnie de niveau.",
+      "reason": "Pourquoi",
+      "reasons": {
+        "mission": "Mission terminée",
+        "milestone": "Étape de l'histoire",
+        "retirement": "Retraite (quête personnelle)",
+        "level": "Nouveau niveau"
+      },
+      "levelReq": "Niveau {n}+",
+      "noBenefits": "Aucun avantage de compagnie trouvé : importez votre contenu (avantages de compagnie) ou créez des objets Avantage de compagnie.",
+      "gained": "{name} obtient un avantage temporaire : {benefit}.",
+      "levelReached": "{name} atteint le niveau de compagnie {level} !",
+      "choosePermanent": "Choisir un avantage permanent",
+      "choosePermanentHint": "Nouveau niveau de compagnie {level} : choisissez un avantage permanent auquel la compagnie a droit.",
+      "used": "Avantage de compagnie utilisé : {benefit}.",
+      "usedTag": "utilisé",
+      "toggleUsed": "Marquer utilisé / non utilisé",
+      "use": "Utiliser cet avantage",
+      "wardPending": "Tous les membres gagnent Garde au début du prochain combat.",
+      "noMembers": "Ajoutez d'abord des membres à la compagnie (déposez des mercenaires sur sa fiche).",
+      "allyType": "Allié",
+      "allyGuard": "Garde du guet",
+      "allyArcher": "Archer du guet",
+      "allyController": "Contrôlé par",
+      "service": "Service",
+      "servicePlaceholder": "chasse aux monstres, récupération d'objets, escorte...",
+      "district": "Quartier d'attache",
+      "leader": "Chef",
+      "closestFaction": "Faction la plus proche",
+      "members": "Membres",
+      "dropMembers": "Déposez des mercenaires ici pour les ajouter à la compagnie.",
+      "removeMember": "Retirer de la compagnie",
+      "concept": "Concept",
+      "missions": "Comment la compagnie obtient et répartit ses missions",
+      "permanent": "Avantages permanents",
+      "temporary": "Avantages temporaires",
+      "none": "Aucun pour l'instant.",
+      "rulesHint": "Cinq avantages temporaires font monter la compagnie de niveau (max 5) ; chaque nouveau niveau donne un avantage permanent. Les avantages et les niveaux ne se perdent jamais.",
+      "relationships": "Relations",
+      "relationshipsHint": "Répondez aux questions sur la fondation et les relations : le chef, les liens entre mercenaires et avec des groupes extérieurs à la compagnie.",
+      "notes": "Notes",
+      "kind": "Genre",
+      "kinds": {
+        "temporary": "Temporaire",
+        "permanent": "Permanent"
+      },
+      "levelRequired": "Niveau de compagnie requis",
+      "automation": "Automatisation",
+      "amount": "Montant",
+      "automations": {
+        "": "Aucune",
+        "bless": "Une carte Bénédiction pour chaque membre",
+        "gold": "De l'or pour chaque membre",
+        "ward": "Garde au prochain combat",
+        "ally": "Allié du guet",
+        "discountHome": "Remise dans les boutiques du quartier d'attache (%)",
+        "discountCity": "Remise dans les boutiques de Gloomhaven (%)",
+        "discountOnce": "Remise unique en boutique (%)",
+        "missionGold": "Or en plus par mercenaire à chaque mission",
+        "recruitGold": "Or par mercenaire entre les missions"
+      },
+      "newCompany": "Nouvelle compagnie",
+      "autoHint": "Appliqué automatiquement en boutique ou dans les récompenses de Mission terminée."
+    },
+    "Shop": {
+      "prosperity": "Prospérité",
+      "district": "Quartier",
+      "markup": "Variation de prix (%)",
+      "inGloomhaven": "À Gloomhaven",
+      "resell": "Met en vente les objets rachetés",
+      "open": "Ouverte aux joueurs",
+      "closed": "Cette boutique est fermée.",
+      "prosperityLevels": {
+        "1": "village ou marchand ambulant",
+        "2": "gros village, région isolée",
+        "3": "ville établie",
+        "4": "grand port marchand",
+        "5": "Gloomhaven ou une autre grande ville"
+      },
+      "buyer": "Acheter en tant que",
+      "noBuyer": "Vous n'avez aucun mercenaire pour qui acheter.",
+      "restock": "Tirer l'étalage",
+      "dropHint": "Déposez des objets du compendium d'équipement pour les ajouter.",
+      "restockHint": "Tire au hasard des objets qu'une boutique de Prospérité {prosperity} vend (jusqu'à {rarity}) dans les compendiums d'équipement.",
+      "count": "Objets en vente",
+      "replace": "Remplacer l'étalage actuel",
+      "basics": "Proposer aussi tous les objets de base communs",
+      "categories": "Catégories",
+      "restocked": "{n} objets mis en vente.",
+      "empty": "Rien en vente.",
+      "stock": "En stock",
+      "buy": "Acheter",
+      "sell": "Vendre",
+      "legendary": "Les objets légendaires ne se vendent jamais en boutique.",
+      "soldOut": "Épuisé.",
+      "levelGate": "Les objets {rarity} demandent un niveau plus élevé (Rare : niveau 4, Chef-d'œuvre : niveau 7).",
+      "notEnoughGold": "Pas assez d'or.",
+      "gmOverride": "(MJ : vous pouvez le vendre quand même.)",
+      "buyTitle": "Acheter {item}",
+      "buyPrompt": "{buyer} achète {item} (a {gold} po).",
+      "quantity": "Quantité",
+      "useOnce": "Utiliser {name} (−{n} %, une fois)",
+      "unitPrice": "Prix : {n} po pièce (arrondi au supérieur pour l'achat entier).",
+      "sellTitle": "Vendre {item}",
+      "sellPrompt": "Vendre {item} pour {n} po ?",
+      "sellEach": "La moitié du coût : {n} po pièce (arrondi à l'inférieur).",
+      "sellHint": "Les objets se revendent à la moitié de leur coût (p. 93).",
+      "nothingToSell": "Aucun objet à vendre.",
+      "bought": "{buyer} achète {n}× {item} pour {gold} po chez {shop}.",
+      "sold": "{seller} vend {n}× {item} pour {gold} po à {shop}.",
+      "rarityMarkupHint": "Plus rare que ce que cette boutique vend d'habitude : +10 po par niveau de Prospérité manquant (p. 269).",
+      "rulesHint": "La Prospérité fixe les objets les plus rares en vente (p. 269). Le marchandage (opposition RU ou LO contre RU) est à la discrétion du MJ : changez le % de prix ou l'étalage à la main.",
+      "settingLevelLimit": "Limiter la rareté en boutique selon le niveau",
+      "settingLevelLimitHint": "Les joueurs ne peuvent pas acheter d'objets rares avant le niveau 4 ni de chefs-d'œuvre avant le niveau 7 (livre de base p. 93). Le MJ peut toujours tout vendre.",
+      "newShop": "Nouvelle boutique",
+      "toStash": "Livrer dans l'inventaire partagé de {company}",
+      "space": "Place dans l'inventaire : {used}/{max} utilisée ; cet objet prend {item}."
+    },
+    "Mission": {
+      "title": "Mission terminée",
+      "count": "Missions terminées",
+      "hint": "Paie la récompense aux mercenaires cochés, enregistre les requêtes de faction, ouvre les montées de niveau et donne l'avantage temporaire de la compagnie (p. 268).",
+      "name": "Mission",
+      "namePlaceholder": "nom facultatif pour le message",
+      "gold": "Récompense par mercenaire ({min}–{max} po)",
+      "goldLabel": "Récompense",
+      "contracts": "Compagnie : {names} (par mercenaire)",
+      "recruits": "Compagnie : {names} (par mercenaire)",
+      "treasure": "Trésor par mercenaire (jusqu'à 5 po)",
+      "mercenary": "Mercenaire",
+      "request": "Requête de faction ({min}–{max} po)",
+      "extra": "Or en plus",
+      "requestGold": "Or pour une requête de faction réussie",
+      "levelUp": "Autoriser les montées de niveau (chaque mercenaire gagne un niveau après une mission)",
+      "benefit": "{company} obtient un avantage temporaire",
+      "levelUpOpen": "Les montées de niveau sont ouvertes : utilisez le bouton Monter de niveau de votre fiche."
+    },
+    "Equip": {
+      "title": "Équipement",
+      "gmOverride": "En tant que MJ, le faire quand même ?",
+      "stunned": "Étourdi·e : vous ne pouvez pas changer d'objet.",
+      "forbidden": "En combat, vous ne pouvez échanger que des objets de main ou des petits objets ({slot} ne peut pas changer).",
+      "full": "Aucun emplacement libre pour {item}. Choisissez quoi déséquiper (au moins {n} emplacement(s)) :",
+      "swapTitle": "Échanger des objets",
+      "notEnough": "Cela ne libère pas assez d'emplacements.",
+      "smallOverflow": "{n} petit(s) objet(s) de trop sont équipés : déséquipez-en.",
+      "inventoryFull": "{name} porte {used}/{max} de place d'inventaire : laissez des objets dans l'inventaire partagé de la compagnie.",
+      "swapped": "{actor} échange {off} contre {on}.",
+      "equipped": "{actor} équipe {on}.",
+      "unequipped": "{actor} déséquipe {off}.",
+      "primaryAction": "action principale",
+      "twoHanded": "Prend les deux emplacements de main",
+      "spaceHint": "Place d'inventaire prise par les objets non équipés (5 disponibles, p. 87).",
+      "stashTitle": "Inventaire partagé",
+      "stash": "Laisser dans l'inventaire partagé de {company}",
+      "stashed": "{item} est maintenant dans l'inventaire partagé de {company}.",
+      "stashHint": "Laisser dans l'inventaire partagé de la compagnie",
+      "noCompany": "Rejoignez d'abord une compagnie (déposez ce mercenaire sur la fiche d'une compagnie).",
+      "take": "Prendre dans l'inventaire de {name}",
+      "takeAs": "Prendre pour",
+      "takeButton": "Prendre",
+      "stashEmpty": "L'inventaire partagé est vide. Les membres y déposent des objets depuis leur onglet Inventaire.",
+      "stashRules": "Les objets ici restent à la base de la compagnie. Un membre peut en prendre un au besoin ; il occupe alors sa place d'inventaire jusqu'à la fin de la mission (p. 87)."
+    },
+    "Lasting": {
+      "heading": "Effets durables",
+      "track": "Effet durable",
+      "title": "Effet durable : {name}",
+      "effect": "Effet durable",
+      "kind": "Type",
+      "round": "Jusqu'à la fin du round",
+      "persistent": "Persistant",
+      "uses": "Utilisations (les X prochaines fois)",
+      "rounds": "Rounds après celui-ci",
+      "lose": "Perdre la compétence à la fin (au lieu de l'épuiser)",
+      "started": "{name} : {effect} est en jeu.",
+      "ended": "{name} : {effect} se termine.",
+      "usesLeft": "{n} utilisation(s) restante(s)",
+      "roundsLeft": "encore {n} round(s)",
+      "use": "En utiliser une",
+      "end": "Terminer l'effet",
+      "bonus": "Bonus d'attaque",
+      "who": "S'applique à",
+      "whoOptions": {
+        "self": "Vous",
+        "allies": "Vos alliés",
+        "selfAndAllies": "Vous et vos alliés",
+        "enemies": "Ennemis (malus)"
+      },
+      "attack": "Attaque (+/-)",
+      "conditions": "États ajoutés",
+      "spends": "Utilise une charge",
+      "dialogHint": "Décochez ce qui ne s'applique pas à cette attaque (corps à corps seulement, une cible précise...). L'avantage de ces effets est présélectionné dans le mode ci-dessous."
+    },
+    "Terrain": {
+      "title": "Placer du terrain",
+      "kind": "Terrain",
+      "trap": "Piège",
+      "hazard": "Terrain dangereux",
+      "difficult": "Terrain difficile",
+      "obstacle": "Obstacle",
+      "count": "Hexagones",
+      "name": "Nom",
+      "namePlaceholder": "facultatif",
+      "trapDamage": "Dégâts du piège (tableau NC : {n})",
+      "hazardDamage": "Dégâts du terrain dangereux (tableau NC : {n})",
+      "trapEffects": "Effets du piège",
+      "lasting": "Le piège reste après s'être déclenché",
+      "hazardName": "Terrain dangereux (dégâts {n})",
+      "trapTriggered": "{name} déclenche {trap} !",
+      "spacesNear": "{name} est sur ou à côté de :",
+      "obstacleBlocks": "Vous ne pouvez pas terminer un déplacement dans un obstacle.",
+      "obstacleGM": "Jeton placé dans un obstacle (MJ).",
+      "teleport": "Téléportation"
+    },
+    "TrapBehavior": {
+      "FIELDS": {
+        "damage": {
+          "label": "Dégâts"
+        },
+        "conditions": {
+          "label": "États"
+        },
+        "oneShot": {
+          "label": "Disparaît une fois déclenché"
+        }
+      }
+    },
+    "Move": {
+      "setting": "Imposer les déplacements en combat",
+      "settingHint": "Les joueurs ne peuvent déplacer leur personnage que pendant son tour, dans la limite des capacités de déplacement utilisées (boutons Déplacement, Déplacement 4 / 3 de base). Libre hors combat ; le MJ n'est jamais limité.",
+      "granted": "{name} : {label} (encore {left} de déplacement ce tour).",
+      "notNow": "Le déplacement n'est accordé que pendant le tour de ce personnage, en phase d'action.",
+      "planning": "Pas de déplacement pendant la phase de planification.",
+      "notYourTurn": "Ce n'est pas le tour de ce personnage.",
+      "immobilized": "Immobilisé·e : vous ne pouvez pas vous déplacer.",
+      "stunned": "Étourdi·e : vous ne pouvez pas agir.",
+      "noMove": "Utilisez d'abord une capacité de déplacement (un bouton Déplacement, ou Déplacement 4 / 3 de base dans le suivi de combat).",
+      "tooFar": "Trop loin : il reste {left} de déplacement ce tour (le terrain difficile coûte 1 de plus).",
+      "noJump": "Sauter demande une capacité de saut.",
+      "noFly": "Voler demande une capacité de vol.",
+      "teleport": "Téléportez-vous avec un bouton Téléportation.",
+      "leftHint": "Déplacement restant / accordé ce tour",
+      "basicPrimary": "Action principale de base : Déplacement 4",
+      "basicSecondary": "Action secondaire de base : Déplacement 3"
+    }
+  }
+}

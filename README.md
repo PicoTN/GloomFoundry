@@ -29,6 +29,8 @@ pack checker (`node tools/validate-pack.mjs path/to/index.json`).
 
 ## Features
 
+- **Languages:** English and French (Foundry's language setting).
+
 - **Per-mercenary Modifier Deck and a shared GM deck.**
   - Each deck is backed by Foundry's built-in Cards documents: a deck plus a discard pile.
   - Decks are created automatically by the GM's client.

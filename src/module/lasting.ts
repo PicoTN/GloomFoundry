@@ -93,7 +93,7 @@ function bonusFromForm(form: Record<string, unknown>): LastingBonus | null {
 export function bonusSummary(b: LastingBonus): string {
   return [
     b.attack ? `${b.attack > 0 ? "+" : ""}${b.attack} ${t("GLOOM.Act.attackWord")}` : "",
-    b.pierce ? `Pierce ${b.pierce}` : "", b.push ? `Push ${b.push}` : "", b.pull ? `Pull ${b.pull}` : "",
+    b.pierce ? f("GLOOM.Act.pierce", { n: String(b.pierce) }) : "", b.push ? f("GLOOM.Act.push", { n: String(b.push) }) : "", b.pull ? f("GLOOM.Act.pull", { n: String(b.pull) }) : "",
     b.advantage ? t("GLOOM.Mode.advantage") : "",
     ...b.conditions.map((c) => (game.i18n!.has(`GLOOM.Condition.${c}.name`) ? t(`GLOOM.Condition.${c}.name`) : c)),
   ].filter(Boolean).join(", ");
