@@ -1,11 +1,18 @@
 /**
  * Character creation wizard (Core Rulebook ch. 4, "Making a Mercenary", p. 105):
  * ancestry, class, faction, Attribute points, Backgrounds, starting inventory, personal quest.
+ * Starting above Level 1 and retirement benefits (p. 121): the identity step sets the starting
+ * level and the number of retired mercenaries; the table and benefits change the points,
+ * Backgrounds, faction tier, gold and gear rarity, and after creation the Level up dialog runs
+ * once per extra level (Skills, Talents, points), after the extra Perks and the Skill trade.
  * Options come from world Items and every Item compendium (e.g. the imported content), so the
  * system itself ships no content.
  */
 import { ATTRIBUTES, SYSTEM_ID, templatePath, type AttributeKey } from "../config.ts";
-import { STARTING_TIER } from "../rules/factions.ts";
+import { higherLevelStart, MAX_LEVEL, retirementBenefits } from "../rules/progression.ts";
+import { RARITIES } from "../rules/shop.ts";
+import { startLevelChain } from "./level-up.ts";
+import { afterCreationBenefits } from "./retirement.ts";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const t = (key: string) => game.i18n!.localize(key);
@@ -42,6 +49,11 @@ interface CreationState {
   inventory: "starting" | "shop";
   cart: Record<string, number>;
   quest: string;
+  /** Starting level (p. 121) and retired mercenaries who completed their personal goal. */
+  level: number;
+  retired: number;
+  /** Free Legendary item (5 retirements). */
+  legendary: string;
 }
 
 const TYPES = ["ancestry", "class", "faction", "background", "equipment"] as const;
@@ -91,6 +103,7 @@ export class CreationWizard extends HandlebarsApplicationMixin(ApplicationV2) {
       img: actor?.img ?? "icons/svg/mystery-man.svg",
       ancestry: "", class: "", faction: "", assigned: emptyAssigned(), backgrounds: [],
       inventory: "starting", cart: {}, quest: (actor?.system as { personalGoal?: string } | undefined)?.personalGoal ?? "",
+      level: 1, retired: 0, legendary: "",
     };
   }
 
@@ -129,8 +142,20 @@ export class CreationWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     return Object.fromEntries(ATTRIBUTES.map((a) => [a, Number(attrs[a] ?? 0)])) as Record<AttributeKey, number>;
   }
 
+  private get start() { return higherLevelStart(this.draft.level); }
+  private get retirement() { return retirementBenefits(this.draft.retired); }
+  private get points(): number { return CREATION_POINTS + this.retirement.attributePoint; }
+  private get backgroundMax(): number { return this.start.backgrounds + this.retirement.background; }
+  /** Gold to spend at creation: 50 g instead of the class gear, plus the higher-level gold. */
+  private get budget(): number { return (this.draft.inventory === "shop" ? SHOPPING_GOLD : 0) + this.start.gold; }
+
   private get pointsLeft(): number {
-    return CREATION_POINTS - Object.values(this.draft.assigned).reduce((a, b) => a + b, 0);
+    return this.points - Object.values(this.draft.assigned).reduce((a, b) => a + b, 0);
+  }
+
+  /** Perks beyond the level-ups': the higher-level table's extra plus the retirement Perk. */
+  private get extraPerks(): number {
+    return Math.max(0, higherLevelStart(this.draft.level).perks - (this.draft.level - 1)) + this.retirement.perk;
   }
 
   private get cartTotal(): number {
@@ -146,10 +171,11 @@ export class CreationWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     if (!s.class) out.class.push(t("GLOOM.Creation.issue.class"));
     if (!s.faction && this.options_?.faction.length) out.faction.push(t("GLOOM.Creation.issue.faction"));
     if (this.pointsLeft > 0) out.attributes.push(f("GLOOM.Creation.issue.points", { n: String(this.pointsLeft) }));
-    if (s.backgrounds.length !== CREATION_BACKGROUNDS) {
-      out.backgrounds.push(f("GLOOM.Creation.issue.backgrounds", { n: String(s.backgrounds.length), max: String(CREATION_BACKGROUNDS) }));
+    if (s.backgrounds.length !== this.backgroundMax) {
+      out.backgrounds.push(f("GLOOM.Creation.issue.backgrounds", { n: String(s.backgrounds.length), max: String(this.backgroundMax) }));
     }
-    if (s.inventory === "shop" && this.cartTotal > SHOPPING_GOLD) out.inventory.push(t("GLOOM.Creation.issue.overBudget"));
+    if (this.cartTotal > this.budget) out.inventory.push(t("GLOOM.Creation.issue.overBudget"));
+    if (this.retirement.legendaryItem && !s.legendary) out.inventory.push(t("GLOOM.Creation.issue.legendary"));
     if (!s.quest.trim()) out.quest.push(t("GLOOM.Creation.issue.quest"));
     out.review = STEPS.filter((k) => k !== "review").flatMap((k) => out[k]);
     return out;
@@ -187,8 +213,9 @@ export class CreationWizard extends HandlebarsApplicationMixin(ApplicationV2) {
 
     const startingItems = ((cls?.system["startingItems"] ?? []) as { name?: string; system?: { quantity?: number } }[])
       .map((i) => ({ name: i.name, quantity: i.system?.quantity ?? 1 }));
+    const top = RARITIES.indexOf(this.start.rarity);
     const shop = o.equipment
-      .filter((e) => (e.system["rarity"] ?? "common") === "common" && Number(e.system["cost"] ?? 0) > 0)
+      .filter((e) => RARITIES.indexOf(String(e.system["rarity"] ?? "common") as never) <= top && Number(e.system["cost"] ?? 0) > 0)
       .map((e) => ({ ...e, cost: Number(e.system["cost"] ?? 0), qty: s.cart[e.uuid] ?? 0, slot: e.system["slot"] }));
 
     return {
@@ -214,7 +241,19 @@ export class CreationWizard extends HandlebarsApplicationMixin(ApplicationV2) {
         startingGear: cls.system["startingGear"],
       },
       faction: faction && { ...faction, description: await enrich(faction.system["description"]) },
-      startingTier: STARTING_TIER,
+      startingTier: this.start.factionTier,
+      levelOptions: Object.fromEntries(Array.from({ length: MAX_LEVEL }, (_, i) => [i + 1, String(i + 1)])),
+      startInfo: {
+        level: s.level, retired: s.retired, ...this.start,
+        rarityLabel: t(`GLOOM.Equipment.rarity.${this.start.rarity}`),
+        extraPerks: this.extraPerks, retirement: this.retirement,
+        levelUps: s.level - 1,
+      },
+      showShop: s.inventory === "shop" || this.start.gold > 0,
+      extraGold: this.start.gold,
+      legendaryItems: this.retirement.legendaryItem
+        ? o.equipment.filter((e) => e.system["rarity"] === "legendary").map((e) => ({ ...e, selected: e.uuid === s.legendary }))
+        : [],
       attributes: ATTRIBUTES.map((a) => ({
         key: a, label: t(`GLOOM.Attribute.${a}.label`), bonus: bonus[a], assigned: s.assigned[a],
         total: bonus[a] + s.assigned[a],
@@ -222,16 +261,16 @@ export class CreationWizard extends HandlebarsApplicationMixin(ApplicationV2) {
         canRemove: s.assigned[a] > 0,
       })),
       pointsLeft: this.pointsLeft,
-      points: CREATION_POINTS,
+      points: this.points,
       max: CREATION_MAX,
       backgroundGroups,
       backgroundCount: s.backgrounds.length,
-      backgroundMax: CREATION_BACKGROUNDS,
+      backgroundMax: this.backgroundMax,
       startingItems,
       startingGold: Number(cls?.system["startingGold"] ?? 0),
       shop,
       cartTotal: this.cartTotal,
-      budget: SHOPPING_GOLD,
+      budget: this.budget,
       noContent: !o.ancestry.length && !o.class.length,
       hasEquipment: o.equipment.length > 0,
       summary: {
@@ -252,6 +291,17 @@ export class CreationWizard extends HandlebarsApplicationMixin(ApplicationV2) {
         const key = input.dataset["field"] as "name" | "pronouns" | "quest";
         this.draft[key] = input.value;
       });
+    });
+    // Starting level and retirements change several steps: re-render.
+    this.element.querySelectorAll<HTMLInputElement | HTMLSelectElement>("[data-number]").forEach((input) => {
+      input.addEventListener("change", () => {
+        const key = input.dataset["number"] as "level" | "retired";
+        this.draft[key] = Math.max(key === "level" ? 1 : 0, Math.min(key === "level" ? MAX_LEVEL : 9, Math.floor(Number(input.value) || 0)));
+        void this.render();
+      });
+    });
+    this.element.querySelectorAll<HTMLInputElement>("input[name=legendary]").forEach((input) => {
+      input.addEventListener("change", () => { this.draft.legendary = input.value; });
     });
     this.element.querySelectorAll<HTMLInputElement>("input[name=inventory]").forEach((input) => {
       input.addEventListener("change", () => {
@@ -294,8 +344,8 @@ export class CreationWizard extends HandlebarsApplicationMixin(ApplicationV2) {
     const uuid = target.dataset["uuid"] ?? "";
     const list = this.draft.backgrounds;
     if (list.includes(uuid)) list.splice(list.indexOf(uuid), 1);
-    else if (list.length < CREATION_BACKGROUNDS) list.push(uuid);
-    else ui.notifications?.warn(f("GLOOM.Creation.issue.tooManyBackgrounds", { max: String(CREATION_BACKGROUNDS) }));
+    else if (list.length < this.backgroundMax) list.push(uuid);
+    else ui.notifications?.warn(f("GLOOM.Creation.issue.tooManyBackgrounds", { max: String(this.backgroundMax) }));
     void this.render();
   }
 
@@ -338,6 +388,11 @@ export class CreationWizard extends HandlebarsApplicationMixin(ApplicationV2) {
       const actor = await createMercenary(this.actor, this.draft, (type, uuid) => this.find(type, uuid));
       await this.close();
       actor?.sheet?.render({ force: true } as never);
+      if (actor) {
+        // Retirement Skill trade and extra Perks, then one Level up per extra level.
+        await afterCreationBenefits(actor, { retired: this.draft.retired, extraPerks: this.extraPerks });
+        if (this.draft.level > 1) await startLevelChain(actor, this.draft.level);
+      }
     } catch (err) {
       console.error("GloomFoundry | Character creation failed", err);
       ui.notifications?.error(f("GLOOM.Creation.failed", { error: String(err) }));
@@ -362,10 +417,11 @@ async function createMercenary(
   find: (type: (typeof TYPES)[number], uuid: string) => Option | undefined,
 ): Promise<Actor.Implementation | null> {
   const cls = find("class", s.class);
-  const gold = s.inventory === "starting"
-    ? Number(cls?.system["startingGold"] ?? 0)
-    // Shopping: 50 g of common gear (p. 118); the change is kept (assumption, see PLAN.md).
-    : Math.max(0, SHOPPING_GOLD - Object.entries(s.cart).reduce((sum, [u, q]) => sum + q * Number(find("equipment", u)?.system["cost"] ?? 0), 0));
+  const start = higherLevelStart(s.level);
+  const spent = Object.entries(s.cart).reduce((sum, [u, q]) => sum + q * Number(find("equipment", u)?.system["cost"] ?? 0), 0);
+  // Class gear (and its gold) or 50 g of gear (p. 118), plus the higher-level gold (p. 121);
+  // the change is kept (assumption, see PLAN.md).
+  const gold = Math.max(0, (s.inventory === "starting" ? Number(cls?.system["startingGold"] ?? 0) : SHOPPING_GOLD) + start.gold - spent);
 
   const base = {
     name: s.name.trim() || t("GLOOM.Creation.defaultName"),
@@ -393,7 +449,7 @@ async function createMercenary(
 
   const others: Record<string, unknown>[] = [];
   if (s.faction) {
-    const data = await itemData(s.faction, { system: { tier: STARTING_TIER, member: true, successes: 0, failures: 0, active: true } });
+    const data = await itemData(s.faction, { system: { tier: start.factionTier, member: true, successes: 0, failures: 0, active: true } });
     if (data) others.push(data);
   }
   for (const u of s.backgrounds) {
@@ -405,11 +461,15 @@ async function createMercenary(
       const { _id, ...data } = item;
       others.push(data);
     }
-  } else {
-    for (const [u, qty] of Object.entries(s.cart)) {
-      const data = await itemData(u, { system: { quantity: qty } });
-      if (data) others.push(data);
-    }
+  }
+  for (const [u, qty] of Object.entries(s.cart)) {
+    const data = await itemData(u, { system: { quantity: qty } });
+    if (data) others.push(data);
+  }
+  // Fifth retirement: a Legendary item for free.
+  if (s.legendary && retirementBenefits(s.retired).legendaryItem) {
+    const data = await itemData(s.legendary);
+    if (data) others.push(data);
   }
   if (others.length) await actor.createEmbeddedDocuments("Item", others as never);
 

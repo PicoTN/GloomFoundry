@@ -24,7 +24,7 @@ import { getPhase } from "../combat/combat.ts";
 import type { PerkStep } from "../rules/perks.ts";
 import { perkHTML } from "../perks/display.ts";
 import { isBlankMercenary, maybeOfferCreation, openCreationWizard } from "../apps/creation.ts";
-import { levelUpEnabled, openLevelUp } from "../apps/level-up.ts";
+import { levelUpEnabled, openLevelUp, pendingLevelTarget } from "../apps/level-up.ts";
 
 const { HandlebarsApplicationMixin } = foundry.applications.api;
 const t = (key: string) => game.i18n!.localize(key);
@@ -217,7 +217,8 @@ export class MercenarySheet extends HandlebarsApplicationMixin(foundry.applicati
         locked: combatant?.initiative !== null && combatant?.initiative !== undefined,
         current: combatant?.initiative ?? null,
       } : null,
-      canLevelUp: levelUpEnabled() && actor.isOwner && system.level < 9,
+      // A new mercenary still being raised to its starting level can always continue.
+      canLevelUp: (levelUpEnabled() || pendingLevelTarget(actor) !== null) && actor.isOwner && system.level < 9,
       tabs: this._prepareTabs("primary"),
       actor,
       system,

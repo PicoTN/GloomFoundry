@@ -703,8 +703,27 @@
         "backgrounds": "{n} of {max} Backgrounds chosen.",
         "tooManyBackgrounds": "You already have {max} Backgrounds: remove one first.",
         "overBudget": "Your purchases cost more than 50 g.",
-        "quest": "Write a personal quest."
-      }
+        "quest": "Write a personal quest.",
+        "legendary": "Choose your free Legendary item."
+      },
+      "startLevel": "Starting level",
+      "retired": "Retired mercenaries (personal goal completed)",
+      "startTable": "{levelUps} Level up(s) after creation (Skills, Talents, Attribute points, HP), {backgrounds} Backgrounds, faction Tier {tier}, +{gold} g for gear up to {rarity}.",
+      "extraPerks": "You choose {n} extra Perk box(es) right after creation.",
+      "extraPerksTitle": "Choose {n} extra Perk(s)",
+      "tooManyPerks": "Choose at most {n} Perk box(es).",
+      "retirementTitle": "Retirement benefits (cumulative)",
+      "retirement": {
+        "perk": "1st: 1 extra Perk",
+        "background": "2nd: 1 extra Background from any category",
+        "attributePoint": "3rd: 1 extra Attribute point",
+        "skillTrade": "4th: trade a Level 1 Skill for a Level 2 Skill",
+        "legendaryItem": "5th: a Legendary item for free"
+      },
+      "extraGold": "Higher-level start: +{gold} g to spend on gear up to {rarity} (the rest is kept).",
+      "tradeHint": "Fourth retirement benefit: give up one Level 1 class Skill for a Level 2 class Skill.",
+      "tradeGive": "Give up",
+      "tradeTake": "Take"
     },
     "Faction": {
       "plural": "Factions",

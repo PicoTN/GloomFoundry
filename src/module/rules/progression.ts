@@ -86,3 +86,54 @@ export function levelGains(level: number): LevelGains {
     upgradeTalents: l === 5,
   };
 }
+
+// ---------------------------------------------------------------------------
+// Starting at higher levels and retirement benefits (p. 121)
+
+export interface HigherLevelStart {
+  /** Total Perks at that level (the level-ups give level − 1 of them). */
+  perks: number;
+  backgrounds: number;
+  factionTier: number;
+  /** Extra gold, on top of the starting equipment. */
+  gold: number;
+  /** Rarest equipment that gold may buy. */
+  rarity: "common" | "uncommon" | "rare" | "masterwork" | "legendary";
+}
+
+const HIGHER_LEVELS: Record<number, HigherLevelStart> = {
+  1: { perks: 0, backgrounds: 4, factionTier: 2, gold: 0, rarity: "common" },
+  2: { perks: 1, backgrounds: 4, factionTier: 2, gold: 75, rarity: "uncommon" },
+  3: { perks: 3, backgrounds: 5, factionTier: 3, gold: 100, rarity: "uncommon" },
+  4: { perks: 4, backgrounds: 5, factionTier: 3, gold: 125, rarity: "rare" },
+  5: { perks: 5, backgrounds: 5, factionTier: 4, gold: 150, rarity: "rare" },
+  6: { perks: 7, backgrounds: 6, factionTier: 4, gold: 175, rarity: "masterwork" },
+  7: { perks: 8, backgrounds: 6, factionTier: 4, gold: 200, rarity: "masterwork" },
+  8: { perks: 9, backgrounds: 6, factionTier: 5, gold: 225, rarity: "legendary" },
+  9: { perks: 10, backgrounds: 6, factionTier: 5, gold: 250, rarity: "legendary" },
+};
+
+export function higherLevelStart(level: number): HigherLevelStart {
+  return HIGHER_LEVELS[clampLevel(level)]!;
+}
+
+/** Perks a higher-level start grants beyond the one per level-up. */
+export function extraStartingPerks(level: number): number {
+  const l = clampLevel(level);
+  return Math.max(0, higherLevelStart(l).perks - (l - 1));
+}
+
+export interface RetirementBenefits {
+  perk: number;
+  background: number;
+  attributePoint: number;
+  /** Trade one Level 1 Skill for a Level 2 Skill. */
+  skillTrade: boolean;
+  legendaryItem: boolean;
+}
+
+/** Cumulative benefits for the number of mercenaries retired after completing their personal goal. */
+export function retirementBenefits(retired: number): RetirementBenefits {
+  const n = Math.max(0, Math.floor(retired));
+  return { perk: n >= 1 ? 1 : 0, background: n >= 2 ? 1 : 0, attributePoint: n >= 3 ? 1 : 0, skillTrade: n >= 4, legendaryItem: n >= 5 };
+}

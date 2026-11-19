@@ -20,6 +20,31 @@
       </div>
     </div>
     <p class="hint">{{localize "GLOOM.Creation.hint.identity"}}</p>
+    <div class="start-options">
+      <label>{{localize "GLOOM.Creation.startLevel"}}
+        <select data-number="level">{{selectOptions levelOptions selected=state.level}}</select></label>
+      <label>{{localize "GLOOM.Creation.retired"}}
+        <input type="number" data-number="retired" value="{{state.retired}}" min="0" max="9" step="1"></label>
+    </div>
+    {{#if (or (gt startInfo.level 1) (gt startInfo.retired 0))}}
+    <div class="detail start-summary">
+      {{#if (gt startInfo.level 1)}}
+      <p><strong>{{localize "GLOOM.Creation.startLevel"}} {{startInfo.level}}</strong>:
+        {{localize "GLOOM.Creation.startTable" levelUps=startInfo.levelUps backgrounds=startInfo.backgrounds tier=startInfo.factionTier gold=startInfo.gold rarity=startInfo.rarityLabel}}</p>
+      {{/if}}
+      {{#if startInfo.extraPerks}}<p>{{localize "GLOOM.Creation.extraPerks" n=startInfo.extraPerks}}</p>{{/if}}
+      {{#if (gt startInfo.retired 0)}}
+      <p><strong>{{localize "GLOOM.Creation.retirementTitle"}}</strong></p>
+      <ul>
+        {{#if startInfo.retirement.perk}}<li>{{localize "GLOOM.Creation.retirement.perk"}}</li>{{/if}}
+        {{#if startInfo.retirement.background}}<li>{{localize "GLOOM.Creation.retirement.background"}}</li>{{/if}}
+        {{#if startInfo.retirement.attributePoint}}<li>{{localize "GLOOM.Creation.retirement.attributePoint"}}</li>{{/if}}
+        {{#if startInfo.retirement.skillTrade}}<li>{{localize "GLOOM.Creation.retirement.skillTrade"}}</li>{{/if}}
+        {{#if startInfo.retirement.legendaryItem}}<li>{{localize "GLOOM.Creation.retirement.legendaryItem"}}</li>{{/if}}
+      </ul>
+      {{/if}}
+    </div>
+    {{/if}}
     {{/if}}
 
     {{#if (eq step "ancestry")}}
@@ -138,8 +163,9 @@
       {{/if}}
     </div>
     {{/if}}
-    <label class="radio"><input type="radio" name="inventory" value="shop" {{#if (eq state.inventory "shop")}}checked{{/if}} {{#unless hasEquipment}}disabled{{/unless}}> {{localize "GLOOM.Creation.shop"}} ({{budget}} g)</label>
-    {{#if (eq state.inventory "shop")}}
+    <label class="radio"><input type="radio" name="inventory" value="shop" {{#if (eq state.inventory "shop")}}checked{{/if}} {{#unless hasEquipment}}disabled{{/unless}}> {{localize "GLOOM.Creation.shop"}}</label>
+    {{#if extraGold}}<p class="hint">{{localize "GLOOM.Creation.extraGold" gold=extraGold rarity=startInfo.rarityLabel}}</p>{{/if}}
+    {{#if showShop}}
     <p class="points">{{localize "GLOOM.Creation.spent"}} <strong>{{cartTotal}}</strong> / {{budget}} g</p>
     <table class="shop">
       <tbody>
@@ -156,6 +182,14 @@
       </tbody>
     </table>
     {{/if}}
+    {{#if legendaryItems.length}}
+    <h3>{{localize "GLOOM.Creation.retirement.legendaryItem"}}</h3>
+    <div class="legendary-choices">
+      {{#each legendaryItems}}
+      <label class="radio"><input type="radio" name="legendary" value="{{uuid}}" {{#if selected}}checked{{/if}}> <img src="{{img}}" alt=""> {{name}}</label>
+      {{/each}}
+    </div>
+    {{/if}}
     {{/if}}
 
     {{#if (eq step "quest")}}
@@ -168,6 +202,7 @@
     <h2>{{localize "GLOOM.Creation.step.review"}}</h2>
     <dl class="summary">
       <dt>{{localize "Name"}}</dt><dd>{{state.name}}{{#if state.pronouns}} ({{state.pronouns}}){{/if}}</dd>
+      <dt>{{localize "GLOOM.Creation.startLevel"}}</dt><dd>{{state.level}}{{#if state.retired}} · {{localize "GLOOM.Creation.retired"}}: {{state.retired}}{{/if}}</dd>
       <dt>{{localize "GLOOM.Mercenary.ancestry"}}</dt><dd>{{ancestry.name}}</dd>
       <dt>{{localize "GLOOM.Mercenary.className"}}</dt><dd>{{cls.name}}</dd>
       {{#if faction}}<dt>{{localize "GLOOM.Creation.step.faction"}}</dt><dd>{{faction.name}} ({{localize "GLOOM.Creation.tier"}} {{startingTier}})</dd>{{/if}}

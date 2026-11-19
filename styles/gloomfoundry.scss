@@ -713,3 +713,10 @@ img.gloom-inline-icon:not(.icon-stat), img.gloom-act-icon:not(.icon-stat),
   label.checkbox { display: flex; align-items: center; gap: 0.35rem; } .hint { font-size: 0.75rem; opacity: 0.8; margin: 0.2rem 0 0; } }
 .gloom-lasting-form fieldset { display: flex; flex-direction: column; gap: 0.25rem;
   > label { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; input[type="number"] { width: 5rem; flex: 0 0 auto; } input[type="text"] { flex: 1; } } }
+.gloomfoundry.creation-wizard {
+  .start-options { display: flex; gap: 1rem; margin-top: 0.6rem; label { display: flex; flex-direction: column; } select, input { width: 6rem; } }
+  .start-summary ul { margin: 0.2rem 0; padding-left: 1.2rem; }
+  .legendary-choices { display: flex; flex-direction: column; gap: 0.2rem; img { width: 24px; height: 24px; border: none; vertical-align: middle; } }
+}
+.gloom-extra-perks { display: flex; flex-direction: column; gap: 0.3rem;
+  .perk-row { display: flex; align-items: center; gap: 0.5rem; input { width: 3.5rem; flex: 0 0 auto; } .perk-text { flex: 1; } } }

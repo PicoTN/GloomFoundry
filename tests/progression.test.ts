@@ -46,3 +46,19 @@ describe("levelGains", () => {
     expect(levelGains(2)).toMatchObject({ perks: 1, attributePoints: 1, passiveTalent: false });
   });
 });
+
+describe("higher-level starts and retirement (p. 121)", () => {
+  it("follows the higher levels guide", async () => {
+    const { higherLevelStart, extraStartingPerks } = await import("../src/module/rules/progression.ts");
+    expect(higherLevelStart(1)).toMatchObject({ backgrounds: 4, factionTier: 2, gold: 0, rarity: "common" });
+    expect(higherLevelStart(5)).toMatchObject({ perks: 5, backgrounds: 5, factionTier: 4, gold: 150, rarity: "rare" });
+    expect(higherLevelStart(9)).toMatchObject({ perks: 10, backgrounds: 6, factionTier: 5, gold: 250 });
+    expect([1, 2, 3, 4, 5, 6, 7, 8, 9].map(extraStartingPerks)).toEqual([0, 0, 1, 1, 1, 2, 2, 2, 2]);
+  });
+  it("stacks retirement benefits", async () => {
+    const { retirementBenefits } = await import("../src/module/rules/progression.ts");
+    expect(retirementBenefits(0)).toEqual({ perk: 0, background: 0, attributePoint: 0, skillTrade: false, legendaryItem: false });
+    expect(retirementBenefits(3)).toEqual({ perk: 1, background: 1, attributePoint: 1, skillTrade: false, legendaryItem: false });
+    expect(retirementBenefits(7)).toMatchObject({ skillTrade: true, legendaryItem: true });
+  });
+});

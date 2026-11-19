@@ -49,7 +49,8 @@ export class LevelUpApp extends HandlebarsApplicationMixin(ApplicationV2) {
   static override PARTS = { body: { template: templatePath("apps/level-up.hbs"), scrollable: [".level-body"] } };
 
   override get title(): string {
-    return f("GLOOM.LevelUp.titleFor", { name: this.actor.name ?? "" });
+    const target = pendingLevelTarget(this.actor);
+    return f("GLOOM.LevelUp.titleFor", { name: this.actor.name ?? "" }) + (target ? ` (→ ${target})` : "");
   }
 
   private get system() {
@@ -187,7 +188,26 @@ export class LevelUpApp extends HandlebarsApplicationMixin(ApplicationV2) {
         gained.length ? `<p>${f("GLOOM.LevelUp.gained", { list: gained.join(", ") })}</p>` : ""}</div>`,
     } as never);
     await this.close();
+    // Starting above Level 1: keep leveling until the chosen starting level.
+    const target = Number(actor.getFlag(SYSTEM_ID as never, LEVEL_TARGET as never) ?? 0);
+    if (target > to) openLevelUp(actor);
+    else if (target) await actor.unsetFlag(SYSTEM_ID as never, LEVEL_TARGET as never);
   }
+}
+
+/** Flag: the level a new mercenary is being raised to (higher-level start, p. 121). */
+export const LEVEL_TARGET = "levelTarget";
+
+export function pendingLevelTarget(actor: Actor.Implementation): number | null {
+  const target = Number(actor.getFlag(SYSTEM_ID as never, LEVEL_TARGET as never) ?? 0);
+  const level = (actor.system as unknown as { level?: number }).level ?? 1;
+  return target > level ? target : null;
+}
+
+/** Raise a freshly created mercenary to its starting level, one Level up dialog per level. */
+export async function startLevelChain(actor: Actor.Implementation, target: number): Promise<void> {
+  await actor.setFlag(SYSTEM_ID as never, LEVEL_TARGET as never, Math.min(MAX_LEVEL, target) as never);
+  openLevelUp(actor);
 }
 
 export function openLevelUp(actor: Actor.Implementation): void {
